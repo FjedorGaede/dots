@@ -217,9 +217,9 @@ bind '"\C-f": "tmux-sessionizer.sh\n"'
 # Neovim using Bob
 export PATH=$PATH:$HOME/.local/share/bob/nvim-bin
 
+export EDITOR="nvim"
 
 # -- Yazi
-export EDITOR="nvim"
 bind '"\C-e": "y\n"'
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
