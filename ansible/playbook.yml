@@ -1,0 +1,11 @@
+---
+- name: Base Hyprland Installation
+  hosts: localhost
+  become: true
+  tasks: 
+    - name: Installation essentials
+      community.general.pacman:
+        name: 
+          - git
+        state: present
+        update_cache: yes
