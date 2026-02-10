@@ -1,0 +1,6 @@
+- [ ] Can I have SSH Keys for Github automatically added? 
+- [ ] On my private machine can i have automatically host names?
+- [ ] For what to use ansible and for what to use chezmoi? 
+- [ ] Install packages
+- [ ] Setup things. look at bootstrap for that. How can i do this
+- [ ] ZSH?
