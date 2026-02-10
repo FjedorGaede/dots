@@ -2,10 +2,32 @@
 - name: Base Hyprland Installation
   hosts: localhost
   become: true
-  tasks: 
-    - name: Installation essentials
-      community.general.pacman:
-        name: 
-          - git
-        state: present
-        update_cache: yes
+
+  vars_prompt:
+    - name: install_dev
+      prompt: "Install Development Tools? (y/n)"
+      default: "n"
+      private: false
+
+    - name: install_gaming
+      prompt: "Install Gaming Suite? (y/n)"
+      default: "n"
+      private: false
+  tasks:
+    - name: "Running Pre-Flight Installations"
+      include_role:
+        name: aur_helper
+
+    - name: "Running Base System Installation"
+      include_role:
+        name: base
+
+    # - name: "Running Dev Tools"
+    #   include_role:
+    #     name: dev
+    #   when: install_dev | lower == 'y'
+    #
+    # - name: "Running Gaming Setup"
+    #   include_role:
+    #     name: gaming
+    #   when: install_gaming | lower == 'y'

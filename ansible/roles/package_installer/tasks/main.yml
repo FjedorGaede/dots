@@ -1,0 +1,18 @@
+---
+# This is a generic task that installs packages from two lists.
+# It expects 'packages_to_install' and 'aur_packages_to_install' to be passed in.
+
+- name: "Install packages from official repositories"
+  become: true
+  community.general.pacman:
+    name: "{{ packages_to_install }}"
+    state: present
+  when: packages_to_install is defined and packages_to_install | length > 0
+
+- name: "Install packages from the AUR"
+  become_user: "{{ ansible_user | default(lookup('env', 'USER')) }}"
+  kewlfft.aur.aur:
+    use: yay
+    name: "{{ aur_packages_to_install }}"
+    state: present
+  when: aur_packages_to_install is defined and aur_packages_to_install | length > 0

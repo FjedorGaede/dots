@@ -1,10 +1,7 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-install_on_fedora() {
-    sudo dnf install -y ansible
-}
-
-install_on_ubuntu() {
+install_on_arch() {
     sudo pacman -Syu
     sudo pacman -S ansible
 }
@@ -13,7 +10,7 @@ OS="$(uname -s)"
 case "${OS}" in
     Linux*)
         if [ -f /etc/arch-release ]; then
-            install_on_fedora
+            install_on_arch
         else
             echo "Unsupported Linux distribution"
             exit 1
@@ -25,8 +22,8 @@ case "${OS}" in
         ;;
 esac
 
-
-# ansible-playbook ~/.bootstrap/setup.yml --ask-become-pass
+echo "--> Install ansible collections"
+ansible-galaxy install -r "{{ .chezmoi.sourceDir }}/ansible/requirements.yml"
 
 echo "Ansible installation complete."
 
