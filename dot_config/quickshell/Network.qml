@@ -14,7 +14,8 @@ RowLayout {
     property var wifiDevice: Networking.devices.values.find(d => d?.mode == WifiDeviceMode.Station)
 
     property bool isScanning: !!wifiDevice?.scannerEnabled
-    property var connectedNetwork: wifiDevice?.networks.values.find(n => !!n?.connected)
+    property var allNetworks: wifiDevice?.networks.values
+    property var connectedNetwork: allNetworks.find(n => !!n?.connected)
 
     property bool isConnected: !!connectedNetwork
     property int signalStrength: connectedNetwork?.signalStrength * 100
@@ -24,6 +25,8 @@ RowLayout {
     function getIcon() {
         const wifiIcons = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"];
         const disconnectedIcon = "󰖪"
+
+        console.log("allNetworks", allNetworks.map(n => n.name))
 
         if (!isConnected) {
             return disconnectedIcon;
@@ -45,6 +48,7 @@ RowLayout {
 
         property var rawWifiNetworkList:  []
         property var wifiNetworksList:  []
+        property var wifiDevice: network.wifiDevice
 
         function processRawWifiList() {
             wifiNetworksList = rawWifiNetworkList.map(wifiNetworkData => {
@@ -104,6 +108,10 @@ RowLayout {
                     HoverHandler {
                         id: hoverHandler
                         cursorShape: Qt.PointingHandCursor
+                    }
+
+                    TapHandler {
+                        onTapped: wifiManager.wifiDevice.scannerEnabled = true
                     }
 
                     Text {
