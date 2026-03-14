@@ -35,7 +35,6 @@ alias connect_homeassistant='ssh root@homeassistant -p 22'
 
 export NODE_OPTIONS=--max-old-space-size=4096
 
-
 # fkill - kill processes with fzf
 fkill() {
     local pid 
@@ -89,4 +88,3 @@ function y() {
 }
 
 source ~/.cache/wal/colors.sh
-
