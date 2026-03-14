@@ -57,7 +57,6 @@ function custom-commands() {
     [ -n "$selected" ] && "$selected"
 }
 
-
 # PATH
 export PATH=$HOME/.local/bin:$PATH
 export PATH="$HOME/.local/bin/custom-commands:$PATH"
