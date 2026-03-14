@@ -2,7 +2,7 @@
 
 case "$1" in
     --subcommands)
-        echo -e "update\npush\nadd\nremove\nnvim\ncd"
+        echo -e "update\npush\nadd\nremove\nupdate-nvim\ncd"
         ;;
     update)
         chezmoi update --refresh-externals
@@ -13,7 +13,7 @@ case "$1" in
     add)
         chezmoi add "$2"
         ;;
-    nvim)
+    update-nvim)
         if [ -n "$2" ]; then
             msg="$2"
         else
