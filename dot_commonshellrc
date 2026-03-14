@@ -35,25 +35,11 @@ alias connect_homeassistant='ssh root@homeassistant -p 22'
 
 export NODE_OPTIONS=--max-old-space-size=4096
 
-# fkill - kill processes with fzf
-fkill() {
-    local pid 
-    if [ "$UID" != "0" ]; then
-        pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
-    else
-        pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
-    fi  
-
-    if [ "x$pid" != "x" ]
-    then
-        echo $pid | xargs kill -${1:-9}
-    fi
-}
 
 # Command palette - fuzzy search all custom commands
 function custom-commands() {
     local selected
-    selected=$(find ~/.local/bin/custom-commands -type f -executable -printf '%f\n' | fzf --tmux)
+    selected=$(find ~/.local/bin/custom-commands -type f -executable -printf '%f\n' | sort | gum filter --placeholder "Search commands...")
     [ -n "$selected" ] && "$selected"
 }
 
