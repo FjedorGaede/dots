@@ -1,0 +1,2 @@
+# Load common shell rc commands shared with other shell
+source $HOME/.commonshellrc
