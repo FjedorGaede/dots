@@ -1,0 +1,22 @@
+#!/bin/bash
+
+case "$1" in 
+    update)
+        chezmoi update --refresh-externals
+        ;;
+    push)
+        chezmoi re-add
+        ;;
+    add)
+        chezmoi add "$2"
+        ;;
+    *)
+        echo "Usage: dots [command]"
+        echo ""
+        echo "Commands:"
+        echo "  update    Pull latest dotfiles from remote and apply them"
+        echo "  push      Re-add changed dotfiles and push to repo"
+        echo "  add       Add a file to chezmoi (e.g. dots add ~/.bashrc)"
+        ;;
+esac
+
