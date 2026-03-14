@@ -205,6 +205,7 @@ function list-custom-commands() {
 [ -r /usr/share/bash-completion/bash_completion   ] && . /usr/share/bash-completion/bash_completion
 
 export PATH=$HOME/.local/bin:$PATH
+export PATH="$HOME/.local/bin/custom-commands:$PATH"
 export PATH="$HOME/.local/scripts:$PATH"
 export PATH=$PATH:$HOME/.local/bin/tmux-sessionizer
 export PATH=$PATH:$HOME/.local/bin/tmux-reattach
