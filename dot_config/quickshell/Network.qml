@@ -2,9 +2,10 @@ import Quickshell
 import Quickshell.Networking
 import Quickshell.Io
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
-import './_helpers/getIntervalIndex.js' as Util
+import './_helpers/wifiUtils.js' as WifiUtils
 
 RowLayout {
     id: network
@@ -15,28 +16,19 @@ RowLayout {
 
     property bool isScanning: !!wifiDevice?.scannerEnabled
     property var allNetworks: wifiDevice?.networks.values
-    property var connectedNetwork: allNetworks.find(n => !!n?.connected)
+    property var connectedNetwork: allNetworks?.find(n => !!n?.connected)
 
     property bool isConnected: !!connectedNetwork
     property int signalStrength: connectedNetwork?.signalStrength * 100
 
     property color defaultColor: "white"
 
-    function getIcon() {
-        const wifiIcons = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"];
-        const disconnectedIcon = "󰖪"
-
-        console.log("allNetworks", allNetworks.map(n => n.name))
-
-        if (!isConnected) {
-            return disconnectedIcon;
-        }
-
-        return wifiIcons[Util.getIntervalIndex(signalStrength, 100, wifiIcons.length)]
+    function getWifiIcon() {
+        return isConnected ? WifiUtils.getWifiIconForSignalStrength(signalStrength) : WifiUtils.DISCONNECTED_ICON;
     }
 
     Text {
-        text: network.getIcon()
+        text: network.getWifiIcon()
         color: network.defaultColor
     }
 
@@ -45,87 +37,60 @@ RowLayout {
         visible: true
         implicitWidth: 200
         implicitHeight: 200
+        // TODO remove this
+        anchors.right: true
+        exclusiveZone: -1
 
-        property var rawWifiNetworkList:  []
-        property var wifiNetworksList:  []
         property var wifiDevice: network.wifiDevice
-
-        function processRawWifiList() {
-            wifiNetworksList = rawWifiNetworkList.map(wifiNetworkData => {
-                const parts = wifiNetworkData.split(":");
-
-                if (parts.length < 3) {
-                    console.error(`I could not split ${wifiNetworkData} into three parts`);
-                }
-
-                const [signalStrength, security, ...rest] = parts;
-                const ssid = rest.join(":");
-
-                console.log(`${ssid}: ${signalStrength} - ${security}`)
-
-
-                return { ssid, signalStrength, security };
-            });
-
-            rawWifiNetworkList = [];
-        }
-
-        Process {
-            id: wifiscan
-            // Claude:
-            // List all APs (terse, SSID/signal/security), drop unnamed networks (empty SSID),
-            // sort by signal descending, then deduplicate by SSID keeping the strongest entry. 
-            command: ["bash", "-c", "nmcli -t -f SIGNAL,SECURITY,SSID dev wifi list | grep -v ':$' | sort -t: -k1 -rn | sort -t: -k3,3 -u"]
-            stdout: SplitParser {
-                onRead: line => {
-                    if (!wifiManager.rawWifiNetworkList) {
-                        wifiManager.rawWifiNetworkList = [];
-                    }
-
-                    wifiManager.rawWifiNetworkList.push(line);
-                }
-            }
-            onExited: wifiManager.processRawWifiList()
-
-            running: true
-        }
+        property var allNetworks: wifiManager.wifiDevice?.networks.values
+        property var knownNetworks: allNetworks?.filter(network => network.known) || []
+        property var unknownNetworks: allNetworks?.filter(network => !network.known) || []
 
         ColumnLayout {
             width: parent.width
             spacing: 5
 
+            Button {
+                text: "Start Scanning"
+                onClicked: wifiManager.wifiDevice.scannerEnabled = !wifiManager.wifiDevice.scannerEnabled
+            }
+
+            // BusyIndicator {
+            //     running: wifiManager.wifiDevice.scannerEnabled
+            // }
+
+            Text {
+                text: "Known Network"
+            }
+
+            Divider {}
+
             Repeater {
-                model: wifiManager.wifiNetworksList
+                model: wifiManager.knownNetworks
 
-                Rectangle {
+                WifiNetworkItem { 
                     required property var modelData
+                    network: modelData
+                }
+            }
 
-                    Layout.fillWidth: true
-                    implicitHeight: 15
-                    color: hoverHandler.hovered ? "red" : "white"
-                    border.color: "black"
+            Text {
+                visible: wifiManager.unknownNetworks.length > 0
+                text: "Other Networks"
+            }
 
-                    HoverHandler {
-                        id: hoverHandler
-                        cursorShape: Qt.PointingHandCursor
-                    }
+            Divider {
+                visible: wifiManager.unknownNetworks.length > 0
+            }
 
-                    TapHandler {
-                        onTapped: wifiManager.wifiDevice.scannerEnabled = true
-                    }
+            Repeater {
+                model: wifiManager.unknownNetworks
 
-                    Text {
-                        text: `${parent.modelData.ssid} - ${parent.modelData.signalStrength}`
-                    }
+                WifiNetworkItem { 
+                    required property var modelData
+                    network: modelData
                 }
             }
         }
-
-        // MouseArea {
-        //     anchors.fill: parent
-        //     hoverEnabled: true
-        //     cursorShape: Qt.PointingHandCursor
-        //     onClicked: wifiscan.running = true
-        // }
     }
 }
