@@ -10,6 +10,17 @@ case "$1" in
     add)
         chezmoi add "$2"
         ;;
+    nvim)
+        if [ -n "$2" ]; then
+            msg="$2"
+        else
+            read -rp "Commit message [Update nvim config]: " msg
+            msg="${msg:-"Update nvim config"}"
+        fi
+        git -C ~/.config/nvim add -A
+        git -C ~/.config/nvim commit -m "$msg"
+        git -C ~/.config/nvim push
+        ;;
     cd)
         chezmoi cd
         ;;
@@ -20,6 +31,7 @@ case "$1" in
         echo "  update    Pull latest dotfiles from remote and apply them"
         echo "  push      Re-add changed dotfiles and push to repo"
         echo "  add       Add a file to chezmoi (e.g. dots add ~/.bashrc)"
+        echo "  nvim      Commit and push nvim config changes"
         ;;
 esac
 

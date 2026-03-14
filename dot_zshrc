@@ -1,2 +1,26 @@
 # Load common shell rc commands shared with other shell
 source $HOME/.commonshellrc
+
+# History settings
+setopt HIST_IGNORE_DUPS   # ignore duplicate commands
+setopt HIST_IGNORE_SPACE  # ignore commands starting with a space
+
+# Starship prompt
+eval "$(starship init zsh)"
+
+# Zoxide (jump to directories)
+eval "$(zoxide init --cmd j zsh)"
+
+# FZF (fuzzy finder)
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval "$(fzf --zsh)"
+
+# Key bindings
+# Ctrl+P: command palette (zsh requires wrapping functions as widgets)
+function _custom-commands-widget() { custom-commands; zle reset-prompt }
+zle -N _custom-commands-widget
+bindkey '^p' _custom-commands-widget
+
+bindkey -s '^g' 'tmux-reattach.sh\n'  # Ctrl+G: reattach to tmux session
+bindkey -s '^f' 'tmux-sessionizer.sh\n'  # Ctrl+F: open tmux sessionizer
+bindkey -s '^e' 'y\n'  # Ctrl+E: open yazi file manager
