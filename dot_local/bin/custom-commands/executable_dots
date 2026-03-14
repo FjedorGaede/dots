@@ -10,6 +10,9 @@ case "$1" in
     add)
         chezmoi add "$2"
         ;;
+    cd)
+        chezmoi cd
+        ;;
     *)
         echo "Usage: dots [command]"
         echo ""
