@@ -1,6 +1,19 @@
 # Load common shell rc commands shared with other shell
 source $HOME/.commonshellrc
 
+# Completion
+autoload -Uz compinit && compinit
+
+# dots completion
+_dots() {
+    local subs=($(dots --subcommands))
+    _arguments "1: :->subcmd"
+    case $state in
+        subcmd) compadd -V unsorted -l $subs ;;
+    esac
+}
+compdef _dots dots
+
 # History settings
 setopt HIST_IGNORE_DUPS   # ignore duplicate commands
 setopt HIST_IGNORE_SPACE  # ignore commands starting with a space
@@ -14,6 +27,10 @@ eval "$(zoxide init --cmd j zsh)"
 # FZF (fuzzy finder)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(fzf --zsh)"
+
+# Word navigation
+bindkey "^[[1;5C" forward-word   # Ctrl+Right: jump word forward
+bindkey "^[[1;5D" backward-word  # Ctrl+Left: jump word backward
 
 # Key bindings
 # Ctrl+P: command palette (zsh requires wrapping functions as widgets)
