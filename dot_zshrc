@@ -6,11 +6,9 @@ autoload -Uz compinit && compinit
 
 # dots completion
 _dots() {
-    local subs=($(dots --subcommands))
-    _arguments "1: :->subcmd"
-    case $state in
-        subcmd) compadd -V unsorted -l $subs ;;
-    esac
+    local -a subs
+    subs=($(dots --subcommands))
+    _describe 'subcommands' subs
 }
 compdef _dots dots
 
