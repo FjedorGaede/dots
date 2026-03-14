@@ -7,6 +7,7 @@ add_newline = true
 [character]
 success_symbol = "[❯](bold #f6aede)"
 error_symbol = "[❯](bold #ff5555)"
+vicmd_symbol = "[■](bold #f6aede)"
 
 
 [aws]
