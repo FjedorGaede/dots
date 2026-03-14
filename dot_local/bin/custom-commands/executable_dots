@@ -1,6 +1,9 @@
 #!/bin/bash
 
-case "$1" in 
+case "$1" in
+    --subcommands)
+        echo -e "update\npush\nadd\nremove\nnvim\ncd"
+        ;;
     update)
         chezmoi update --refresh-externals
         ;;

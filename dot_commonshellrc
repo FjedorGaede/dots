@@ -38,9 +38,18 @@ export NODE_OPTIONS=--max-old-space-size=4096
 
 # Command palette - fuzzy search all custom commands
 function custom-commands() {
-    local selected
+    local selected subcommand subcommands
     selected=$(find ~/.local/bin/custom-commands -type f -executable -printf '%f\n' | sort | gum filter --placeholder "Search commands...")
-    [ -n "$selected" ] && "$selected"
+    [ -z "$selected" ] && return
+
+    subcommands=$("$selected" --subcommands 2>/dev/null)
+    if [ -n "$subcommands" ]; then
+        subcommand=$(echo "$subcommands" | gum filter --placeholder "Select subcommand...")
+        [ -z "$subcommand" ] && return
+        "$selected" "$subcommand"
+    else
+        "$selected"
+    fi
 }
 
 # PATH
