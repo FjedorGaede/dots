@@ -13,8 +13,14 @@ _dots() {
 compdef _dots dots
 
 # History settings
+HISTFILE=~/.zsh_history   # persist history to file
+SAVEHIST=10000            # number of entries to save
 setopt HIST_IGNORE_DUPS   # ignore duplicate commands
 setopt HIST_IGNORE_SPACE  # ignore commands starting with a space
+setopt SHARE_HISTORY      # share history across all open terminals
+
+# Autosuggestions
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Starship prompt
 eval "$(starship init zsh)"
@@ -39,3 +45,6 @@ bindkey '^p' _custom-commands-widget
 bindkey -s '^g' 'tmux-reattach.sh\n'  # Ctrl+G: reattach to tmux session
 bindkey -s '^f' 'tmux-sessionizer.sh\n'  # Ctrl+F: open tmux sessionizer
 bindkey -s '^e' 'y\n'  # Ctrl+E: open yazi file manager
+
+# Syntax highlighting (must be sourced last)
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
