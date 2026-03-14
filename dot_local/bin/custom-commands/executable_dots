@@ -31,14 +31,8 @@ case "$1" in
         chezmoi cd
         ;;
     *)
-        echo "Usage: dots [command]"
-        echo ""
-        echo "Commands:"
-        echo "  update    Pull latest dotfiles from remote and apply them"
-        echo "  push      Re-add changed dotfiles and push to repo"
-        echo "  add       Add a file to chezmoi (e.g. dots add ~/.bashrc)"
-        echo "  remove    Remove a file from chezmoi (e.g. dots remove ~/.bashrc)"
-        echo "  nvim      Commit and push nvim config changes"
+        sub=$(dots --subcommands | sort | gum choose --header "dots")
+        [ -n "$sub" ] && dots "$sub"
         ;;
 esac
 
