@@ -21,6 +21,9 @@ case "$1" in
         git -C ~/.config/nvim commit -m "$msg"
         git -C ~/.config/nvim push
         ;;
+    remove)
+        chezmoi forget "$2"
+        ;;
     cd)
         chezmoi cd
         ;;
@@ -31,6 +34,7 @@ case "$1" in
         echo "  update    Pull latest dotfiles from remote and apply them"
         echo "  push      Re-add changed dotfiles and push to repo"
         echo "  add       Add a file to chezmoi (e.g. dots add ~/.bashrc)"
+        echo "  remove    Remove a file from chezmoi (e.g. dots remove ~/.bashrc)"
         echo "  nvim      Commit and push nvim config changes"
         ;;
 esac
