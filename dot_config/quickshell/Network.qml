@@ -29,13 +29,22 @@ RowLayout {
     Text {
         text: network.getWifiIcon()
         color: network.defaultColor
+
+        TapHandler {
+            onTapped: wifiManager.visible = !wifiManager.visible
+        }
+
+        HoverHandler {
+            cursorShape: Qt.PointingHandCursor
+        }
     }
 
     PanelWindow {
         id: wifiManager
-        visible: true
+        visible: false
         implicitWidth: 200
         implicitHeight: 200
+
         // TODO remove this
         anchors.right: true
         exclusiveZone: -1
@@ -45,6 +54,14 @@ RowLayout {
         property var knownNetworks: allNetworks?.filter(network => network.known) || []
         property var unknownNetworks: allNetworks?.filter(network => !network.known) || []
 
+        onVisibleChanged: {
+            if (visible && wifiDevice) {
+                wifiDevice.scannerEnabled = true
+            } else {
+                wifiDevice.scannerEnabled = false
+            }
+        }
+
         ColumnLayout {
             width: parent.width
             spacing: 5
@@ -53,10 +70,6 @@ RowLayout {
                 text: "Start Scanning"
                 onClicked: wifiManager.wifiDevice.scannerEnabled = !wifiManager.wifiDevice.scannerEnabled
             }
-
-            // BusyIndicator {
-            //     running: wifiManager.wifiDevice.scannerEnabled
-            // }
 
             Text {
                 text: "Known Network"
