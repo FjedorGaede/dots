@@ -1,6 +1,5 @@
 import Quickshell
 import Quickshell.Networking
-import Quickshell.Io
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -68,7 +67,7 @@ RowLayout {
             Repeater {
                 model: wifiManager.knownNetworks
 
-                WifiNetworkItem { 
+                WifiNetworkItem {
                     required property var modelData
                     network: modelData
                 }
@@ -86,7 +85,7 @@ RowLayout {
             Repeater {
                 model: wifiManager.unknownNetworks
 
-                WifiNetworkItem { 
+                WifiNetworkItem {
                     required property var modelData
                     network: modelData
                 }
