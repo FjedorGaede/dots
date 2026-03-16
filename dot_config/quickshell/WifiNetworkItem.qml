@@ -1,13 +1,9 @@
 import Quickshell.Networking
+import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 
 import './_helpers/wifiUtils.js' as WifiUtils
-
-// TODOS
-// 1. When i have my hotspot open it is not really using the correct signal strength? It is different and sometimes super low
-// 2. When i connect to a wifi i need a agent. nm-applet worked but is also super intrusive. i want another one maybe? Or can i just do it on my own?
-// 3. sort connected wifi to the top
 
 Rectangle {
     id: root
@@ -24,6 +20,7 @@ Rectangle {
     Layout.fillWidth: true
     implicitHeight: 24
     color: hoverHandler.hovered ? "red" : "white"
+    radius: 4
 
     HoverHandler {
         id: hoverHandler
@@ -41,9 +38,11 @@ Rectangle {
         return !isInsecure;
     }
 
-    RowLayout {
-        anchors.fill: parent
+    MarginWrapperManager {
+        margin: 4
+    }
 
+    RowLayout {
 
         Rectangle {
             implicitHeight: parent.height
@@ -60,7 +59,9 @@ Rectangle {
         }
 
         Text {
-            text: root.network.name 
+            text: root.network.name
         }
+
+        Item { Layout.fillWidth: true }
     }
 }
