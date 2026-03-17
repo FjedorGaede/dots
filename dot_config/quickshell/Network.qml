@@ -3,6 +3,7 @@ import Quickshell.Networking
 import QtQuick.Layouts
 
 import './_helpers/wifiUtils.js' as WifiUtils
+import './theme'
 
 RowLayout {
     id: network
@@ -18,7 +19,7 @@ RowLayout {
     property bool isConnected: !!connectedNetwork
     property int signalStrength: connectedNetwork?.signalStrength * 100
 
-    property color defaultColor: "white"
+    property color defaultColor: Theme.white
 
     function getWifiIcon() {
         return wifiEnabled ? WifiUtils.getWifiIconForSignalStrength(signalStrength) : WifiUtils.DISCONNECTED_ICON;

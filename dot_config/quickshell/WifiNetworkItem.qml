@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import './_helpers/wifiUtils.js' as WifiUtils
+import './theme'
 
 Rectangle {
     id: root
@@ -13,7 +14,7 @@ Rectangle {
     property bool securedConnection: isSecureConnection()
     property bool isConnected: root.network.connected
 
-    property color activeConnectionBackgroundColor: "blue"
+    property color activeConnectionBackgroundColor: Theme.mainAccent
     property color activeConnectionIconColor: "white"
     property color defaultIconColor: "black"
 

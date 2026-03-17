@@ -3,7 +3,9 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-RowLayout { 
+import './theme'
+
+RowLayout {
     id: workspaces
 
     spacing: 10
@@ -17,7 +19,7 @@ RowLayout {
             property var ws: Hyprland.workspaces.values.find(w => w.id == relatedWorkspaceId)
             property bool isActive: Hyprland.focusedWorkspace.id == relatedWorkspaceId
             text: isActive ? "󱓻" : relatedWorkspaceId
-            color: "white"
+            color: Theme.foreground
             Layout.preferredWidth: 15
             horizontalAlignment: Text.AlignHCenter
             font { pixelSize: 14; bold: true; }

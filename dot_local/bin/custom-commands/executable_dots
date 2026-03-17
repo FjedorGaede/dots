@@ -1,8 +1,11 @@
 #!/bin/bash
 
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 case "$1" in
     --subcommands)
-        echo -e "update\npush\nadd\nremove\nupdate-nvim\ncd"
+        echo -e "update\npush\nadd\nremove\nupdate-nvim\ncd\ngenerate-colors"
         ;;
     update)
         chezmoi update --refresh-externals
@@ -12,6 +15,9 @@ case "$1" in
         ;;
     add)
         chezmoi add "$2"
+        ;;
+    generate-colors)
+        source $SCRIPT_DIR/../../scripts/set-colors
         ;;
     update-nvim)
         if [ -n "$2" ]; then
@@ -35,4 +41,3 @@ case "$1" in
         [ -n "$sub" ] && dots "$sub"
         ;;
 esac
-

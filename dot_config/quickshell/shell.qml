@@ -2,34 +2,33 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 
+import './theme'
+
 
 PanelWindow {
     id: root
     anchors.top: true
     anchors.right: true
-    anchors.left: true 
+    anchors.left: true
     implicitHeight: 30
-    color: "#f6aede"
+    color: "transparent"
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.margins: 8
+    property int borderMargin: 4
 
-        spacing: 10
-
+    BarElement {
+        anchors.left: parent.left
+        anchors.leftMargin: root.borderMargin
         HyprlandWorkspaces {}
+    }
 
-        Item {
-            Layout.fillWidth: true
-        }
-
+    BarElement {
+        anchors.centerIn: parent
         Clock {}
+    }
 
-        Item {
-            Layout.fillWidth: true
-        }
-
+    BarElement {
+        anchors.right: parent.right
+        anchors.rightMargin: root.borderMargin
         SystemStats {}
     }
 }
-
