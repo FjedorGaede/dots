@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import './_helpers/getIntervalIndex.js' as Util
+import './theme'
 
 RowLayout {
     id: power
@@ -17,8 +18,8 @@ RowLayout {
     property bool batteryCritical: percentage <= criticalBatteryLevel
     property int changeRate: Math.ceil(UPower.displayDevice.changeRate)
 
-    property color defaultColor: "white"
-    property color criticalColor: "red"
+    property color defaultColor: Theme.foreground
+    property color criticalColor: Theme.error
 
     function getChargingIcon() {
         // I want to divide the interval from 0 to 100 into number of icons chunks and automatically select the corresponding icon
@@ -57,7 +58,7 @@ RowLayout {
 
     function getColor() {
         if (batteryCritical) {
-            return criticalColor
+            return criticalColor;
         }
 
         return defaultColor;
@@ -71,11 +72,12 @@ RowLayout {
     Text {
         text: parent.icon()
         color: parent.getColor()
-        font.pixelSize: 13
+
+        font { family: Theme.fontFamily; pixelSize: 14 }
     }
 
     Text {
-        text: parent.percentageString() 
+        text: parent.percentageString()
         color: parent.getColor()
         font.pixelSize: 13
     }
@@ -86,7 +88,7 @@ RowLayout {
         hoverEnabled: true
         onHoveredChanged: popup.visible = containsMouse
     }
-    
+
     PopupWindow {
         id: popup
         anchor.item: parent
@@ -98,8 +100,7 @@ RowLayout {
 
         Text {
             id: content
-            text: power.powerTooltipText() 
+            text: power.powerTooltipText()
         }
     }
 }
-

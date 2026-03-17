@@ -3,6 +3,8 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Bluetooth
 
+import './theme'
+
 RowLayout {
     id: bluetooth
 
@@ -11,7 +13,7 @@ RowLayout {
     property int numberDevicesConnected: adapter.devices.values.map(device => device.connected).filter(it => !!it).length
     property bool anyDeviceConnected: numberDevicesConnected > 0
 
-    property color defaultColor: "white"
+    property color defaultColor: Theme.foreground
 
     function getIcon() {
         if (!enabled) {
@@ -40,6 +42,8 @@ RowLayout {
     Text {
         text: bluetooth.getIcon()
         color: bluetooth.defaultColor
+
+        font { family: Theme.fontFamily; pixelSize: 14 }
     }
 
     MouseArea {
@@ -48,7 +52,7 @@ RowLayout {
         hoverEnabled: true
         onHoveredChanged: popup.visible = containsMouse
     }
-    
+
     PopupWindow {
         id: popup
         anchor.item: bluetooth
@@ -60,7 +64,8 @@ RowLayout {
 
         Text {
             id: content
-            text: bluetooth.bluetoothTooltipText() 
+            text: bluetooth.bluetoothTooltipText()
+
         }
     }
 }

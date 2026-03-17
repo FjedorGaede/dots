@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import './theme'
 
@@ -15,20 +16,25 @@ PanelWindow {
 
     property int borderMargin: 4
 
-    BarElement {
-        anchors.left: parent.left
-        anchors.leftMargin: root.borderMargin
-        HyprlandWorkspaces {}
-    }
+    Control {
+        anchors.fill: parent
+        background: null
 
-    BarElement {
-        anchors.centerIn: parent
-        Clock {}
-    }
+        BarElement {
+            anchors.left: parent.left
+            anchors.leftMargin: root.borderMargin
+            HyprlandWorkspaces {}
+        }
 
-    BarElement {
-        anchors.right: parent.right
-        anchors.rightMargin: root.borderMargin
-        SystemStats {}
+        BarElement {
+            anchors.centerIn: parent
+            Clock {}
+        }
+
+        BarElement {
+            anchors.right: parent.right
+            anchors.rightMargin: root.borderMargin
+            SystemStats {}
+        }
     }
 }

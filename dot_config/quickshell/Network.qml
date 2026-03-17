@@ -19,7 +19,7 @@ RowLayout {
     property bool isConnected: !!connectedNetwork
     property int signalStrength: connectedNetwork?.signalStrength * 100
 
-    property color defaultColor: Theme.white
+    property color defaultColor: Theme.foreground
 
     function getWifiIcon() {
         return wifiEnabled ? WifiUtils.getWifiIconForSignalStrength(signalStrength) : WifiUtils.DISCONNECTED_ICON;
@@ -28,6 +28,8 @@ RowLayout {
     Text {
         text: network.getWifiIcon()
         color: network.defaultColor
+
+        font { family: Theme.fontFamily; pixelSize: 14 }
 
         TapHandler {
             onTapped: wifiManager.visible = !wifiManager.visible

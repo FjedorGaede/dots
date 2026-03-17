@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 
+import './theme'
+
 RowLayout {
     SystemClock {
         id: clock
@@ -12,8 +14,8 @@ RowLayout {
         id: clockText
         property bool showDate: false
         text: Qt.formatDateTime(clock.date, showDate ? "dddd - hh:mm - dd.MM.yyyy" : "hh:mm")
-        color: "white"
-        font { bold: true }
+        color: Theme.foreground
+        font { family: Theme.fontFamily; pixelSize: 14 }
 
         MouseArea {
             anchors.fill: parent

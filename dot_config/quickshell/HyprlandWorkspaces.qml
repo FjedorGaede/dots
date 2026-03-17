@@ -22,7 +22,7 @@ RowLayout {
             color: Theme.foreground
             Layout.preferredWidth: 15
             horizontalAlignment: Text.AlignHCenter
-            font { pixelSize: 14; bold: true; }
+            font { family: Theme.fontFamily; pixelSize: 14 }
 
             MouseArea {
                 anchors.fill: parent

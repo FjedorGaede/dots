@@ -3,7 +3,9 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 
-// Note: Muted and audio level on 0 is not the same. You can have your Audio Level to 50% and still mute it 
+import './theme'
+
+// Note: Muted and audio level on 0 is not the same. You can have your Audio Level to 50% and still mute it
 
 RowLayout {
     id: sound
@@ -16,8 +18,8 @@ RowLayout {
     property int currentVolume: Math.floor(defaultSink.audio?.volume * 100)
     property bool isMuted: defaultSink.audio?.muted
 
-    property color defaultColor: "white"
-    property color mutedColor: "gray"
+    property color defaultColor: Theme.foreground
+    property color mutedColor: Theme.subdued
 
     function getIcon() {
         const audioLoudIcon = "";
@@ -46,6 +48,8 @@ RowLayout {
     Text {
         text: sound.getIcon()
         color: sound.getColor()
+
+        font { family: Theme.fontFamily; pixelSize: 14 }
     }
 
     MouseArea {
