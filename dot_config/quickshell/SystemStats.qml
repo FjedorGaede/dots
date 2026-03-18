@@ -3,7 +3,7 @@ import QtQuick.Layouts
 
 RowLayout {
     id: stats
-    spacing: 6
+    spacing: 10
 
     Network {}
     Sound {}

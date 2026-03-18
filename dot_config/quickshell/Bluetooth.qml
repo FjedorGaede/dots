@@ -40,11 +40,9 @@ RowLayout {
         return "No devices connected!"
     }
 
-    Text {
+    StatusIcon {
         text: bluetooth.getIcon()
-        color: bluetooth.defaultColor
-
-        font { family: Theme.fontFamily; pixelSize: 14 }
+        size: 15
     }
 
     TapHandler {

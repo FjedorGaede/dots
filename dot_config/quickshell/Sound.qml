@@ -45,11 +45,9 @@ RowLayout {
         return defaultColor;
     }
 
-    Text {
+    StatusIcon {
         text: sound.getIcon()
-        color: sound.getColor()
-
-        font { family: Theme.fontFamily; pixelSize: 14 }
+        size: 13
     }
 
     TapHandler {

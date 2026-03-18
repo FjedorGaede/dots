@@ -70,17 +70,14 @@ RowLayout {
         return arrowIcon + " " + power.changeRate + "W - " + power.percentage + "%";
     }
 
-    Text {
+    StatusIcon {
         text: parent.icon()
-        color: parent.getColor()
-
-        font { family: Theme.fontFamily; pixelSize: 14 }
+        size: 13
     }
 
-    Text {
+    StatusIcon {
         text: parent.percentageString()
-        color: parent.getColor()
-        font.pixelSize: 13
+        size: 12
     }
 
     Process {

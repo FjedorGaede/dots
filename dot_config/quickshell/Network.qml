@@ -25,11 +25,9 @@ RowLayout {
         return wifiEnabled ? WifiUtils.getWifiIconForSignalStrength(signalStrength) : WifiUtils.DISCONNECTED_ICON;
     }
 
-    Text {
+    StatusIcon {
         text: network.getWifiIcon()
-        color: network.defaultColor
-
-        font { family: Theme.fontFamily; pixelSize: 14 }
+        size: 12
     }
 
     TapHandler {
