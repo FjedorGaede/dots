@@ -90,7 +90,6 @@ RowLayout {
     }
 
     HoverHandler {
-        cursorShape: Qt.PointingHandCursor
         onHoveredChanged: tooltip.visible = hovered
     }
 

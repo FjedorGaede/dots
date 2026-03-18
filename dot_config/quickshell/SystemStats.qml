@@ -9,4 +9,5 @@ RowLayout {
     Sound {}
     Bluetooth {}
     Power {}
+    Notification {}
 }

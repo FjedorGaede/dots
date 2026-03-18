@@ -44,7 +44,7 @@ RowLayout {
     Tooltip {
         id: tooltip
         anchorItem: network
-        tooltipText: "test"
+        tooltipText: network.connectedNetwork?.name ?? "Not connected"
     }
 
     WifiNetworkManager {
