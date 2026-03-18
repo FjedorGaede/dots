@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 
 import './theme'
@@ -52,13 +53,13 @@ RowLayout {
         font { family: Theme.fontFamily; pixelSize: 14 }
     }
 
-    MouseArea {
-        Layout.fillWidth: false
-        Layout.fillHeight: true
+    TapHandler {
+        onTapped: Quickshell.execDetached(["sh", "-c", "GTK_THEME=Adwaita-dark pavucontrol -t 3"])
+    }
+
+    HoverHandler {
+        onHoveredChanged: audioPopup.visible = hovered
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["sh", "-c", "GTK_THEME=Adwaita-dark pavucontrol -t 3"])
-        hoverEnabled: true
-        onHoveredChanged: audioPopup.visible = containsMouse
     }
 
     PopupWindow {

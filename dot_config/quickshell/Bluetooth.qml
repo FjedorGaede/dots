@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Bluetooth
 
 import './theme'
@@ -46,11 +47,13 @@ RowLayout {
         font { family: Theme.fontFamily; pixelSize: 14 }
     }
 
-    MouseArea {
-        Layout.fillWidth: false
-        Layout.fillHeight: true
-        hoverEnabled: true
-        onHoveredChanged: popup.visible = containsMouse
+    TapHandler {
+        onTapped: Quickshell.execDetached(["sh", "-c", "GTK_THEME=Adwaita-dark blueman-manager"])
+    }
+
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+        onHoveredChanged: popup.visible = hovered
     }
 
     PopupWindow {

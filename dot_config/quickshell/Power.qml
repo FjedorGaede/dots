@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
@@ -82,11 +83,15 @@ RowLayout {
         font.pixelSize: 13
     }
 
-    MouseArea {
-        Layout.fillWidth: false
-        Layout.fillHeight: true
-        hoverEnabled: true
-        onHoveredChanged: popup.visible = containsMouse
+    Process {
+        id: bluemanManagerProc
+        command: ["GTK_THEME=Adwaita-dark blueman-manager"]
+        running: false
+    }
+
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+        onHoveredChanged: popup.visible = hovered
     }
 
     PopupWindow {
