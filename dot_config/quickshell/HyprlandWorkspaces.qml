@@ -11,22 +11,22 @@ RowLayout {
     spacing: 10
 
     Repeater {
-        model: 9
+        model: Hyprland.workspaces.values
 
         Text {
-            required property int index  // explicitly declare it
-            property var relatedWorkspaceId: index + 1
-            property var ws: Hyprland.workspaces.values.find(w => w.id == relatedWorkspaceId)
-            property bool isActive: Hyprland.focusedWorkspace.id == relatedWorkspaceId
-            text: isActive ? "󱓻" : relatedWorkspaceId
+            required property var modelData
+            property bool isActive: Hyprland.focusedWorkspace.id == modelData.id
+            text: isActive ? "󱓻" : modelData.id
             color: Theme.foreground
             Layout.preferredWidth: 15
             horizontalAlignment: Text.AlignHCenter
             font { family: Theme.fontFamily; pixelSize: 14 }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: Hyprland.dispatch("workspace " + (index + 1))
+            TapHandler {
+                onTapped: Hyprland.dispatch("workspace " + parent.modelData.id)
+            }
+
+            HoverHandler {
                 cursorShape: Qt.PointingHandCursor
             }
         }
