@@ -47,5 +47,6 @@ RowLayout {
     WifiNetworkManager {
         id: wifiManager
         network: network
+        anchorItem: network
     }
 }

@@ -19,7 +19,7 @@ Rectangle {
     property color defaultTextColor: Theme.foreground
 
     Layout.fillWidth: true
-    implicitHeight: 24
+    implicitHeight: 42
     color: hoverHandler.hovered ? Theme.overlay : "transparent"
     radius: 4
 
@@ -44,10 +44,11 @@ Rectangle {
     }
 
     RowLayout {
+        spacing: 8
 
         Rectangle {
-            implicitHeight: parent.height
-            implicitWidth: parent.height
+            implicitHeight: 28
+            implicitWidth: 28
 
             radius: width / 2
             color: root.isConnected ? root.activeConnectionBackgroundColor : "transparent"
@@ -56,12 +57,14 @@ Rectangle {
                 anchors.centerIn: parent
                 text: WifiUtils.getWifiIconForSignalStrength(root.network.signalStrength * 100, root.securedConnection)
                 color: root.isConnected ? root.activeConnectionIconColor : root.defaultTextColor
+                font.pixelSize: 18
             }
         }
 
         Text {
             text: root.network.name
             color: root.defaultTextColor
+            font.pixelSize: 14
         }
 
         Item { Layout.fillWidth: true }
