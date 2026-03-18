@@ -30,19 +30,25 @@ RowLayout {
         color: network.defaultColor
 
         font { family: Theme.fontFamily; pixelSize: 14 }
+    }
 
-        TapHandler {
-            onTapped: wifiManager.visible = !wifiManager.visible
-        }
+    TapHandler {
+        onTapped: wifiManager.visible = !wifiManager.visible
+    }
 
-        HoverHandler {
-            cursorShape: Qt.PointingHandCursor
-        }
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+        onHoveredChanged: tooltip.visible = hovered
+    }
+
+    Tooltip {
+        id: tooltip
+        anchorItem: network
+        tooltipText: "test"
     }
 
     WifiNetworkManager {
         id: wifiManager
         network: network
     }
-
 }

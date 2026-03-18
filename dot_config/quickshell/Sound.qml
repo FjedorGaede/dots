@@ -58,23 +58,13 @@ RowLayout {
     }
 
     HoverHandler {
-        onHoveredChanged: audioPopup.visible = hovered
+        onHoveredChanged: audioTooltip.visible = hovered
         cursorShape: Qt.PointingHandCursor
     }
 
-    PopupWindow {
-        id: audioPopup
-
-        anchor.item: sound
-        anchor.edges: Edges.Bottom
-        visible: false
-
-        implicitHeight: content.implicitHeight
-        implicitWidth: content.implicitWidth
-
-        Text {
-            id: content
-            text: sound.currentVolume + "%"
-        }
+    Tooltip {
+        id: audioTooltip
+        anchorItem: sound
+        tooltipText: sound.currentVolume + "%"
     }
 }

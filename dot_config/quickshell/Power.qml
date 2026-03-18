@@ -91,21 +91,12 @@ RowLayout {
 
     HoverHandler {
         cursorShape: Qt.PointingHandCursor
-        onHoveredChanged: popup.visible = hovered
+        onHoveredChanged: tooltip.visible = hovered
     }
 
-    PopupWindow {
-        id: popup
-        anchor.item: parent
-        anchor.edges: Edges.Bottom
-        visible: false
-
-        implicitHeight: content.implicitHeight
-        implicitWidth: content.implicitWidth
-
-        Text {
-            id: content
-            text: power.powerTooltipText()
-        }
+    Tooltip {
+        id: tooltip
+        anchorItem: power
+        tooltipText: power.powerTooltipText()
     }
 }
