@@ -14,13 +14,13 @@ Rectangle {
     property bool securedConnection: isSecureConnection()
     property bool isConnected: root.network.connected
 
-    property color activeConnectionBackgroundColor: Theme.mainAccent
-    property color activeConnectionIconColor: "white"
-    property color defaultIconColor: "black"
+    property color activeConnectionBackgroundColor: Theme.accent
+    property color activeConnectionIconColor: Theme.background
+    property color defaultTextColor: Theme.foreground
 
     Layout.fillWidth: true
     implicitHeight: 24
-    color: hoverHandler.hovered ? "red" : "white"
+    color: hoverHandler.hovered ? Theme.overlay : "transparent"
     radius: 4
 
     HoverHandler {
@@ -55,12 +55,13 @@ Rectangle {
             Text {
                 anchors.centerIn: parent
                 text: WifiUtils.getWifiIconForSignalStrength(root.network.signalStrength * 100, root.securedConnection)
-                color: root.isConnected ? root.activeConnectionIconColor : root.defaultIconColor
+                color: root.isConnected ? root.activeConnectionIconColor : root.defaultTextColor
             }
         }
 
         Text {
             text: root.network.name
+            color: root.defaultTextColor
         }
 
         Item { Layout.fillWidth: true }

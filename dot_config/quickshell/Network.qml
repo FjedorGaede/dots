@@ -27,7 +27,6 @@ RowLayout {
 
     StatusIcon {
         text: network.getWifiIcon()
-        size: 12
     }
 
     TapHandler {
