@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Bluetooth
 
 import './theme'
@@ -45,6 +46,13 @@ RowLayout {
 
     TapHandler {
         onTapped: btManager.visible = !btManager.visible
+    }
+
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+        onTapped: {
+            Quickshell.execDetached(["blueman-manager"])
+        }
     }
 
     HoverHandler {

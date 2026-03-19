@@ -80,12 +80,6 @@ RowLayout {
         size: 12
     }
 
-    Process {
-        id: bluemanManagerProc
-        command: ["GTK_THEME=Adwaita-dark blueman-manager"]
-        running: false
-    }
-
     HoverHandler {
         onHoveredChanged: tooltip.visible = hovered
     }

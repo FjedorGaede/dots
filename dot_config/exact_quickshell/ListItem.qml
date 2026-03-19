@@ -13,9 +13,11 @@ Rectangle {
     property int status: ListItem.Default
     property string icon: ""
     property string label: ""
+    property string actionIcon: ""
 
     signal tapped()
     signal rightTapped()
+    signal actionTapped()
 
     readonly property var _sizeMetrics: ({
         [ListItem.Small]:  { height: 32, iconSize: 12, labelSize: 11, checkSize: 13, padding:  8, spacing:  8 },
@@ -42,6 +44,7 @@ Rectangle {
     HoverHandler {
         id: hoverHandler
         cursorShape: Qt.PointingHandCursor
+        onHoveredChanged: actionButton.visible = hovered && root.actionIcon != ""
     }
 
     TapHandler {
@@ -102,6 +105,36 @@ Rectangle {
             color: Theme.mainAccent
             font.pixelSize: root._m.checkSize
             font.family: Theme.fontFamily
+        }
+
+        Rectangle {
+            id: actionButton
+            visible: false
+            implicitWidth: root._m.height - 8
+            implicitHeight: root._m.height - 8
+            radius: 6
+            color: actionButtonHover.hovered ? Theme.hoverOverlay : "transparent"
+
+            HoverHandler {
+                id: actionButtonHover
+                cursorShape: Qt.PointingHandCursor
+            }
+
+            TapHandler {
+                onTapped: {
+                    root.actionTapped()
+                    // prevent the tap from bubbling up to the item's TapHandler
+                    accepted = true
+                }
+            }
+
+            Text {
+                anchors.centerIn: parent
+                text: root.actionIcon
+                color: Theme.dimForeground
+                font.pixelSize: root._m.iconSize
+                font.family: Theme.fontFamily
+            }
         }
     }
 }

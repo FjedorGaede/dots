@@ -1,5 +1,6 @@
 import Quickshell.Bluetooth
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 import './theme'
@@ -10,10 +11,18 @@ PopupBase {
     property var adapter: Bluetooth.defaultAdapter
     property var devices: adapter?.devices.values ?? []
     property var connectedDevices: devices.filter(d => d.state === BluetoothDeviceState.Connected)
-    property var otherDevices: devices.filter(d => d.state !== BluetoothDeviceState.Connected)
+    property var notConnectedDevices: devices.filter(d => d.state !== BluetoothDeviceState.Connected)
+    property var pairedDevices: notConnectedDevices.filter(d => d.paired)
+    property var discoveredDevices: notConnectedDevices.filter(d => !d.paired)
 
     property int headerSize: 14
     property color textColor: Theme.foreground
+
+    onVisibleChanged: adapter.discovering = false
+
+    function toggleDiscovering() {
+        adapter.discovering = !adapter.discovering;
+    }
 
     minWidth: 280
 
@@ -54,21 +63,80 @@ PopupBase {
         }
 
         Divider {
-            visible: bluetoothManager.connectedDevices.length > 0 && bluetoothManager.otherDevices.length > 0
+            visible: bluetoothManager.connectedDevices.length > 0 && bluetoothManager.pairedDevices.length > 0
         }
 
-        Text {
-            text: "OTHER DEVICES"
-            color: bluetoothManager.textColor
-            font.pixelSize: bluetoothManager.headerSize
-            visible: bluetoothManager.otherDevices.length > 0
+        RowLayout {
+            Text {
+                text: "PAIRED DEVICES"
+                color: bluetoothManager.textColor
+                font.pixelSize: bluetoothManager.headerSize
+                visible: bluetoothManager.pairedDevices.length > 0
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
         }
 
         Repeater {
-            model: bluetoothManager.otherDevices
+            model: bluetoothManager.pairedDevices
             BluetoothDeviceItem {
                 required property var modelData
                 device: modelData
+            }
+        }
+
+        Divider {}
+
+        RowLayout {
+            Text {
+                text: "DISCOVERED DEVICES"
+                color: bluetoothManager.textColor
+                font.pixelSize: bluetoothManager.headerSize
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            Button {
+                background: Rectangle {
+                    color: Theme.mainAccent
+                    radius: 8
+                }
+
+                contentItem: Text {
+                    text: bluetoothManager.adapter.discovering ? "Discovering..." : "Discover"
+                    color: Theme.black
+                }
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                TapHandler {
+                    onTapped: bluetoothManager.toggleDiscovering()
+                }
+            }
+        }
+
+        Text {
+            text: "Discovering disabled.."
+            font.italic: true
+            font.pixelSize: 12
+            color: Theme.fadedForeground
+            visible: !bluetoothManager.adapter.discovering
+        }
+
+        ColumnLayout {
+            visible: bluetoothManager.adapter.discovering
+            Repeater {
+                model: bluetoothManager.discoveredDevices
+                BluetoothDeviceItem {
+                    required property var modelData
+                    device: modelData
+                }
             }
         }
     }
