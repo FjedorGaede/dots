@@ -1,0 +1,2 @@
+- [ ] bluetooth forget and pair
+- [ ] system tray

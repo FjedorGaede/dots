@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
@@ -11,6 +12,9 @@ PopupWindow {
     required property var anchorItem
     property int margin: 8
     property int minWidth: 0
+    property bool bordered: false
+    property int radius: 2
+    property color borderColor: Theme.mainAccent
 
     default property alias content: layout.data
 
@@ -26,6 +30,8 @@ PopupWindow {
     implicitWidth: Math.max(layout.implicitWidth + margin * 2, minWidth)
     implicitHeight: layout.implicitHeight + margin * 2
 
+    grabFocus: true
+
     Rectangle {
         MarginWrapperManager {
             margin: root.margin
@@ -33,7 +39,9 @@ PopupWindow {
 
         anchors.fill: parent
         color: Theme.background
-        radius: 2
+        radius: root.radius
+        border.width: root.bordered ? 1.5 : 0
+        border.color: root.borderColor
 
         ColumnLayout {
             id: layout
