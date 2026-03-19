@@ -1,5 +1,4 @@
 import Quickshell.Networking
-import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 
