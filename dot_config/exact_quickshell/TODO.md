@@ -1,4 +1,0 @@
-- [ ] Wifi credentials
-- [ ] Bluetooth pair and forget
-- [ ] system tray
-- [ ] Click outside of menus does close them. Make it a component?
