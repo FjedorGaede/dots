@@ -10,7 +10,7 @@ RowLayout {
     spacing: 10
 
     Repeater {
-        model: Hyprland.workspaces.values
+        model: Hyprland.workspaces.values.filter(it => it.id >= 0)
 
         Text {
             required property var modelData
