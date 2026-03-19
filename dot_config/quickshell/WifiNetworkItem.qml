@@ -73,7 +73,7 @@ Rectangle {
             visible: root.isConnected
             text: "✓"
             color: Theme.mainAccent
-            font.pixelSize: 13
+            font.pixelSize: 16
             font.family: Theme.fontFamily
         }
     }
