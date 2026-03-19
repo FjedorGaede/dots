@@ -46,7 +46,7 @@ RowLayout {
     }
 
     TapHandler {
-        onTapped: Quickshell.execDetached(["sh", "-c", "GTK_THEME=Adwaita-dark blueman-manager"])
+        onTapped: btManager.visible = !btManager.visible
     }
 
     HoverHandler {
@@ -58,5 +58,10 @@ RowLayout {
         id: tooltip
         anchorItem: bluetooth
         tooltipText: bluetooth.bluetoothTooltipText()
+    }
+
+    BluetoothManager {
+        id: btManager
+        anchorItem: bluetooth
     }
 }
