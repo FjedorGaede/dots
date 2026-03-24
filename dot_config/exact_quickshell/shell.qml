@@ -31,10 +31,21 @@ PanelWindow {
             Clock {}
         }
 
-        BarElement {
+        RowLayout {
             anchors.right: parent.right
             anchors.rightMargin: root.borderMargin
-            SystemStats {}
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 4
+
+            BarElement {
+                Layout.fillHeight: true
+                SystemTray {}
+            }
+
+            BarElement {
+                Layout.fillHeight: true
+                SystemStats {}
+            }
         }
     }
 }
