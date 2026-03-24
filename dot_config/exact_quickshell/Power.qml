@@ -71,13 +71,8 @@ RowLayout {
     }
 
     StatusIcon {
-        text: parent.icon()
+        text: parent.icon() + " " + parent.percentageString()
         size: 13
-    }
-
-    StatusIcon {
-        text: parent.percentageString()
-        size: 12
     }
 
     HoverHandler {
