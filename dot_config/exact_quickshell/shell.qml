@@ -4,9 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import './theme'
-
-
 PanelWindow {
     id: root
     anchors.top: true
@@ -49,4 +46,6 @@ PanelWindow {
             }
         }
     }
+
+    OSD {}
 }

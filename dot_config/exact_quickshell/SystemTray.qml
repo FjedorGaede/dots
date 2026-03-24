@@ -11,16 +11,16 @@ RowLayout {
 
     property var items: SystemTray.items
     property var numberOfSystemTrayItems: items.values.length
-    property bool showSystemTrayIcons: true
+    property bool showSystemTrayIcons: false
 
     spacing: 8
 
     function chevronIcon() {
-        return showSystemTrayIcons ? "" : ""
+        return showSystemTrayIcons ? "" : "";
     }
 
     RowLayout {
-        visible: parent.showSystemTrayIcons
+        visible: systemTray.showSystemTrayIcons
         Repeater {
             model: systemTray.items
 
@@ -28,19 +28,9 @@ RowLayout {
                 id: systemTrayIcon
                 required property var modelData
 
-                function test() {
-                    console.log("modelData.id", modelData.id);
-                    console.log("modelData.icon", modelData.icon);
-                    console.log("modelData.hasModel", modelData.hasMenu);
-                    console.log("modelData.onlyMenu", modelData.onlyMenu);
-
-                    return true
-                }
-
                 IconImage {
                     source: systemTrayIcon.modelData.icon
                     implicitSize: 18
-                    visible: parent.test()
 
                     HoverHandler {
                         cursorShape: Qt.PointingHandCursor
@@ -72,7 +62,6 @@ RowLayout {
                     tooltipText: systemTrayIcon.modelData.tooltipTitle
                 }
             }
-
         }
     }
 
