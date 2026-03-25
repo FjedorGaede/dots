@@ -10,6 +10,7 @@ Singleton {
     property int percent: -1
     property int value: -1
     property int max: -1
+    property bool ready: false
 
     function _readBrightness() {
         readProc.running = true
@@ -20,6 +21,7 @@ Singleton {
         root.value = parseInt(parts[2])
         root.max = parseInt(parts[4])
         root.percent = parseInt(parts[3].slice(0, -1))
+        root.ready = true
     }
 
     Process {

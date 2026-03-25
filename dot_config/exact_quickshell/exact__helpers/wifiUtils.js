@@ -1,5 +1,5 @@
 function getIntervalIndex(value, maximum, numberOfIntevals) {
-    return Math.floor(value * numberOfIntevals / maximum);
+    return Math.floor(value * (numberOfIntevals - 1) / maximum);
 }
 
 const DISCONNECTED_ICON = "󰖪";
@@ -10,11 +10,9 @@ function getWifiIconForSignalStrength(signalStrength, selectSecureIcons) {
 
     const index = getIntervalIndex(signalStrength, 100, wifiIcons.length);
 
-
     if (!!selectSecureIcons) {
         return secureWifiIcons[index];
     }
 
     return wifiIcons[index];
 }
-

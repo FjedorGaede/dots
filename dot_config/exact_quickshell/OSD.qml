@@ -43,6 +43,13 @@ PanelWindow {
     }
 
     property int currentType: osdTypes.volumeChanged
+    property bool audioReady: false
+
+    Timer {
+        interval: 1000
+        running: true
+        onTriggered: osd.audioReady = true
+    }
 
     Timer {
         id: hideTimer
@@ -118,6 +125,8 @@ PanelWindow {
                 if (brightnessChanged) {
                     return "";
                 }
+
+                return "xxx";
             }
 
             function getPercent() {
@@ -128,6 +137,8 @@ PanelWindow {
                 if (brightnessChanged) {
                     return BrightnessService.percent;
                 }
+
+                return 0;
             }
 
             function progressBarBackgroundColor() {
@@ -166,11 +177,11 @@ PanelWindow {
         target: osd.audio
 
         function onMutedChanged() {
-            osd.showMutedOSD()
+            if (osd.audioReady) osd.showMutedOSD()
         }
 
         function onVolumeChanged() {
-            osd.showVolumeChangedOSD()
+            if (osd.audioReady) osd.showVolumeChangedOSD()
         }
     }
 
@@ -178,7 +189,8 @@ PanelWindow {
         target: BrightnessService
 
         function onPercentChanged() {
-            osd.showBrightnessChangedOSD();
+            if (BrightnessService.ready)
+                osd.showBrightnessChangedOSD();
         }
     }
 }

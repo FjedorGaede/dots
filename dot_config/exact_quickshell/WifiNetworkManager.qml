@@ -29,15 +29,12 @@ PopupBase {
         Networking.wifiEnabled = false
     }
 
-    function isConnecting() {
-        if (isLoadingWifi && allNetworks?.length === 0)
-            return true
-        isLoadingWifi = false
-        return false
-    }
+    readonly property bool isConnecting: isLoadingWifi && (allNetworks?.length === 0 ?? true)
+    readonly property bool hideNetworksLayout: isConnecting || !Networking.wifiEnabled
 
-    function hideNetworksLayout() {
-        return isConnecting() || !Networking.wifiEnabled
+    onAllNetworksChanged: {
+        if (allNetworks?.length > 0)
+            isLoadingWifi = false
     }
 
     onVisibleChanged: {
@@ -63,7 +60,7 @@ PopupBase {
         }
 
         Text {
-            visible: wifiManager.isConnecting() && Networking.wifiEnabled
+            visible: wifiManager.isConnecting && Networking.wifiEnabled
             text: "Connecting..."
             color: wifiManager.textColor
         }
@@ -77,7 +74,7 @@ PopupBase {
     }
 
     ColumnLayout {
-        visible: !wifiManager.hideNetworksLayout()
+        visible: !wifiManager.hideNetworksLayout
 
         Divider {}
 
