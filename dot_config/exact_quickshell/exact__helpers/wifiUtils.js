@@ -2,7 +2,7 @@ function getIntervalIndex(value, maximum, numberOfIntevals) {
     return Math.floor(value * (numberOfIntevals - 1) / maximum);
 }
 
-const DISCONNECTED_ICON = "󰖪";
+const DISCONNECTED_ICON = "󰤮";
 
 function getWifiIconForSignalStrength(signalStrength, selectSecureIcons) {
     const wifiIcons = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"];

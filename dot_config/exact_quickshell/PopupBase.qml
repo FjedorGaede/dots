@@ -43,6 +43,9 @@ PopupWindow {
         border.width: root.bordered ? 1.5 : 0
         border.color: root.borderColor
 
+        focus: true
+        Keys.onEscapePressed: root.visible = false
+
         ColumnLayout {
             id: layout
             spacing: 5

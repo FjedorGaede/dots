@@ -3,5 +3,5 @@
 - [x] OSD Sound
 - [x] OSD Backlight
 - [ ] power menu
-- [ ] wifi credentials
+- [x] wifi credentials
 - [ ] Notifications ersetzen?

@@ -22,7 +22,7 @@ RowLayout {
     property color defaultColor: Theme.foreground
 
     function getWifiIcon() {
-        return wifiEnabled ? WifiUtils.getWifiIconForSignalStrength(signalStrength) : WifiUtils.DISCONNECTED_ICON;
+        return (wifiEnabled && isConnected) ? WifiUtils.getWifiIconForSignalStrength(signalStrength) : WifiUtils.DISCONNECTED_ICON;
     }
 
     StatusIcon {
