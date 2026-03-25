@@ -1,5 +1,5 @@
 - [x] bluetooth forget and pair
 - [x] system tray
-- [ ] power menu
 - [ ] OSD Sound
 - [ ] OSD Backlight
+- [ ] power menu

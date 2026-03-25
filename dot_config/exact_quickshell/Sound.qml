@@ -16,8 +16,8 @@ RowLayout {
 
     property var defaultSink: Pipewire.defaultAudioSink
     property int currentVolume: Math.floor(defaultSink.audio?.volume * 100)
-    property bool isMuted: defaultSink.audio?.muted
 
+    property bool isMuted: defaultSink.audio?.muted
     property color defaultColor: Theme.foreground
     property color mutedColor: Theme.subdued
 
@@ -25,6 +25,10 @@ RowLayout {
         const audioLoudIcon = "";
         const audioQuiteIcon = "";
         const noSoundIcon = "";
+
+        if (isMuted) {
+            return noSoundIcon;
+        }
 
         if (currentVolume === 0) {
             return noSoundIcon;

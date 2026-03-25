@@ -7,4 +7,6 @@ Text {
     color: Theme.foreground
     font.family: Theme.fontFamily
     font.pixelSize: size
+
+    width: 32
 }
