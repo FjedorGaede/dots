@@ -8,18 +8,43 @@ import './theme'
 PanelWindow {
     id: powerMenu
     visible: false
-    color: "transparent"
 
-    property int spacing: 18
+    anchors.top: true
+    anchors.bottom: true
+    anchors.left: true
+    anchors.right: true
 
-    width: row.implicitWidth + spacing * 4
-    height: row.implicitHeight + spacing * 4
+    focusable: true
+    color: Theme.backdrop
 
-    Rectangle {
+    HyprlandFocusGrab {
+        windows: [ powerMenu ]
+        active: powerMenu.visible
+        onCleared: powerMenu.visible = false
+    }
+
+    Item {
+        anchors.fill: parent
         focus: true
         Keys.onEscapePressed: powerMenu.visible = false
 
-        anchors.fill: parent
+        TapHandler {
+            onTapped: powerMenu.visible = false
+        }
+    }
+
+    Rectangle {
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {} // absorb event just
+        }
+
+        property int spacing: 18
+
+        width: row.implicitWidth + spacing * 4
+        height: row.implicitHeight + spacing * 4
+
+        anchors.centerIn: parent
         color: Theme.background
         radius: 14
 
@@ -29,7 +54,7 @@ PanelWindow {
         RowLayout {
             id: row
             anchors.centerIn: parent
-            spacing: powerMenu.spacing
+            spacing: parent.spacing
 
             IconButton {
                 color: Theme.mainAccent

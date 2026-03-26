@@ -10,4 +10,5 @@ RowLayout {
     Bluetooth {}
     Power {}
     Notification {}
+    PowerMenuItem {}
 }

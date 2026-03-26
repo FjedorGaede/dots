@@ -40,6 +40,7 @@ Singleton {
     property color accentSubtle:     Qt.rgba(accent.r, accent.g, accent.b, 0.15)
     property color mainAccentSubtle: Qt.rgba(mainAccent.r, mainAccent.g, mainAccent.b, 0.15)
     property color hoverOverlay:     Qt.rgba(1, 1, 1, 0.07)
+    property color backdrop:         Qt.rgba(background.r, background.g, background.b, 0.7)
     property color dimForeground:    Qt.rgba(foreground.r, foreground.g, foreground.b, 0.5)
     property color fadedForeground:  Qt.rgba(foreground.r, foreground.g, foreground.b, 0.8)
 
