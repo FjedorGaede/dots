@@ -48,4 +48,5 @@ PanelWindow {
     }
 
     OSD {}
+    PowerMenu {}
 }
