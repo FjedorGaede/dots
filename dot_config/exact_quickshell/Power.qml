@@ -68,8 +68,16 @@ RowLayout {
         return arrowIcon + " " + power.changeRate + "W - " + power.percentage + "%";
     }
 
+    function statusIcon() {
+        if (fullyCharged) {
+            return icon();
+        }
+
+        return icon() + " " + percentageString();
+    }
+
     StatusIcon {
-        text: parent.icon() + " " + parent.percentageString()
+        text: parent.statusIcon()
         size: 13
     }
 
