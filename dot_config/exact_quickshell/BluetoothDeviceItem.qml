@@ -1,3 +1,4 @@
+import Quickshell
 import Quickshell.Bluetooth
 import QtQuick
 
@@ -29,7 +30,7 @@ ListItem {
             return;
         }
 
-        device.pair();
+        Quickshell.execDetached(["bluetoothctl", "pair", device.address]);
     }
 
     actionIcon: (isPaired && !isConnected) ? "󰌸" : ""
