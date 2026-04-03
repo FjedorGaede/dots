@@ -2,6 +2,6 @@
 - [x] system tray
 - [x] OSD Sound
 - [x] OSD Backlight
-- [ ] power menu
+- [x] power menu
 - [x] wifi credentials
 - [ ] Notifications ersetzen?
