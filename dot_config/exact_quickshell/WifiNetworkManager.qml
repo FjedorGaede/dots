@@ -1,6 +1,7 @@
 import Quickshell.Networking
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import './theme'
 
@@ -17,6 +18,7 @@ PopupBase {
     property bool isLoadingWifi: false
     property int headerSize: 14
     property color textColor: Theme.foreground
+    property int maxNetworkHeight: 300
 
     minWidth: 320
 
@@ -73,38 +75,81 @@ PopupBase {
         }
     }
 
-    ColumnLayout {
+    Flickable {
         visible: !wifiManager.hideNetworksLayout
+        Layout.fillWidth: true
+        implicitHeight: Math.min(networkContent.implicitHeight, wifiManager.maxNetworkHeight)
+        contentHeight: networkContent.implicitHeight
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-        Divider {}
-
-        Text {
-            text: "KNOWN"
-            color: wifiManager.textColor
-            font.pixelSize: wifiManager.headerSize
-        }
-
-        Repeater {
-            model: wifiManager.knownNetworks
-            WifiNetworkItem {
-                required property var modelData
-                network: modelData
-            }
+        ScrollBar.vertical: ScrollBar {
+            policy: parent.contentHeight > parent.height ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
         }
 
         ColumnLayout {
-            visible: wifiManager.unknownNetworks.length > 0
+            id: networkContent
+            width: parent.width
+            spacing: 5
 
             Divider {}
 
-            Text { text: "OTHERS"; color: wifiManager.textColor; font.pixelSize: wifiManager.headerSize }
+            Text {
+                text: "KNOWN"
+                color: wifiManager.textColor
+                font.pixelSize: wifiManager.headerSize
+            }
 
             Repeater {
-                model: wifiManager.unknownNetworks
+                model: wifiManager.knownNetworks
                 WifiNetworkItem {
                     required property var modelData
                     network: modelData
                 }
+            }
+
+            ColumnLayout {
+                visible: wifiManager.unknownNetworks.length > 0
+
+                Divider {}
+
+                Text { text: "OTHERS"; color: wifiManager.textColor; font.pixelSize: wifiManager.headerSize }
+
+                Repeater {
+                    model: wifiManager.unknownNetworks
+                    WifiNetworkItem {
+                        required property var modelData
+                        network: modelData
+                    }
+                }
+            }
+        }
+    }
+
+    ColumnLayout {
+        visible: VpnService.connections.length > 0
+        spacing: 5
+
+        Divider {}
+
+        Text {
+            text: "VPN"
+            color: Theme.mainAccent
+            font.pixelSize: wifiManager.headerSize
+            font.family: Theme.fontFamily
+        }
+
+        Repeater {
+            model: VpnService.connections
+            ListItem {
+                required property var modelData
+                size: ListItem.Small
+                icon: modelData.active ? "󰌆" : "󰌊"
+                label: modelData.name
+                status: modelData.active ? ListItem.Active : ListItem.Default
+                onTapped: modelData.active
+                    ? VpnService.disconnect(modelData.name)
+                    : VpnService.connect(modelData.name)
             }
         }
     }
