@@ -48,5 +48,10 @@ RowLayout {
         id: wifiManager
         network: network
         anchorItem: network
+        passwordPrompt: wifiPasswordPrompt
+    }
+
+    WifiPasswordPrompt {
+        id: wifiPasswordPrompt
     }
 }

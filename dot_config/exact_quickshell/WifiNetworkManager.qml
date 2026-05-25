@@ -9,6 +9,14 @@ PopupBase {
     id: wifiManager
 
     required property var network
+    property var passwordPrompt: null
+
+    function requestPassword(net) {
+        if (passwordPrompt) {
+            passwordPrompt.open(net)
+            visible = false
+        }
+    }
 
     property var wifiDevice: network.wifiDevice
     property int fontSize: 13
@@ -105,6 +113,7 @@ PopupBase {
                 WifiNetworkItem {
                     required property var modelData
                     network: modelData
+                    onPasswordRequested: net => wifiManager.requestPassword(net)
                 }
             }
 
@@ -120,6 +129,7 @@ PopupBase {
                     WifiNetworkItem {
                         required property var modelData
                         network: modelData
+                        onPasswordRequested: net => wifiManager.requestPassword(net)
                     }
                 }
             }

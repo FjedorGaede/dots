@@ -71,7 +71,7 @@ PanelWindow {
             IconButton {
                 color: Theme.yellow
                 icon: "󰍃"
-                tapCallback: () => Quickshell.execDetached(["hyprctl", "dispatch", "exit"])
+                tapCallback: () => Quickshell.execDetached(["hyprctl", "dispatch", "'hl.dsp.exit()'"])
             }
 
             IconButton {
