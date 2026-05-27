@@ -54,6 +54,11 @@ hl.window_rule({
     size  = { "monitor_w * 0.8", "monitor_h * 0.8" },
 })
 
+hl.window_rule({
+    match = { class = "obsidian" },
+    workspace = "name:obsidian"
+})
+
 -- ── IMPALA ────────────────────────────────────────────
 hl.window_rule({
     match  = { title = "Impala" },
