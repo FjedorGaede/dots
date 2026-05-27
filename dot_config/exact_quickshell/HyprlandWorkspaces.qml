@@ -22,7 +22,7 @@ RowLayout {
             font { family: Theme.fontFamily; pixelSize: 14 }
 
             TapHandler {
-                onTapped: Hyprland.dispatch("workspace " + parent.modelData.id)
+                onTapped: Hyprland.dispatch("hl.dsp.focus({workspace=" + parent.modelData.id + "})")
             }
 
             HoverHandler {
