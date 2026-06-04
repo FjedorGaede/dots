@@ -37,6 +37,11 @@ PanelWindow {
 
             BarElement {
                 Layout.fillHeight: true
+                StatusBar {}
+            }
+
+            BarElement {
+                Layout.fillHeight: true
                 SystemTray {}
             }
 
