@@ -4,7 +4,7 @@
 -- Main laptop display: BOE 16" 2560x1600 @ 60Hz, scale 1.333
 hl.monitor({
     output   = "desc:BOE 0x0AF0",
-    mode     = "2560x1600@60",
+    mode     = "2560x1600@240",
     position = "auto",
     scale    = 1.333,
 })
