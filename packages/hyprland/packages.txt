@@ -1,0 +1,13 @@
+hyprland
+quickshell
+hyprlock
+hypridle
+hyprpaper
+hyprshot
+hyprpolkitagent
+aur:walker
+aur:elephant
+pamixer
+pavucontrol
+blueman
+aur:python-pywal16

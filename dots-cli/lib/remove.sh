@@ -30,7 +30,7 @@ cmd_remove() {
 
     if [ "$uninstall" = true ]; then
         require_gum
-        info "removing from system — sudo may ask for your password"
+        info "removing from system"
         gum_confirm "Also remove ${pkgs[*]} from the system?" || { info "skipped uninstall"; return 0; }
         uninstall_packages "${pkgs[@]}"
     fi
@@ -117,7 +117,7 @@ remove_interactive() {
     [ ${#entries[@]} -gt 0 ] || die "no packages tracked yet"
 
     local -a raw=() picked=()
-    mapfile -t raw < <(gum_choose_many "Remove which packages? (type to search)" "${entries[@]}")
+    mapfile -t raw < <(gum_choose_many "Remove which packages? (x to select, type to search, enter to confirm)" "${entries[@]}")
     # gum can emit empty lines (confirm with nothing selected, ESC) — drop them
     local p
     for p in "${raw[@]}"; do
@@ -146,10 +146,10 @@ remove_interactive() {
     done
 
     if $uninstall_flag; then
-        info "removing from system — sudo may ask for your password"
+        info "removing from system"
         uninstall_packages "${all_pkgs[@]}"
     elif gum_confirm "Also uninstall ${all_pkgs[*]} from the system?"; then
-        info "removing from system — sudo may ask for your password"
+        info "removing from system"
         uninstall_packages "${all_pkgs[@]}"
     else
         info "kept installed, only untracked"

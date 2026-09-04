@@ -17,8 +17,9 @@ anything.** This file is a summary + working rules, not a replacement.
 
 - **Stack:** bash, GNU stow, gum. No DSL, no templating, no state files —
   filesystem + pacman/stow queries are the source of truth.
-- **Structure:** `packages/<category>.txt` (one file = one category, `aur:` prefix
-  routes to yay), `stow/<component>/` (one folder per stow package),
+- **Structure:** `packages/<category>/` (one dir = one category: `packages.txt`, optional
+  `setup/<name>/setup.sh` idempotent hooks; `aur:` prefix routes to yay),
+  `stow/<component>/` (one folder per stow package),
   `dots-cli/` (the CLI), `bootstrap.sh` (minimal curl-pipe-bash entrypoint).
 - **`dots` CLI subcommands:** `install`, `add`, `remove`, `list`, `stow`, `sync`.
 - **Conflict rule:** repo always wins; existing machine files get backed up to
@@ -48,6 +49,28 @@ anything.** This file is a summary + working rules, not a replacement.
    stow components (porting config *content* from the backup where applicable).
 2. **Phase 2 — Migrate:** move the user's live machine over to the new system,
    then replace this AGENTS.md/TODO.md with the permanent versions.
+
+## Current state (update this as work progresses)
+
+- **DONE:** the `dots` CLI (all subcommands incl. setup scripts and interactive
+  pickers), package categories `core` / `hyprland` / `dev` / `tuxedo-extras`
+  (tracked via the CLI itself, dogfooded), the neovim-via-bob setup script.
+- **Deliberately dropped from the old setup** (do not reintroduce): waybar,
+  astal, swayosd, wlogout, mako, rofi, nm-connection-editor, vim — the
+  custom quickshell shell replaces several of them.
+- **NEXT:** port configs into `stow/` components, theming/post-install setup
+  scripts, then `bootstrap.sh`.
+- `transfer-packages.sh` is a temporary one-off helper from the package
+  transfer; remove it once Phase 2 starts.
+
+## Working rules with the user
+
+- **Commit only when the user confirms** changes were tested and work.
+- The user runs interactive/sudo steps themselves when needed (this agent has
+  no TTY, so `sudo` in `dots add`/`install` fails — never bypass the CLI by
+  hand-editing generated files like `packages/*/packages.txt`).
+- gum 2.0 quirks: `choose` uses `--header` (not `--prompt`), `x` toggles in
+  multi-select (space does not), `--selected` takes a comma-separated value.
 
 ## Reference material
 

@@ -13,14 +13,23 @@ usage() {
 dots — dotfiles CLI
 
 Usage:
-  dots install [category...]    Install packages from categories (menu if none given)
+  dots install [category...] [--no-setup]
+                              Install packages from categories (menu if none given);
+                              runs setup/ scripts unless --no-setup
   dots add <pkg...> [--aur] [--category <name>]
-                                Install package(s), then track them in a category
-  dots remove <category> <pkg...> [--uninstall]
-                                Untrack package(s) from a category; --uninstall also removes from system
-  dots list [category]          Show tracked packages (all or one category)
-  dots stow [component...]      Stow components (menu, pre-selecting linked ones)
-  dots sync                     Drift check: installed vs. tracked packages (print-only)
+                              Install package(s), then track them in a category
+  dots add --setup <name> [--category <name>]
+                              Scaffold a new setup script for a category
+  dots remove [<category> <pkg...>] [--uninstall]
+                              Untrack package(s) from a category; --uninstall also
+                              removes from system; no arguments = searchable picker
+  dots list [category]        Show tracked packages (all or one category)
+  dots stow [component...]    Stow components (menu, pre-selecting linked ones)
+  dots sync                   Drift check: installed vs. tracked packages (print-only)
+
+Category layout (packages/ is scanned — a directory = one category):
+  packages/<category>/packages.txt       one package per line, aur: prefix → yay
+  packages/<category>/setup/<name>/setup.sh   optional post-install hook (idempotent bash)
 
 Environment:
   DOTFILES_DIR    Repo root (auto-detected from the script location)
@@ -53,6 +62,15 @@ warn() {
     fi
 }
 
+# gum log has no success level — a green ✔ line via gum style instead.
+success() {
+    if command -v gum >/dev/null 2>&1; then
+        gum style --foreground 76 "✔ $*"
+    else
+        echo "✔ $*"
+    fi
+}
+
 # --- gum wrappers -----------------------------------------------------------
 # gum is the interaction layer. Interactive commands refuse to run without it.
 
@@ -79,13 +97,16 @@ gum_choose_many() { # gum_choose_many <question> <option>... -> selected options
 }
 
 # --- categories -------------------------------------------------------------
+# A category is a directory under packages/ containing packages.txt and an
+# optional setup/ directory. Discovered by scanning — no registry.
 
-categories() { # all category names, one per line (empty output if none yet)
+categories() { # all category names, one per line
     [ -d "$PACKAGES_DIR" ] || return 0
-    find "$PACKAGES_DIR" -maxdepth 1 -name '*.txt' -printf '%f\n' | sed 's/\.txt$//' | sort
+    find "$PACKAGES_DIR" -mindepth 1 -maxdepth 1 -type d ! -name '.*' -printf '%f\n' | sort
 }
 
-category_file() { echo "$PACKAGES_DIR/$1.txt"; }
+category_dir() { echo "$PACKAGES_DIR/$1"; }
+category_file() { echo "$PACKAGES_DIR/$1/packages.txt"; }
 
 category_exists() { [ -f "$(category_file "$1")" ]; }
 
@@ -98,6 +119,13 @@ packages_in_category() { # lines minus blanks/comments; aur: prefix preserved
     file="$(category_file "$1")"
     [ -f "$file" ] || return 0
     sed -e 's/#.*$//' -e 's/[[:space:]]*$//' "$file" | grep -v '^$' || true
+}
+
+setup_scripts() { # setup names for a category, one per line (sorted)
+    local dir
+    dir="$(category_dir "$1")/setup"
+    [ -d "$dir" ] || return 0
+    find "$dir" -mindepth 2 -maxdepth 2 -name setup.sh -type f -printf '%h\n' | sed "s|^$dir/||" | sort
 }
 
 is_aur() { [ "${1#aur:}" != "$1" ]; }
@@ -161,6 +189,10 @@ main() {
             ;;
         help|-h|--help)
             usage
+            ;;
+        --subcommands)
+            # for shell completion (e.g. zsh compdef) — one subcommand per line
+            printf '%s\n' install add remove list stow sync
             ;;
         *)
             usage >&2

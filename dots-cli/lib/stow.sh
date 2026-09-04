@@ -27,7 +27,7 @@ cmd_stow() {
         info "stowing $comp"
         backup_conflicts "$comp"
         stow -d "$STOW_DIR" -t "$HOME" "$comp"
-        info "stowed: $comp"
+        success "stowed: $comp"
     done
 }
 
@@ -50,10 +50,10 @@ select_components() {
         local joined
         joined="$(IFS=,; echo "${linked[*]}")"
         if [ ${#linked[@]} -gt 0 ]; then
-            gum choose --no-limit --header "Stow which components? (space to toggle, enter to apply)" \
+            gum choose --no-limit --header "Stow which components? (x to select, enter to apply)" \
                 --selected "$joined" "${options[@]}" | sed 's/  \[linked\]$//'
         else
-            gum choose --no-limit --header "Stow which components? (space to toggle, enter to apply)" \
+            gum choose --no-limit --header "Stow which components? (x to select, enter to apply)" \
                 "${options[@]}" | sed 's/  \[linked\]$//'
         fi
     else

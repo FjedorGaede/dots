@@ -32,11 +32,17 @@ small CLI tool (`dots`) rather than loose scripts.
 dotfiles/
 ├── AGENTS.md                 # repo-level reference for agents/future-you
 ├── bootstrap.sh                # curl-pipe-bash entrypoint
-├── packages/
-│   ├── core.txt                # one category = one file
-│   ├── hyprland.txt
-│   ├── dev.txt
-│   └── gaming.txt              # add a category by adding a file — nothing else to register
+├── packages/                   # one directory = one category (scanned, no registry)
+│   ├── core/
+│   │   ├── packages.txt        # one package per line; aur: prefix → yay
+│   │   └── setup/              # optional post-install hooks
+│   │       └── <name>/setup.sh # plain bash, must be idempotent
+│   ├── hyprland/
+│   │   └── packages.txt
+│   ├── dev/
+│   │   └── packages.txt
+│   └── gaming/
+│       └── packages.txt        # add a category by adding a dir — nothing else to register
 ├── stow/                       # one folder per stow "package"
 │   ├── hypr/.config/hypr/...
 │   ├── waybar/.config/waybar/...
@@ -58,18 +64,33 @@ dotfiles/
 
 ## Packages: categories
 
-Each file under `packages/` is a category — discovered automatically by
-scanning the directory, no separate registry. One package per line;
-`aur:` prefix marks an AUR package, routed to `yay` instead of `pacman`.
+Each directory under `packages/` is a category — discovered automatically by
+scanning the directory, no separate registry. `packages.txt` holds one
+package per line; `aur:` prefix marks an AUR package, routed to `yay` instead
+of `pacman`.
 
 ```
-# packages/hyprland.txt
+# packages/hyprland/packages.txt
 hyprland
 waybar
 mako
 aur:swayosd
 aur:hyprpicker-git
 ```
+
+### Setup scripts
+
+Optional `packages/<category>/setup/<name>/setup.sh` files run after the
+category's packages are installed (`dots install <category>`). They are plain
+bash, must be idempotent (they re-run on every install), and handle everything
+that isn't a package: systemd user enables, `fc-cache`, wal template regen,
+driver post-install steps. `dots add --setup <name> [--category <cat>]`
+scaffolds a new one. `dots install --no-setup` skips them.
+
+Category design principle: a package belongs to the category that answers
+"would every machine running this repo want this?" — the session stack is
+category-scoped (`hyprland`), not core, so non-Hyprland sessions stay possible.
+Core holds session-agnostic tools only.
 
 ## The `dots` CLI
 
@@ -79,9 +100,10 @@ tool, not a dotfile.
 
 | Command | Behavior |
 |---|---|
-| `dots install [category...]` | Installs packages from given categories (all, via a menu, if none given) |
+| `dots install [category...] [--no-setup]` | Installs packages from given categories (all, via a menu, if none given), then runs the categories' setup scripts |
 | `dots add <pkg...> [--aur] [--category <name>]` | Installs the package(s) in one call, then tracks them. No `--category` → prompts via `gum choose` (existing categories + "+ new category") |
-| `dots remove <category> <pkg>` | Untracks from the category file. Add `--uninstall` to also remove from the system (with confirm) |
+| `dots add --setup <name> [--category <name>]` | Scaffolds `packages/<cat>/setup/<name>/setup.sh` |
+| `dots remove [<category> <pkg>] [--uninstall]` | Untracks from the category file. Add `--uninstall` to also remove from the system (with confirm). No arguments → searchable picker over all tracked packages |
 | `dots list [category]` | Prints tracked packages, optionally scoped to one category |
 | `dots stow [component...]` | Menu over `stow/*`, pre-selecting already-linked components (via `stow -n` dry-run, not a state file); force-applies with backup on conflict |
 | `dots sync` | Drift check — installed-but-untracked packages, printed only, never auto-modified |

@@ -34,8 +34,9 @@ Unknown commands print usage and exit 1. There is no argument parsing in
   each file states it anyway so it's self-contained when read).
 - `DOTFILES_DIR`, `PACKAGES_DIR`, `STOW_DIR`, `BACKUP_DIR` and all helper
   functions (`die`, `info`, `warn`, `require_gum`, `gum_*`, `categories`,
-  `category_file`, `packages_in_category`, `is_aur`, `pkg_name`,
-  `stow_components`, `is_linked`, `backup_conflicts`) come from `common.sh`.
+  `category_dir`, `category_file`, `packages_in_category`, `setup_scripts`,
+  `is_aur`, `pkg_name`, `stow_components`, `is_linked`, `backup_conflicts`)
+  come from `common.sh`.
 - Errors: `die "message"` (prints to stderr, exit 1). Progress: `info`.
   Non-fatal failures: `warn` — never silently ignore a failure.
 - Interactive bits must go through the `gum_*` wrappers, and must call
@@ -70,4 +71,4 @@ Unknown commands print usage and exit 1. There is no argument parsing in
   recorded.
 - **`sync` never mutates** — it prints, nothing else.
 - **Filesystem is the source of truth** — categories are discovered by scanning
-  `packages/*.txt`, components by scanning `stow/*`; no registries.
+  `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`; no registries.
