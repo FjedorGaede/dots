@@ -39,6 +39,7 @@
 - [ ] Old custom scripts ported or dropped: tmux-sessionizer, wifi-menu, set-colors (wal), log, arch/yay install helpers
 
 ### Theming / post-install scripts (needed for migration)
+- [x] DECIDED: stay on pywal16 (actively maintained fork; matugen/wallust considered and rejected for now — revisit only if generated palettes annoy; template conversion is easiest during this port)
 - [ ] Port the old theming flow into setup scripts + configs:
   - [ ] `wal` flow: pywal16 colorscheme generation from wallpaper (old `set-colors` script)
   - [ ] Apply wal templates → hyprland, quickshell/waybar, swaync (drop swayosd + mako templates — those packages are dropped)
