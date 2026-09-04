@@ -116,8 +116,15 @@ remove_interactive() {
     done
     [ ${#entries[@]} -gt 0 ] || die "no packages tracked yet"
 
-    local -a picked=()
-    mapfile -t picked < <(gum_choose_many "Remove which packages? (type to search)" "${entries[@]}")
+    local -a raw=() picked=()
+    mapfile -t raw < <(gum_choose_many "Remove which packages? (type to search)" "${entries[@]}")
+    # gum can emit empty lines (confirm with nothing selected, ESC) — drop them
+    local p
+    for p in "${raw[@]}"; do
+        [ -n "$p" ] || continue
+        [[ "$p" == */* ]] || continue
+        picked+=("$p")
+    done
     [ ${#picked[@]} -gt 0 ] || { info "nothing selected"; return 0; }
 
     # strip display decorations, group back into category -> packages
@@ -128,6 +135,7 @@ remove_interactive() {
         display_pkg="${entry#*/}"        # "cat/pkg  (aur)" -> "pkg  (aur)"
         display_pkg="${display_pkg%%  (*}" # strip "  (aur)"
         cat_part="${entry%%/*}"
+        [ -n "$cat_part" ] || continue
         pkgs_by_cat[$cat_part]+=" $display_pkg"
         all_pkgs+=("$display_pkg")
     done
