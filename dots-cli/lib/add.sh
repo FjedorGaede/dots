@@ -22,7 +22,8 @@ cmd_add() {
 
     [ ${#pkgs[@]} -gt 0 ] || die "usage: dots add <pkg...> [--aur] [--category <name>]"
 
-    # 1. Install
+    # 1. Install (guidance first — sudo will ask for a password here)
+    info "installing ${pkgs[*]} — sudo may ask for your password"
     if [ "$force_aur" = true ]; then
         command -v yay >/dev/null 2>&1 || die "yay not found (required for --aur)"
         yay -S --needed "${pkgs[@]}"
@@ -41,7 +42,7 @@ cmd_add() {
             || die "cancelled"
         [ -n "$picked" ] || die "no category selected"
         if [ "$picked" = "+ new category" ]; then
-            category="$(gum_input "New category name:" "e.g. hyprland")" || die "cancelled"
+            category="$(gum_input "New category name: " "e.g. hyprland")" || die "cancelled"
             [ -n "$category" ] || die "empty category name"
         else
             category="$picked"
@@ -49,6 +50,7 @@ cmd_add() {
     fi
 
     # 3. Track
+    info "tracking under '$category': ${pkgs[*]}"
     local file
     file="$(category_file "$category")"
     mkdir -p "$PACKAGES_DIR"

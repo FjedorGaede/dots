@@ -51,6 +51,7 @@ cmd_remove() {
 
     if [ "$uninstall" = true ]; then
         require_gum
+        info "removing from system — sudo may ask for your password"
         gum_confirm "Also remove ${pkgs[*]} from the system?" || { info "skipped uninstall"; return 0; }
         for pkg in "${pkgs[@]}"; do
             if [ -n "${was_aur[$pkg]:-}" ]; then

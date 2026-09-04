@@ -28,12 +28,30 @@ EOF
 }
 
 die() {
-    echo "dots: $*" >&2
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level error "$*" >&2
+    else
+        echo "dots: $*" >&2
+    fi
     exit 1
 }
 
-info() { echo "==> $*"; }
-warn() { echo "dots: warning: $*" >&2; }
+# Leveled logging through gum when available, plain echo otherwise.
+info() {
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level info "$*"
+    else
+        echo "==> $*"
+    fi
+}
+
+warn() {
+    if command -v gum >/dev/null 2>&1; then
+        gum log --level warn "$*" >&2
+    else
+        echo "dots: warning: $*" >&2
+    fi
+}
 
 # --- gum wrappers -----------------------------------------------------------
 # gum is the interaction layer. Interactive commands refuse to run without it.

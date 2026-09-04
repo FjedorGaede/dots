@@ -21,6 +21,7 @@ cmd_install() {
     local cat
     for cat in "${chosen[@]}"; do
         require_category "$cat"
+        info "installing category '$cat' — sudo may ask for your password"
         install_category "$cat"
     done
 }
