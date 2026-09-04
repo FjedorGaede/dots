@@ -1,7 +1,0 @@
-- [x] bluetooth forget and pair
-- [x] system tray
-- [x] OSD Sound
-- [x] OSD Backlight
-- [x] power menu
-- [x] wifi credentials
-- [ ] Notifications ersetzen?

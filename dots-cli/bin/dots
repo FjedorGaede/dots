@@ -3,8 +3,16 @@
 # Dispatches to lib/<cmd>.sh; all logic lives there. See ../AGENTS.md.
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)"
+# Resolve symlinks so DOTFILES_DIR is correct when invoked via e.g.
+# ~/.local/bin/dots -> ~/dots/dots-cli/bin/dots
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+    DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE == /* ]] || SOURCE="$DIR/$SOURCE"
+done
+DOTFILES_DIR="$(cd "$(dirname "$SOURCE")/../.." && pwd)"
+LIB_DIR="$DOTFILES_DIR/dots-cli/lib"
 
 # shellcheck source=../lib/common.sh
 source "$LIB_DIR/common.sh"
