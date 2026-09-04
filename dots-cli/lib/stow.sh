@@ -44,18 +44,21 @@ select_components() {
         fi
     done
 
-    if gum choose --help 2>&1 | grep -q -- '--selected'; then
-        # gum >= 0.14: genuinely pre-select the linked ones
+    if gum choose --help 2>&1 | grep -q -- '--selected='; then
+        # gum with --selected support: genuinely pre-select the linked ones
+        # (--selected takes a single comma-separated value)
+        local joined
+        joined="$(IFS=,; echo "${linked[*]}")"
         if [ ${#linked[@]} -gt 0 ]; then
-            gum choose --no-limit --prompt "Stow which components? (space to toggle, enter to apply)" \
-                --selected "${linked[@]}" "${options[@]}" | sed 's/  \[linked\]$//' || true
+            gum choose --no-limit --header "Stow which components? (space to toggle, enter to apply)" \
+                --selected "$joined" "${options[@]}" | sed 's/  \[linked\]$//'
         else
-            gum choose --no-limit --prompt "Stow which components? (space to toggle, enter to apply)" \
-                "${options[@]}" | sed 's/  \[linked\]$//' || true
+            gum choose --no-limit --header "Stow which components? (space to toggle, enter to apply)" \
+                "${options[@]}" | sed 's/  \[linked\]$//'
         fi
     else
         # older gum: fall back to labelling linked components in the menu
-        gum choose --no-limit --prompt "Stow which components? [linked] = already stowed" \
-            "${options[@]}" | sed 's/  \[linked\]$//' || true
+        gum choose --no-limit --header "Stow which components? [linked] = already stowed" \
+            "${options[@]}" | sed 's/  \[linked\]$//'
     fi
 }

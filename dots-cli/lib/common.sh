@@ -50,14 +50,14 @@ gum_input() { # gum_input <prompt> <placeholder> -> value on stdout
     gum input --placeholder "$2" --prompt "$1"
 }
 
-gum_choose_one() { # gum_choose_one <prompt> <option>... -> selected option
-    local prompt="$1"; shift
-    gum choose --prompt "$prompt" "$@"
+gum_choose_one() { # gum_choose_one <question> <option>... -> selected option
+    local header="$1"; shift
+    gum choose --header "$header" "$@"
 }
 
-gum_choose_many() { # gum_choose_many <prompt> <option>... -> selected options, one per line
-    local prompt="$1"; shift
-    gum choose --no-limit --prompt "$prompt" "$@" || true
+gum_choose_many() { # gum_choose_many <question> <option>... -> selected options, one per line
+    local header="$1"; shift
+    gum choose --no-limit --header "$header" "$@"
 }
 
 # --- categories -------------------------------------------------------------
