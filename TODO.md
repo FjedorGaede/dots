@@ -27,8 +27,8 @@
 - [ ] Test bootstrap in an Arch container (`~/test-bootstrap.sh`) — BLOCKED:
       user must reboot first (running kernel 7.1.3 is outdated, its modules
       were deleted; docker can't start until then)
-- [ ] Run `dots install dev` once to verify the neovim/bob setup script
-      (needs sudo password → user runs it)
+- [x] `dots install dev` verified by user 2026-09-05: bob setup + nvim-config
+      setup (clone pull path: "Already up to date") both ran clean
 - [x] Post-bootstrap manual checklist documented in README.md (SSH keys, remote
       switch, gh auth, brave-search npm ci, hostname) — including a loud
       "the one exception" section for the neovim config (user chose Option 2:
