@@ -108,8 +108,11 @@
       existing real dirs, conflicts backed up, live-only files (tmux plugins/)
       untouched. Caught + fixed: quickshell/.qmlls.ini was an absolute symlink
       to /run (qmlls runtime artifact) — removed from repo, stow refuses those.
-- [ ] Link components via `dots stow` on the live machine (Phase 2,
-      component-by-component, chezmoi NOT touched meanwhile)
+- [x] Link components via `dots stow` on the live machine — DONE 2026-09-05: all
+      9 components (ghostty, tmux, tools, wal, scripts, shell, hypr, quickshell,
+      pi) linked, every replaced file backed up to ~/.dotfiles-backup/<comp>.<ts>/.
+      Old chezmoi-managed copies now live ONLY in ~/.dotfiles-backup — do NOT run
+      `chezmoi apply` (it would clobber the stow symlinks); retire chezmoi next.
 - [ ] nvim config: external git repo (`github.com/FjedorGaede/neovim-config`) — clone as setup script or stow component
 - [x] Decide: zsh stays as default shell — USER ACTION: `dots add zsh --category core` (zsh was never tracked)
 - [ ] SSH keys for GitHub setup, automatic hostnames

@@ -16,7 +16,8 @@ dots-cli/
 │   ├── list.sh       # cmd_list
 │   ├── stow.sh       # cmd_stow
 │   ├── sync.sh       # cmd_sync
-│   └── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
+│   ├── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
+│   └── edit.sh       # cmd_edit
 └── theming/          # theming engine + per-app adapters (see README.md + section below)
     ├── apply-theme.sh  # THE owner of all theming code: wal + adapters + notify
     ├── adapters/       # executable scripts run per theme change

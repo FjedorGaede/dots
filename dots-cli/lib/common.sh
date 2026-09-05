@@ -27,7 +27,9 @@ Usage:
   dots stow [component...]    Stow components (menu, pre-selecting linked ones)
   dots sync                   Drift check: installed vs. tracked packages (print-only)
   dots theme [-l] [name]      Apply a pywal16 colorscheme (+ per-app adapters in
-                              dots-cli/theme-adapters/); no name = picker, -l = light
+                              dots-cli/theming/); no name = picker, -l = light
+  dots edit [component]       Open $EDITOR in the stow tree (whole tree or one
+                              component); edits land in the repo — commit them
 
 Category layout (packages/ is scanned — a directory = one category):
   packages/<category>/packages.txt       one package per line, aur: prefix → yay
@@ -184,7 +186,7 @@ main() {
     [ $# -gt 0 ] && shift
 
     case "$cmd" in
-        install|add|remove|list|stow|sync|theme)
+        install|add|remove|list|stow|sync|theme|edit)
             # shellcheck source=/dev/null
             source "$LIB_DIR/$cmd.sh"
             "cmd_$cmd" "$@"
@@ -194,7 +196,7 @@ main() {
             ;;
         --subcommands)
             # for shell completion (e.g. zsh compdef) — one subcommand per line
-            printf '%s\n' install add remove list stow sync theme
+            printf '%s\n' install add remove list stow sync theme edit
             ;;
         *)
             usage >&2
