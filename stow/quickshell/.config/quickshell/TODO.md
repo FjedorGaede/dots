@@ -67,21 +67,36 @@
       names, today highlighted with accent, adjacent-month days shown dimmed.
       NOTE: was briefly lost when a stow run overwrote the live file with the
       old repo version — rewritten directly into the stow repo.
+- [ ] Own audio control panel — replace pavucontrol (launched by the Sound bar
+      icon on click; "looks awful, no benefits"). Quickshell `Quickshell.Services.Pipewire`
+      gives sinks/sources/streams: output + input device volumes, default device
+      switcher, per-app volumes; reuse PopupBase + ListItem styling
+- [ ] Suspend control ("stay awake") — user case: long-running agents get
+      killed by auto-suspend when away. Previously postponed, now wanted.
+      AGREED DESIGN (2026-09): toggle lives OUT of the way (e.g. "Stay awake"
+      row in the power menu next to Sleep); while active, a small coffee-cup
+      indicator appears in the bar (click = turn off again). Hidden otherwise
+      so the bar stays clean. Implementation: hypridle reacts to the Wayland
+      idle event, so Quickshell.Wayland.IdleInhibitor attached to the bar
+      window should suffice; hypridle config rewrite is the fallback lever.
+      State needs to survive shell reloads (file-backed).
 - [ ] **B. Icon polish pass** — unify bar icon sizes (14px baseline: Sound 13,
       Bluetooth 15, battery 13 today); fix `IconButton` unset text color (renders
       black) + hover state; remove Power.qml `" "` spacing hack; OSD fallback
       icon is literal `"xxx"`; audit right-side bar row paddings
-- [ ] **C. Power menu** — wire up real shutdown (currently a `console.warn`
-      stub!); two-click confirm for shutdown/reboot (button switches to
-      checkmark state); styling: labels under icons, no harsh full-opacity
-      1px border
+- [x] **C. Power menu (2026-09)** — shutdown wired up (was a `console.warn`
+      stub!); two-click confirm for reboot/shutdown (button → check mark + red
+      for 3s, second click executes, other clicks/close disarms); also fixed
+      broken exit action (`hyprctl dispatch "hl.dsp.exit()"` → `exit`).
+      Design intentionally unchanged — user likes it.
 - [x] **D. OSDs (2026-09)** — mic-mute OSD added (`XF86AudioMicMute`, shows
       mic icon + percent, red accents when muted, tracks `defaultAudioSource`);
       single volume bar with the peak meter now drawn as a translucent overlay
       INSIDE the bar (second bar removed); percentage text right of the bar
       ("75%" / "Muted"), also for brightness; hide timer 1s→1.4s
 - [ ] OSD leftovers — review the 1s `audioReady` delay hack (startup noise
-      guard) and "xxx" fallback icon in getIcon()
+      guard); gap between bar and percent text (fixed-width box = stable size
+      but visible dead space)
 - [x] Notification toasts too small to read comfortably — bumped ~20–25%:
       width 340→420, summary 13→16, body 12→15, appName 10→12, icon 26→34,
       action buttons 24→30 tall / 11→13 font, CloseButton 30→36
@@ -97,6 +112,11 @@
 
 ## Bigger ideas (omarchy-inspired)
 
+- [ ] Evaluate walker + elephant — walker is the current launcher (Super+D,
+      `shared.lua: menu = "walker"`), rofi handles smart search. Question: do
+      we actually need walker (and its elephant backend daemon) at all, or is
+      rofi/fuzzel/anyrun enough? If keeping walker: does it still need
+      elephant running, or do the used features work without it?
 - [ ] Network panel: header stats — throughput, ping/latency, packet loss
       (omarchy polls `/proc/net/dev` + `ping`, slow poll ~4s)
 - [ ] Network panel: wifi band selector (pin 2.4/5 GHz)

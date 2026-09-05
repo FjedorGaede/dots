@@ -24,14 +24,6 @@ PanelWindow {
         objects: Pipewire.defaultAudioSource ? [Pipewire.defaultAudioSource] : []
     }
 
-    // Live output level metering for the peak overlay. Only enabled while the
-    // OSD is shown so PipeWire isn't polled constantly.
-    PwNodePeakMonitor {
-        id: peakMonitor
-        node: osd.defaultSink
-        enabled: osd.visible
-    }
-
     HyprlandWindow.opacity: 0.95
 
     property var defaultSink: Pipewire.defaultAudioSink
@@ -47,6 +39,7 @@ PanelWindow {
     property int margin: 16
 
     implicitHeight: 50
+    implicitWidth: contentLayout.implicitWidth + margin * 2
 
     color: "transparent"
 
@@ -117,26 +110,32 @@ PanelWindow {
                 rightMargin: osd.margin
             }
 
-            spacing: 12
+            spacing: 16
 
             property bool audioChanged: ([osdTypes.volumeChanged, osdTypes.mutedChanged].includes(osd.currentType))
             property bool brightnessChanged: osd.currentType === osdTypes.brightnessChanged
             property bool micChanged: osd.currentType === osdTypes.micChanged
 
             function getAudioIcon() {
-                const noSoundIcon = "";
-                return osd.isMuted ? noSoundIcon : currentVolume === 0 ? noSoundIcon : currentVolume < 70 ? "" : "";
+                const audioLoudIcon = "";
+                const audioQuietIcon = "";
+                const noSoundIcon = "";
+
+                if (osd.isMuted) return noSoundIcon;
+                if (osd.currentVolume === 0) return noSoundIcon;
+                if (osd.currentVolume < 70) return audioQuietIcon;
+                return audioLoudIcon;
             }
 
             function getIcon() {
                 if (audioChanged) return getAudioIcon();
-                if (brightnessChanged) return "";
+                if (brightnessChanged) return "";
                 if (micChanged) return osd.sourceMuted ? "󰍭" : "󰍬";
-                return "xxx";
             }
 
             function getIconColor() {
                 if (micChanged && osd.sourceMuted) return Theme.error;
+                if (audioChanged && !osd.isMuted && osd.currentVolume > 100) return Theme.error;
                 return Theme.foreground;
             }
 
@@ -163,23 +162,28 @@ PanelWindow {
             }
 
             function showPeak() {
-                return audioChanged && !osd.isMuted && osd.currentVolume > 0;
+                // "Overshoot" segment: volume above 100% (wpctl allows up to
+                // 150%) shown as a red translucent segment, width = over-100
+                // part (110% volume → 10% red)
+                return audioChanged && !osd.isMuted && osd.currentVolume > 100;
             }
 
             Text {
                 text: contentLayout.getIcon();
                 color: contentLayout.getIconColor();
-                font { pixelSize: 26 }
-                Layout.preferredWidth: 24
+                font { pixelSize: 24 }
+                // Fixed box so the OSD doesn't resize when the glyph changes
+                Layout.preferredWidth: 28
                 horizontalAlignment: Text.AlignHCenter
             }
 
             ProgressBar {
                 height: 12
                 percent: contentLayout.getPercent()
-                // Peak overlay only in the volume OSD — the translucent fill
-                // inside the bar shows how hot the output actually is
-                overlayPercent: contentLayout.showPeak() ? Math.round(peakMonitor.peak * 100) : -1
+                // Red overshoot segment when the audio signal clips
+                overlayPercent: contentLayout.showPeak()
+                    ? osd.currentVolume - 100 : -1
+                overlayColor: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.55)
                 backgroundColor: Theme.subdued
                 fillColor: contentLayout.progressBarFillColor()
             }
@@ -188,7 +192,8 @@ PanelWindow {
                 text: contentLayout.getPercentText()
                 color: contentLayout.getIconColor()
                 font { family: Theme.fontFamily; pixelSize: 14 }
-                Layout.preferredWidth: 52
+                // Fixed box so "9%" → "100%" doesn't shift the OSD size
+                Layout.preferredWidth: 44
                 horizontalAlignment: Text.AlignRight
             }
         }
