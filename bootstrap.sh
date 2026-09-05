@@ -5,10 +5,10 @@
 #
 # or, when the repo is already around:  ~/dots/bootstrap.sh
 #
-# Flow: base tools (pacman) → clone/pull repo → build yay from AUR if missing
-# (makepkg, therefore: never run as root) → pick categories (core+hyprland
-# pre-selected) → dots install → dots stow all components → first-run setup
-# (dracula theme, zsh login shell).
+# Flow: base tools (pacman) → clone/pull repo → pick categories (core+hyprland
+# pre-selected) → dots install (its core/yay setup builds yay from the AUR if
+# missing — that's why core must be installed) → dots stow all components →
+# first-run setup (dracula theme, zsh login shell).
 #
 # The default theme is dracula; the custom accent comes from the stowed
 # quickshell theme layering (theme/overrides.json), not from wal.
@@ -27,7 +27,7 @@ die() { if command -v gum >/dev/null 2>&1; then gum log --level error "$*" >&2; 
 grep -qE '^ID=(arch|cachyos)$' /etc/os-release 2>/dev/null \
     || die "not an Arch-based system (/etc/os-release says otherwise)"
 
-[ "$(id -u)" -ne 0 ] || die "run as a regular user — makepkg (yay build) refuses root"
+[ "$(id -u)" -ne 0 ] || die "run as a regular user — the yay setup script builds via makepkg, which refuses root"
 
 sudo -v   # ask for the password once, up front
 
@@ -46,22 +46,9 @@ else
     git clone "$REPO_URL" "$DOTFILES_DIR"
 fi
 
-# --- 3. build yay from the AUR if it is not installed --------------------------
-
-if ! command -v yay >/dev/null 2>&1; then
-    log "yay not found — building from AUR (this can take a few minutes)"
-    rm -rf /tmp/yay-bootstrap
-    git clone --depth=1 https://aur.archlinux.org/yay.git /tmp/yay-bootstrap
-    ( cd /tmp/yay-bootstrap && makepkg -si --noconfirm )
-    command -v yay >/dev/null 2>&1 || die "yay build finished but yay is still not on PATH"
-    rm -rf /tmp/yay-bootstrap
-else
-    log "yay already present"
-fi
+# --- 3. pick categories (core + hyprland pre-selected) ------------------------
 
 DOTS="$DOTFILES_DIR/dots-cli/bin/dots"
-
-# --- 4. pick categories (core + hyprland pre-selected) ------------------------
 
 mapfile -t all_cats < <(find "$DOTFILES_DIR/packages" -mindepth 1 -maxdepth 1 -type d ! -name '.*' -printf '%f\n' | sort)
 [ ${#all_cats[@]} -gt 0 ] || die "no categories found in $DOTFILES_DIR/packages"
@@ -75,10 +62,12 @@ chosen="$(gum choose --no-limit \
 
 # shellcheck disable=SC2086
 log "installing: $chosen"
+# core's yay setup script builds yay from the AUR when missing — required
+# before any other selected category can install its aur: entries.
 # shellcheck disable=SC2086
 "$DOTS" install $chosen
 
-# --- 5. stow all components -----------------------------------------------------
+# --- 4. stow all components -----------------------------------------------------
 
 mapfile -t components < <(find "$DOTFILES_DIR/stow" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
 [ ${#components[@]} -gt 0 ] || die "no stow components found"
@@ -87,7 +76,7 @@ log "stowing all components: ${components[*]}"
 # shellcheck disable=SC2086
 "$DOTS" stow ${components[@]}
 
-# --- 6. first-run setup ---------------------------------------------------------
+# --- 5. first-run setup ---------------------------------------------------------
 
 # the stowed commonshellrc sources ~/.cache/wal/colors.sh — generate the
 # initial colorscheme so new shells don't error before the first theme run.
