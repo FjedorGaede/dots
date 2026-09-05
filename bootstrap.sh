@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # bootstrap.sh — fresh-machine entrypoint for the dotfiles.
 #
-#   curl -fsSL https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh | bash
+#   bash <(curl -fsSL https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh)
 #
+# (NOT `curl ... | bash`: the script is interactive — sudo and gum need the
+# terminal on stdin, which piping cuts off.)
 # or, when the repo is already around:  ~/dots/bootstrap.sh
 #
 # Flow: base tools (pacman) → clone/pull repo → pick categories (core+hyprland
@@ -16,6 +18,7 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/FjedorGaede/dots.git"
+REPO_URL_RAW="https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dots}"
 DEFAULT_THEME="dracula"
 
@@ -23,6 +26,8 @@ log() { if command -v gum >/dev/null 2>&1; then gum log --level info "$*"; else 
 die() { if command -v gum >/dev/null 2>&1; then gum log --level error "$*" >&2; else echo "bootstrap: $*" >&2; fi; exit 1; }
 
 # --- 0. sanity ----------------------------------------------------------------
+
+[ -t 0 ] || die "interactive terminal required — run via: bash <(curl -fsSL $REPO_URL_RAW)"
 
 grep -qE '^ID=(arch|cachyos)$' /etc/os-release 2>/dev/null \
     || die "not an Arch-based system (/etc/os-release says otherwise)"
