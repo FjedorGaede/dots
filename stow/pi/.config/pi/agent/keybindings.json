@@ -1,0 +1,10 @@
+{
+  "tui.editor.cursorUp": ["up", "ctrl+k"],
+  "tui.editor.cursorDown": ["down", "ctrl+j"],
+  "tui.editor.cursorLeft": ["left", "ctrl+h"],
+  "tui.editor.cursorRight": ["right", "ctrl+l"],
+  "tui.editor.cursorWordLeft": ["alt+left", "ctrl+b"],
+  "tui.editor.cursorWordRight": ["alt+right", "ctrl+w"],
+  "tui.select.up": ["up", "ctrl+k"],
+  "tui.select.down": ["down", "ctrl+j"]
+}

@@ -1,0 +1,18 @@
+{
+  "lastChangelogVersion": "0.83.0",
+  "defaultProvider": "openrouter",
+  "defaultModel": "z-ai/glm-5.3-flash",
+  "defaultThinkingLevel": "high",
+  "theme": "dracula",
+  "quietStartup": true,
+  "doubleEscapeAction": "tree",
+  "compaction": {
+    "enabled": true,
+    "keepRecentTokens": 20000
+  },
+  "shellCommandPrefix": "export EDITOR=nvim",
+  "packages": [
+    "git:github.com/badlogic/pi-skills"
+  ],
+  "hideThinkingBlock": false
+}
