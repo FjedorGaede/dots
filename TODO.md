@@ -38,11 +38,11 @@
       dracula via bootstrap; afterwards `dots theme` is run manually when
       wanted. Wallpaper-following colors: user will build it themselves if the
       need arises (design stays: fixed scheme + accent from overrides.json).
-- [x] nvim config — DECIDED: stays its own repo (NOT stowed — stowing would
-      merge its history into dots and break pushing to neovim-config).
-      Distributed via packages/dev/setup/nvim-config/setup.sh: HTTPS clone on
-      fresh machines (public repo), ff-only pull when present, SSH-remote hint.
-      Live ~/.config/nvim is already the clone, in sync with origin.
+- [x] nvim config — DECIDED (final): stowed like everything else. The old
+      `neovim-config` repo was ARCHIVED on GitHub (read-only) — no push target
+      existed, so its own-repo rationale was void. Live ~/.config/nvim copied
+      into stow/nvim (minus .git), stowed live, stale .git removed; nvim-config
+      setup script deleted. The archive repo stays on GitHub as history.
 - [x] Fonts — DECIDED: `ttf-jetbrains-mono-nerd` from official extra repo (the
       family "JetBrainsMono Nerd Font" used by quickshell/ghostty/terminal). No
       setup script needed (pacman hooks fc-cache). USER ACTION: `dots add

@@ -1,0 +1,504 @@
+_G.dd = function(...)
+    Snacks.debug.inspect(...)
+end
+_G.bt = function()
+    Snacks.debug.backtrace()
+end
+if vim.fn.has("nvim-0.11") == 1 then
+    vim._print = function(_, ...)
+        dd(...)
+    end
+else
+    vim.print = dd
+end
+
+-- options
+vim.g.mapleader = " "
+
+local opts = vim.o
+
+-- TODO Sort and categorize these better?
+opts.termguicolors = true -- enable 24-bit color
+opts.tabstop = 4
+opts.shiftwidth = 4
+opts.expandtab = true -- Tab uses the correct space
+opts.smartindent = true -- Indent correctly after a {
+opts.autoindent = true
+opts.scrolloff = 8  -- Lines to keep above and below cursor when scrolling down
+opts.wrap = true -- Wrap when line becomes longer that the screen width
+opts.breakindent = true -- Wrapped line gets the same indenting as the line it orignates from for better readability
+opts.linebreak = true
+opts.number = true
+opts.cursorline = true
+opts.signcolumn = "yes" -- Always show the sign column so we do not have jumping when disagnostics come in
+opts.undofile = true
+opts.ignorecase = true
+opts.smartcase = true
+opts.incsearch = true
+
+-- Dagnostics --
+local severity = { min = vim.diagnostic.severity.WARN, max = vim.diagnostic.severity.ERROR }
+vim.diagnostic.config({
+    float = { border = 'rounded', source = 'if_many' },
+
+    -- Show signs on top of any other sign, but only for warnings and errors
+    signs = { priority = 9999, severity = severity },
+
+    -- Show all diagnostics as underline (for their messages type `<Leader>ld`)
+    underline = { severity = severity },
+
+    -- Show more details immediately for errors on the current line
+    virtual_lines = false,
+    virtual_text = {
+        current_line = true,
+        severity = severity,
+    },
+
+    -- Don't update diagnostics when typing
+    update_in_insert = false,
+})
+
+-- plugins
+
+local function add(...) 
+    local githubPrefix = "https://github.com/"
+    local plugins = { ... }
+    local sources = {}
+    for _, plugin in ipairs(plugins) do
+        local to_insert = nil
+
+        if type(plugin) == "string" then
+            to_insert = { src = githubPrefix .. plugin }
+        elseif type(plugin) == "table" then 
+            to_insert = vim.deepcopy(plugin)
+            to_insert.src = githubPrefix .. plugin.src
+        end
+
+        table.insert(sources, to_insert)
+    end
+
+    vim.pack.add(sources)
+end
+
+-- LSP
+add("neovim/nvim-lspconfig", "mason-org/mason.nvim", "mason-org/mason-lspconfig.nvim")
+
+require("mason").setup()
+require("mason-lspconfig").setup({
+    ensure_installed = {
+        "lua_ls",
+        "ts_ls",
+    }
+})
+
+vim.lsp.enable({ "lua_ls", "ts_ls" })
+
+-- Completion
+add({ src = 'Saghen/blink.cmp', version = vim.version.range('*') })
+
+require("blink.cmp").setup({
+    completion = { documentation = { auto_show = false } },
+    sources = {
+      default = { 'lsp', 'path', 'snippets', 'buffer' },
+    },
+    keymap = {
+        preset = "enter",
+    },
+})
+
+-- Incremental Rename --
+add("smjonas/inc-rename.nvim")
+require("inc_rename").setup {
+  input_buffer_type = "snacks",
+}
+
+-- LSP Signature --
+-- TODO Do I really need this? Maybe I just want to always do it manually?
+add("ray-x/lsp_signature.nvim")
+require("lsp_signature").setup({
+    hint_enable = true,
+    hint_prefix = "↖ " 
+})
+
+-- Navigation --
+add("kwkarlwang/bufjump.nvim")
+
+require("bufjump").setup({
+    forward_key = "<M-i>",
+    backward_key = "<M-o>",
+    on_success = nil
+})
+
+-- Color scheme
+add("Mofiqul/dracula.nvim")
+require('dracula').setup({
+    colors = {
+        comment = "#6E87D4",
+    }
+})
+
+vim.cmd.colorscheme("dracula")
+
+-- Mini Packages --
+-- TODO Sort by funcking alphabet
+add(
+    "nvim-mini/mini.clue",
+    "nvim-mini/mini.cursorword",
+    "nvim-mini/mini.extra",
+    "nvim-mini/mini.files",
+    "nvim-mini/mini.hipatterns",
+    "nvim-mini/mini.icons",
+    "nvim-mini/mini.keymap",
+    "nvim-mini/mini.move",
+    "nvim-mini/mini.notify",
+    "nvim-mini/mini.pairs",
+    "nvim-mini/mini.pick",
+    "nvim-mini/mini.statusline",
+    "nvim-mini/mini.surround",
+    "nvim-mini/mini.trailspace"
+)
+
+local MiniFiles = require("mini.files")
+MiniFiles.setup({
+    mappings = {
+        go_in_plus  = '<CR>',
+    },
+})
+
+local MiniClue = require("mini.clue")
+MiniClue.setup({
+    window = { delay = 650 },
+    triggers = {
+        -- Leader triggers
+        { mode = 'n', keys = '<Leader>' },
+        { mode = 'x', keys = '<Leader>' },
+
+        -- `[` and `]` keys
+        { mode = 'n', keys = '[' },
+        { mode = 'n', keys = ']' },
+
+        -- Built-in completion
+        { mode = 'i', keys = '<C-x>' },
+
+        -- `g` key
+        { mode = 'n', keys = 'g' },
+        { mode = 'x', keys = 'g' },
+
+        -- Marks
+        { mode = 'n', keys = "'" },
+        { mode = 'n', keys = '`' },
+        { mode = 'x', keys = "'" },
+        { mode = 'x', keys = '`' },
+
+        -- Registers
+        { mode = 'n', keys = '"' },
+        { mode = 'x', keys = '"' },
+        { mode = 'i', keys = '<C-r>' },
+        { mode = 'c', keys = '<C-r>' },
+
+        -- Window commands
+        { mode = 'n', keys = '<C-w>' },
+
+        -- `z` key
+        { mode = 'n', keys = 'z' },
+        { mode = 'x', keys = 'z' },
+    },
+
+    clues = {
+        -- Enhance this by adding descriptions for <Leader> mapping groups
+        MiniClue.gen_clues.square_brackets(),
+        MiniClue.gen_clues.builtin_completion(),
+        MiniClue.gen_clues.g(),
+        MiniClue.gen_clues.marks(),
+        MiniClue.gen_clues.registers(),
+        MiniClue.gen_clues.windows(),
+        MiniClue.gen_clues.z(),
+    },
+})
+
+local MiniIcons = require("mini.icons")
+MiniIcons.setup({})
+
+-- TODO Do I even need this and if yes is it enough for me?
+local MiniNotify = require("mini.notify")
+MiniNotify.setup({})
+
+local MiniCursorword = require("mini.cursorword")
+MiniCursorword.setup({ delay = 0})
+local cursorline = vim.api.nvim_get_hl(0, { name = "CursorLine" })
+vim.api.nvim_set_hl(0, "MiniCursorword", { bg = cursorline.bg, bold = true})
+
+local MiniPick = require("mini.pick")
+MiniPick.setup({})
+
+local MiniTrailspace = require("mini.trailspace")
+MiniTrailspace.setup({})
+
+local MiniMove = require('mini.move')
+MiniMove.setup({})
+
+local MiniSurround = require('mini.surround')
+MiniSurround.setup({})
+
+local MiniPairs = require("mini.pairs")
+MiniPairs.setup({
+    modes = { command = false },
+    -- Global mappings. Each right hand side should be a pair information, a
+    -- table with at least these fields (see more in |MiniPairs.map|):
+    -- - <action> - one of 'open', 'close', 'closeopen'.
+    -- - <pair> - two character string for pair to be used.
+    -- By default pair is not inserted after `\`, quotes are not recognized by
+    -- `<CR>`, `'` does not insert pair after a letter.
+    -- Only parts of tables can be tweaked (others will use these defaults).
+    mappings = {
+        [")"] = { action = "close", pair = "()", neigh_pattern = "[^\\]." },
+        ["]"] = { action = "close", pair = "[]", neigh_pattern = "[^\\]." },
+        ["}"] = { action = "close", pair = "{}", neigh_pattern = "[^\\]." },
+        ["["] = {
+            action = "open",
+            pair = "[]",
+            neigh_pattern = ".[%s%z%)}%]]",
+            register = { cr = true },
+            -- foo|bar -> press "[" -> foo[bar
+            -- foobar| -> press "[" -> foobar[]
+            -- |foobar -> press "[" -> [foobar
+            -- | foobar -> press "[" -> [] foobar
+            -- foobar | -> press "[" -> foobar []
+            -- {|} -> press "[" -> {[]}
+            -- (|) -> press "[" -> ([])
+            -- [|] -> press "[" -> [[]]
+        },
+        ["{"] = {
+            action = "open",
+            pair = "{}",
+            -- neigh_pattern = ".[%s%z%)}]",
+            neigh_pattern = ".[%s%z%)}%]]",
+            register = { cr = true },
+            -- foo|bar -> press "{" -> foo{bar
+            -- foobar| -> press "{" -> foobar{}
+            -- |foobar -> press "{" -> {foobar
+            -- | foobar -> press "{" -> {} foobar
+            -- foobar | -> press "{" -> foobar {}
+            -- (|) -> press "{" -> ({})
+            -- {|} -> press "{" -> {{}}
+        },
+        ["("] = {
+            action = "open",
+            pair = "()",
+            -- neigh_pattern = ".[%s%z]",
+            neigh_pattern = ".[%s%z%)]",
+            register = { cr = false },
+            -- foo|bar -> press "(" -> foo(bar
+            -- foobar| -> press "(" -> foobar()
+            -- |foobar -> press "(" -> (foobar
+            -- | foobar -> press "(" -> () foobar
+            -- foobar | -> press "(" -> foobar ()
+        },
+        -- Single quote: Prevent pairing if either side is a letter
+        ['"'] = {
+            action = "closeopen",
+            pair = '""',
+            neigh_pattern = "[^%w\\][^%w]",
+            register = { cr = false },
+        },
+        -- Single quote: Prevent pairing if either side is a letter
+        ["'"] = {
+            action = "closeopen",
+            pair = "''",
+            neigh_pattern = "[^%w\\][^%w]",
+            register = { cr = false },
+        },
+        -- Backtick: Prevent pairing if either side is a letter
+        ["`"] = {
+            action = "closeopen",
+            pair = "``",
+            neigh_pattern = "[^%w\\][^%w]",
+            register = { cr = false },
+        },
+    },
+
+})
+
+local MiniKeymap = require("mini.keymap")
+MiniKeymap.setup({})
+
+-- local MiniJump2d = require("mini.jump2d")
+-- MiniJump2d.setup({})
+
+local MiniPatterns = require("mini.hipatterns")
+MiniPatterns.setup({
+  highlighters = {
+    fixme = { pattern = 'FIXME', group = 'MiniHipatternsFixme' },
+    hack  = { pattern = 'HACK',  group = 'MiniHipatternsHack'  },
+    todo  = { pattern = 'TODO',  group = 'MiniHipatternsTodo'  },
+    note  = { pattern = 'NOTE',  group = 'MiniHipatternsNote'  },
+  }
+})
+
+
+-- This is used to make accepting the completion and CR in minipairs working and also just basic new line
+MiniKeymap.map_multistep('i', '<CR>', { 'pmenu_accept', 'minipairs_cr' })
+
+-- Press ESC + ESC so that the highlighting of a serach turns off
+MiniKeymap.map_combo({ 'n', 'i', 'x' ,'c' }, '<Esc>', function() vim.cmd('nohlsearch') end)
+
+-- Make Backspace work nicely
+MiniKeymap.map_multistep('i', '<BS>', { 'minipairs_bs' })
+
+-- Snacks Plugins --
+add({
+    src = "folke/snacks.nvim",
+    ---@class snacks.Config
+    opts = {
+        ---@class snacks.picker.Config
+        picker = {
+            enabled = true
+        },
+        input = {
+            enabled = true
+        },
+    }
+})
+
+-- Noice --
+-- vim.pack.add({ 
+--     { src = "https://github.com/MunifTanjim/nui.nvim", },
+--     { src = "https://github.com/folke/noice.nvim", } 
+-- })
+--
+-- require("noice").setup({})
+
+-- Flash --
+add("folke/flash.nvim")
+
+-- Overwrite vim.ui.select so that mini.pick is used instead of the default things
+-- vim.ui.select = function(items, o, on_choice)
+--   local start_opts = { window = { config = { width = vim.o.columns } } }
+--   return MiniPick.ui_select(items, o, on_choice, start_opts)
+-- end
+
+-- Indention Scope --
+-- TODO Do I actually like this? Is it distracting?
+add("lukas-reineke/indent-blankline.nvim")
+require("ibl").setup(
+    ---@module "ibl"
+    ---@type ibl.config
+    {
+
+    }
+)
+
+-- Auto Session --
+add("rmagatti/auto-session")
+require("auto-session").setup({})
+
+-- Keymaps
+-- NOTE I want to use  m and
+local keymap = vim.keymap.set
+
+local function nmap(keys, callback, desc)
+	keymap("n", keys, callback, { desc = desc })
+end
+
+local function xmap(keys, callback, desc)
+	keymap("x", keys, callback, { desc = desc })
+end
+
+local jumpCharacters = {
+    ["forward"] = "m",
+    ["backward"] = ",",
+}
+local function jumpmap(direction, keys, callback, desc)
+    if (direction ~= "forward" and direction ~= "backward") then 
+        error("direction has to be 'forward' or 'backward'")
+    end
+
+    local jumpCharacter = jumpCharacters
+
+    -- nmap()
+
+end
+
+nmap("<CR>", function() require("flash").jump() end, "Flash-Jump")
+
+-- Map m to forward and , to backward to have quicker access for moving to things
+nmap("m", "]")
+nmap(",", "[")
+
+-- Make the down and up feel more deterministic
+nmap("<C-d>", "8j")
+nmap("<C-u>", "8k")
+
+-- System clipboard
+nmap("<leader>p", '"+p', "Paste from system clipboard")
+nmap("<leader>y", '"+yy', "Copy line to clipboard")
+xmap("<leader>y", '"+y', "Copy visual selection to clipboard")
+
+-- Reload the nvim configuration
+nmap("<leader>r", ":source $MYVIMRC <CR>")
+
+-- "E"xplore files
+nmap("<leader>ee", '<Cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>', 'Open on current file' )
+nmap("<leader>ed", '<Cmd>lua MiniFiles.open()<CR>', 'Open at directory')
+
+-- Fuzzy file search
+nmap("<leader>ff", function() Snacks.picker.files({ live = true, hidden = true }) end, "[F]ind [F]iles")
+nmap("<leader>fs", function() Snacks.picker.grep({ live = true, hidden = true }) end, "[F]ind [S]tring in Files")
+nmap("<leader>fr", function() Snacks.picker.recent({ filter = { cwd = true } }) end, "[F]ind [R]ecent Files")
+nmap("<leader>fl", function() Snacks.picker.resume() end, "[F]ocus [L]ast Picker")
+nmap("<leader>fe", function() Snacks.picker.explorer() end, "[F]uzzy [E]xplorer")
+nmap("<leader>fh", function() Snacks.picker.help() end, "[F]ind [H]elp")
+nmap("<leader>fx", function() Snacks.picker.command_history() end, "[F]ind [X]ommands")
+nmap("<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, "[F]ind [C]onfig")
+nmap("<leader>hl", function() Snacks.picker.files({ cwd = "~/.config/hypr"}) end, "[H]yper[l]and Configuration")
+
+-- Git 
+nmap("<leader>gl", function() Snacks.lazygit.open() end, "[H]yper[l]and Configuration")
+nmap("<leader>gs", function() Snacks.lazygit.log_file() end, "[H]yper[l]and Configuration")
+
+-- Diagnostics & LSP
+nmap("gh", "<Cmd>lua vim.diagnostic.open_float()<CR>", "Show diagnostic hover")
+nmap("md", "<Cmd>lua vim.diagnostic.goto_next()<CR>", "Jump to next diagnostic")
+nmap(",d", "<Cmd>lua vim.diagnostic.goto_prev()<CR>", "Jump to previous diagnostic")
+nmap("]d", "<Cmd>lua vim.diagnostic.goto_next()<CR>", "Jump to next diagnostic")
+
+vim.keymap.set("n", "<C-r>", function()
+  return ":IncRename " .. vim.fn.expand("<cword>")
+end, { expr = true })
+
+-- Mini has something to offer for that maybe?
+vim.api.nvim_set_hl(0, "OnYank", { bg = "#f6aede", fg = "black" })
+
+-- autocommands
+-- On comments it does not auto adding comments on new line when using
+-- "o" but still when using insert mode and hitting return
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("no_auto_comment", {}),
+    callback = function()
+        vim.opt_local.formatoptions:remove({ "c", "o"})
+    end,
+})
+
+-- Return cursor position to the previous state in the file
+vim.api.nvim_create_autocmd("BufReadPost", {
+    callback = function(args)
+        local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+        local line_count = vim.api.nvim_buf_line_count(args.buf)
+        if mark[1] > 0 and mark[1] <= line_count then
+            vim.api.nvim_win_set_cursor(0, mark)
+            -- defer rending a bit so it is applied after render
+            vim.schedule(function()
+                vim.cmd("normal! zz")
+            end)
+        end
+    end,
+})
+
+-- Highlight yanked text
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("post_yank", { clear = true }),
+    pattern = "*",
+    callback = function()
+        vim.highlight.on_yank({ timeout = 200, visual = true, higroup= "OnYank" })
+    end,
+})

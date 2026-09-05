@@ -35,22 +35,11 @@ dots-cli/theming/                  theme engine + per-app adapters
 bootstrap.sh covers packages, configs and the first theme. Manual follow-ups:
 
 1. **SSH key for GitHub**: `ssh-keygen -t ed25519` → add at github.com/settings/keys
-2. **Switch remotes to SSH** (push access):
-   - `git -C ~/dots remote set-url origin git@github.com:FjedorGaede/dots.git`
-   - `git -C ~/.config/nvim remote set-url origin git@github.com:FjedorGaede/neovim-config.git`
+2. **Switch the dots remote to SSH** (push access):
+   `git -C ~/dots remote set-url origin git@github.com:FjedorGaede/dots.git`
 3. `gh auth login` (for `my-repos` and GitHub CLI usage)
 4. brave-search skill deps: `cd ~/.config/pi/agent/skills/brave-search && npm ci`
 5. hostname: `sudo hostnamectl set-hostname <name>`
 
-## ⚠️ The one exception: neovim config
-
-Everything in `stow/` is edited via `dots edit` and committed via `dots git`.
-**The neovim config is not part of this repo.** It lives in its own repo at
-`github.com/FjedorGaede/neovim-config`, cloned to `~/.config/nvim` by
-`dots install dev` (packages/dev/setup/nvim-config/setup.sh).
-
-- Edit: `~/.config/nvim` directly (real files, not symlinks)
-- Commit/push: `lazygit -p ~/.config/nvim`
-- Why: its history stays independent of the dotfiles repo
-
-Everything else — one repo, one flow. This is the only special case.
+That's it — no special cases. Every config (including neovim) lives in `stow/`,
+is edited via `dots edit` and committed via `dots git`.
