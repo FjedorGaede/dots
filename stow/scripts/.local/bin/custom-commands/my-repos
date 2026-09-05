@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if ! command -v gh &>/dev/null; then
+    echo "gh is not installed. Run: sudo pacman -S github-cli"
+    exit 1
+fi
+
+if ! gh auth status &>/dev/null; then
+    echo "gh is not authenticated. Run: gh auth login"
+    exit 1
+fi
+
+name="FjedorGaede"
+
+repos=$(gum spin --spinner dot --title "Fetching repos..." -- gh repo list $name --json name --jq '.[] | .name')
+selected=$(echo "$repos" | sort | gum filter --placeholder "Search repos...")
+[ -n "$selected" ] && xdg-open "https://github.com/${name}/${selected}"

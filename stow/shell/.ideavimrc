@@ -1,0 +1,194 @@
+# Vim Setup
+let mapleader=" "
+
+imap jj <Esc> 
+
+# Options
+set clipboard+=unnamed # Sync clipboard between OS and Webstorm
+
+set relativenumber
+set number
+
+set ignorecase
+set smartcase
+set incsearch
+
+set showcmd
+
+set hls # Highlight search result
+nnoremap <silent> <esc> :noh<cr><esc>
+set scrolloff=5
+
+## IdeaVim specific Setup
+set idearefactormode=keep
+set ideajoin
+
+vnoremap p ""p
+## Plugins
+Plug 'tpope/vim-commentary'
+set matchit
+
+set highlightedyank
+let g:highlightedyank_highlight_duration = "150"
+
+set surround
+
+set which-key
+set timeoutlen=800
+
+set argtextobj
+
+## Mapping
+
+# Yanking and deleting behaviour
+" have x (removes single character) not go into the default registry
+nnoremap x "_x
+" Make X an operator that removes without placing text in the default registry
+nmap X "_d
+nmap XX "_dd
+vmap X "_d
+vmap x "_d
+
+" don't yank to default register when changing something
+nnoremap c "xc
+xnoremap c "xc
+
+" Center screen when jumping to next match
+nnoremap n nzz
+nnoremap N Nzz
+vnoremap n nzz
+vnoremap N Nzz
+
+# Move forward and backward fix. This should be solved in the future releases
+# but is still buggy
+nmap <C-o> <Action>(Back)
+nmap <C-i> <Action>(Forward)
+
+# Create empty line above or below
+nmap zj o<ESC>k
+nmap zk O<ESC>j
+
+nmap <leader>; /\v;/<CR>:noh<CR>
+nmap daf /^\s*}\s*$<CR>V?function<CR>d:noh<CR>
+
+nnoremap <leader>p "_dP
+
+# Multiple vim-multiple-cursors
+set multicursor
+map mc <A-n>
+map mx <A-x>
+map mp <A-p>
+
+# AceJump
+map ff <Action>(AceAction)
+map fv <Action>(AceTargetAction)
+map fl <Action>(AceLineAction)
+
+# Custom utils
+map gs :g/selector: /g<CR>4w
+
+# Nerd Tree
+set NERDTree
+let g:NERDTreeMapActivateNode = 'l'
+let g:NERDTreeMapJumpParent = 'h'
+
+# Action remapping
+nmap gm <Action>(MethodUp)
+nmap gn <Action>(MethodDown)
+
+# Template
+" map <M-j> <Action>(PrevTemplateVariable)
+" map <M-k> <Action>(NextTemplateVariable)
+"
+
+" Keys from vim-gitgutter
+nmap ]c <Action>(VcsShowNextChangeMarker)
+nmap [c <Action>(VcsShowPrevChangeMarker)
+" Not from vim-gitgutter. ={motion} is for indenting. =c does nothing
+nmap =c <Action>(VcsShowCurrentChangeMarker)
+
+nmap ge <Action>(GotoNextError)
+nmap gE <Action>(GotoPreviousError)
+
+map <leader>th <Action>(HideAllWindows)
+
+map <leader>r <Action>(MoveTabRight)
+map <leader>l <Action>(NextSplitter)
+map <leader>h <Action>(PrevSplitter)
+map <leader>m <Action>(MoveEditorToOppositeTabGroup)
+map <leader>RL <Action>(RecentLocations)
+nmap gh <Action>(ShowErrorDescription)
+
+map <leader>ff <Action>(GotoFile)
+map <leader>fc <Action>(RecentChangedFiles)
+map <leader>fr <Action>(RecentFiles)
+map <leader>fs <Action>(FindInPath)
+map <leader>fo <Action>(FileStructurePopup)
+map <leader>w <Action>(CloseAllEditorsButActive)
+map <leader>ns <Action>(NewScratchFile)
+
+map <leader>a <Action>(GotoAction)
+map <leader>oi <Action>(OptimizeImports)
+map R <Action>(RenameElement)
+map <leader>R <Action>(Refactorings.QuickListPopupAction)
+map g, <Action>(JumpToLastChange)
+map g. <Action>(JumpToNextChange)
+map <leader>ss <Action>(SelectInProjectView)
+map <leader>sw <Action>(SurroundWith)
+
+# Incremental selection
+map <leader>w <Action>(EditorSelectWord)
+map <leader>W <Action>(EditorUnSelectWord)
+
+# Git
+map <leader>gc <Action>(CheckinProject)
+map <leader>gr <Action>(Git.Rebase)
+map <leader>gb <Action>(Git.Branches)
+map <leader>gnb <Action>(Git.CreateNewBranch)
+map <leader>gf <Action>(Git.Fetch)
+map <leader>gp <Action>(Vcs.Push)
+map <leader>gcpr <Action>(Github.Create.Pull.Request)
+map <leader>gz <Action>(Vcs.RollbackChangedLines)
+map <leader>gs <Action>(Vcs.ShowTabbedFileHistory)
+
+# run config
+map <leader>rc <Action>(RunConfiguration)
+map <leader>rr <Action>(Run)
+map <leader>rs <Action>(Stop)
+map <leader>rd <Action>(Debug)
+map <leader>re <Action>(editRunConfigurations)
+map <leader>rt <Action>(RunClass)
+
+# move lines up and down
+nmap <C-j> <Action>(MoveLineDown)
+xmap <C-j> <Action>(MoveLineDown)
+nmap <C-k> <Action>(MoveLineUp)
+xmap <C-k> <Action>(MoveLineUp)
+
+# Marks
+set ideamarks
+
+nnoremap ma :action ToggleBookmark0<CR>
+nnoremap ms :action ToggleBookmark1<CR>
+nnoremap md :action ToggleBookmark2<CR>
+nnoremap mf :action ToggleBookmark3<CR>
+nnoremap mg :action ToggleBookmark4<CR>
+
+nnoremap mh :action ToggleBookmark5<CR>
+nnoremap mj :action ToggleBookmark6<CR>
+nnoremap mk :action ToggleBookmark7<CR>
+nnoremap ml :action ToggleBookmark8<CR>
+nnoremap mö :action ToggleBookmark9<CR>
+
+nnoremap 'a :action GotoBookmark0<CR>
+nnoremap 's :action GotoBookmark1<CR>
+nnoremap 'd :action GotoBookmark2<CR>
+nnoremap 'f :action GotoBookmark3<CR>
+nnoremap 'g :action GotoBookmark4<CR>
+
+nnoremap 'h :action GotoBookmark5<CR>
+nnoremap 'j :action GotoBookmark6<CR>
+nnoremap 'k :action GotoBookmark7<CR>
+nnoremap 'l :action GotoBookmark8<CR>
+nnoremap 'ö :action GotoBookmark9<CR>
+

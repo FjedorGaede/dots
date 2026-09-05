@@ -1,0 +1,75 @@
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+NVM_SYMLINK_CURRENT=true
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Set locale to English
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Remap ls and cd to command line tools
+alias ls='lsd'
+alias l='ls -l'
+alias la='ls -a'
+alias ll='ls -la'
+alias lt='ls --tree'
+
+alias jj='j -'
+
+alias python='python3'
+
+alias connect_homeassistant='ssh root@homeassistant -p 22'
+
+export NODE_OPTIONS=--max-old-space-size=4096
+
+
+# Command palette - fuzzy search all custom commands
+function custom-commands() {
+    local selected subcommand subcommands
+    selected=$(find ~/.local/bin/custom-commands -type f -executable -printf '%f\n' | sort | gum filter --placeholder "Search commands...")
+    [ -z "$selected" ] && return
+
+    subcommands=$("$selected" --subcommands 2>/dev/null)
+    if [ -n "$subcommands" ]; then
+        subcommand=$(echo "$subcommands" | sort | gum filter --placeholder "Select subcommand...")
+        [ -z "$subcommand" ] && return
+        "$selected" "$subcommand"
+    else
+        "$selected"
+    fi
+}
+
+# Dotfiles repo (dots CLI + stow packages)
+export DOTFILES_DIR="$HOME/dots"
+
+# PATH
+export PATH="$DOTFILES_DIR/dots-cli/bin:$PATH"
+export PATH=$HOME/.local/bin:$PATH
+export PATH="$HOME/.local/bin/custom-commands:$PATH"
+export PATH=$PATH:$HOME/.local/share/bob/nvim-bin  # Neovim via Bob
+
+# Set our preferred editor to the first available editor in the array below.
+preferred_editors=(nvim vim vi)
+for editor in ${preferred_editors[@]}; do
+    if command -v "${editor}" >/dev/null 2>&1; then
+        VISUAL="$(command -v ${editor})"
+        EDITOR="${VISUAL}"
+        break
+    fi
+done
+unset editor preferred_editors
+
+source ~/.cache/wal/colors.sh

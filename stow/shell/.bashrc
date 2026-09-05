@@ -1,0 +1,24 @@
+# Load common shell rc commands shared with other shells
+source $HOME/.commonshellrc
+
+# History settings
+HISTCONTROL=ignoreboth   # ignore duplicate and space-prefixed commands
+shopt -s histappend      # append to history file instead of overwriting it
+
+# Starship prompt
+eval "$(starship init bash)"
+
+# Zoxide (jump to directories)
+eval "$(zoxide init --cmd j bash)"
+
+# FZF (fuzzy finder)
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+eval "$(fzf --bash)"
+
+# Key bindings
+bind -x '"\C-p": "custom-commands"'  # Ctrl+P: command palette
+bind -r '"\C-g"'
+bind '"\C-g": "tmux-reattach.sh\n"'  # Ctrl+G: reattach to tmux session
+bind '"\C-f": "tmux-sessionizer.sh\n"'  # Ctrl+F: open tmux sessionizer
+bind '"\C-e": "y\n"'  # Ctrl+E: open yazi file manager
+export PATH="$HOME/.node_modules/bin:$PATH"

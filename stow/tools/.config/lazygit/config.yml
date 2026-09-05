@@ -1,0 +1,10 @@
+gui:
+  timeFormat: 02.01.2006 15:04
+  # sidePanelWidth: 0.2 # gives you more space to show things side-by-side
+git:
+  diffRenderers:
+    - colorArg: always
+      command: diff-so-fancy
+      # colorArg: never
+      # pager: ydiff -p cat -s --wrap --width={{columnWidth}}
+      # externalDiffCommand: difft --color=always
