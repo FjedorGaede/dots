@@ -29,8 +29,11 @@
       were deleted; docker can't start until then)
 - [ ] Run `dots install dev` once to verify the neovim/bob setup script
       (needs sudo password → user runs it)
-- [ ] Post-bootstrap manual checklist (document in a README?): SSH keys for
-      GitHub, hostname, `gh auth login`, brave-search `npm ci`
+- [x] Post-bootstrap manual checklist documented in README.md (SSH keys, remote
+      switch, gh auth, brave-search npm ci, hostname) — including a loud
+      "the one exception" section for the neovim config (user chose Option 2:
+      nvim stays its own repo; known and accepted cost = one special case to
+      remember, documented instead of hidden)
 - [x] Theming install-time wiring — DECIDED: none for now. Fresh machines get
       dracula via bootstrap; afterwards `dots theme` is run manually when
       wanted. Wallpaper-following colors: user will build it themselves if the
