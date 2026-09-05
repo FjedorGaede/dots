@@ -27,4 +27,6 @@ if [ ! -e "$HOME/.local/bin/nvim" ] && [ -x "$BOB_BIN/nvim" ]; then
     echo "linked $HOME/.local/bin/nvim -> $BOB_BIN/nvim"
 fi
 
-nvim --version | head -n 1
+# print version by explicit path — a fresh-install session may not have
+# ~/.local/bin on PATH yet
+"$BOB_BIN/nvim" --version | head -n 1
