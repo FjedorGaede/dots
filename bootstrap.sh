@@ -18,7 +18,13 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/FjedorGaede/dots.git"
-REPO_URL_RAW="https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh"
+# branch to clone — override with DOTFILES_BRANCH until the work branch is
+# merged into main
+case "${DOTFILES_BRANCH:-}" in
+    "") BRANCH="main" ;;
+    *) BRANCH="$DOTFILES_BRANCH" ;;
+esac
+REPO_URL_RAW="https://raw.githubusercontent.com/FjedorGaede/dots/$BRANCH/bootstrap.sh"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dots}"
 DEFAULT_THEME="dracula"
 
@@ -47,8 +53,8 @@ if [ -d "$DOTFILES_DIR/.git" ]; then
     log "updating existing repo at $DOTFILES_DIR"
     git -C "$DOTFILES_DIR" pull --ff-only
 else
-    log "cloning dotfiles to $DOTFILES_DIR"
-    git clone "$REPO_URL" "$DOTFILES_DIR"
+    log "cloning dotfiles to $DOTFILES_DIR (branch: $BRANCH)"
+    git clone -b "$BRANCH" "$REPO_URL" "$DOTFILES_DIR"
 fi
 
 # --- 3. pick categories (core + hyprland pre-selected) ------------------------
