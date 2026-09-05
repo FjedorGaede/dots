@@ -27,8 +27,14 @@
 - [x] `dots --subcommands` — shell completion support
 - [x] `dots-cli/AGENTS.md` — CLI internals reference
 
-### Git integration (requested)
-- [ ] Easy git commit flow in the CLI: whenever the user adds/removes packages (`dots add`/`dots remove`) or changes configs (stow components, setup scripts), there should be a simple way to commit those changes on the machine — e.g. a `dots commit` command (stage + commit with a sensible generated message) and/or an optional auto-commit prompt at the end of mutating commands
+### Git integration (requested) — DONE
+- [x] `dots add` / `dots remove` / `dots add --setup` auto-commit their tracking
+      change (staging ONLY the touched category file — never unrelated config
+      edits) with template messages (`packages(dev): add lazygit, bob (aur)`) and
+      best-effort push (offline → warn, never fails the command)
+- [x] `dots commit [message] [--push]` — manual flow for config changes after
+      `dots edit`: stages everything, prompted/arg message, asks to push (or
+      --push). Verified end-to-end in a throwaway clone.
 - [x] gum 2.0 quirks handled: `--header` not `--prompt`, `x` toggles multi-select (documented in menu hints), `--selected` takes comma-separated value
 
 ### Dogfood: package transfer (DONE)

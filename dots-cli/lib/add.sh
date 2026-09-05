@@ -55,6 +55,7 @@ cmd_add() {
     mkdir -p "$(dirname "$file")"
     touch "$file"
     local line
+    local -a added=()
     for line in "${pkgs[@]}"; do
         [ "$force_aur" = true ] && line="aur:$line"
         if grep -qx "$line" "$file"; then
@@ -62,9 +63,17 @@ cmd_add() {
         else
             echo "$line" >> "$file"
             info "tracked in '$category': $line"
+            added+=("$line")
         fi
     done
     success "${pkgs[*]} installed and tracked in '$category'"
+
+    # auto-commit the tracking change so the repo never drifts from the system
+    if [ ${#added[@]} -gt 0 ]; then
+        local msg_list
+        msg_list="$(printf '%s, ' "${added[@]}")"; msg_list="${msg_list%, }"
+        repo_commit_paths "packages($category): add $msg_list" "$file"
+    fi
 }
 
 # Resolve the target category: explicit --category, or gum menu with existing
@@ -109,4 +118,5 @@ echo "TODO: implement the $name setup"
 EOF
     chmod +x "$dir/setup.sh"
     info "scaffolded packages/$cat/setup/$name/setup.sh — edit it; it runs on 'dots install $cat'"
+    repo_commit_paths "packages($cat): add $name setup script" "$(category_dir "$cat")/setup/$name"
 }

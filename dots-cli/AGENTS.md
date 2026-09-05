@@ -17,7 +17,9 @@ dots-cli/
 │   ├── stow.sh       # cmd_stow
 │   ├── sync.sh       # cmd_sync
 │   ├── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
-│   └── edit.sh       # cmd_edit
+│   ├── edit.sh       # cmd_edit
+│   └── commit.sh     # cmd_commit (manual flow; add/remove auto-commit via
+│                     #   repo_commit_paths in common.sh)
 └── theming/          # theming engine + per-app adapters (see README.md + section below)
     ├── apply-theme.sh  # THE owner of all theming code: wal + adapters + notify
     ├── adapters/       # executable scripts run per theme change
@@ -120,6 +122,9 @@ Flow of `apply-theme.sh`:
 - **Install first, track second** (`add`) — a failed install must not be
   recorded.
 - **`sync` never mutates** — it prints, nothing else.
+- **Auto-commits stay surgical** — `add`/`remove` commit ONLY the category file
+  they touched (via `repo_commit_paths`); `git add -A` is reserved for the
+  explicit `dots commit` flow.
 - **Filesystem is the source of truth** — categories are discovered by scanning
   `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`, theme
   adapters by scanning `dots-cli/theming/adapters/*`; no registries.

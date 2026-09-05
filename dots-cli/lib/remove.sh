@@ -70,6 +70,13 @@ untrack_packages() {
     fi
     info "untracked from '$category': ${removed[*]:-none}"
 
+    # auto-commit the tracking change so the repo never drifts from the system
+    if [ ${#removed[@]} -gt 0 ]; then
+        local msg_list
+        msg_list="$(printf '%s, ' "${removed[@]}")"; msg_list="${msg_list%, }"
+        repo_commit_paths "packages($category): remove $msg_list" "$file"
+    fi
+
     # remember aur status for the caller via a file-scoped global
     UNTRACKED_WAS_AUR=("${!was_aur[@]}")
 }

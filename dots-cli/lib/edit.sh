@@ -26,6 +26,6 @@ cmd_edit() {
 
     # edits land in the repo — nudge towards committing
     if [ -n "$(git -C "$DOTFILES_DIR" status --porcelain)" ]; then
-        info "repo has uncommitted changes — remember to commit"
+        info "repo has uncommitted changes — run 'dots commit'"
     fi
 }

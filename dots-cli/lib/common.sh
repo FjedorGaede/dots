@@ -30,6 +30,9 @@ Usage:
                               dots-cli/theming/); no name = picker, -l = light
   dots edit [component]       Open $EDITOR in the stow tree (whole tree or one
                               component); edits land in the repo — commit them
+  dots commit [message] [--push]
+                              Commit all repo changes (message prompted if not
+                              given); --push pushes without asking
 
 Category layout (packages/ is scanned — a directory = one category):
   packages/<category>/packages.txt       one package per line, aur: prefix → yay
@@ -179,6 +182,29 @@ backup_conflicts() {
     done
 }
 
+# --- git integration ---------------------------------------------------------
+# Auto-commit for tracking changes (add/remove) + manual `dots commit` for
+# configs. Commits from add/remove stage ONLY the touched category files, so
+# unrelated in-progress config edits never get swept into them.
+
+repo_push() { # best-effort push; never fails the calling command
+    if ! git -C "$DOTFILES_DIR" push --quiet 2>/dev/null; then
+        warn "not pushed (offline or no upstream?) — run 'git push' later"
+    fi
+}
+
+repo_commit_paths() { # repo_commit_paths <message> <path>... — stage exactly the
+                      # given paths, commit, push best-effort; silent no-op if
+                      # nothing changed after staging
+    local msg="$1"
+    shift
+    git -C "$DOTFILES_DIR" add -- "$@" || return 1
+    git -C "$DOTFILES_DIR" diff --cached --quiet && return 0
+    git -C "$DOTFILES_DIR" commit --quiet -m "$msg"
+    success "committed: $msg"
+    repo_push
+}
+
 # --- dispatch ----------------------------------------------------------------
 
 main() {
@@ -186,7 +212,7 @@ main() {
     [ $# -gt 0 ] && shift
 
     case "$cmd" in
-        install|add|remove|list|stow|sync|theme|edit)
+        install|add|remove|list|stow|sync|theme|edit|commit)
             # shellcheck source=/dev/null
             source "$LIB_DIR/$cmd.sh"
             "cmd_$cmd" "$@"
@@ -196,7 +222,7 @@ main() {
             ;;
         --subcommands)
             # for shell completion (e.g. zsh compdef) — one subcommand per line
-            printf '%s\n' install add remove list stow sync theme edit
+            printf '%s\n' install add remove list stow sync theme edit commit
             ;;
         *)
             usage >&2
