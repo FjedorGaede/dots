@@ -31,13 +31,15 @@
       (needs sudo password → user runs it)
 - [ ] Post-bootstrap manual checklist (document in a README?): SSH keys for
       GitHub, hostname, `gh auth login`, brave-search `npm ci`
-- [ ] Theming install-time wiring: `hyprland/setup/theme/setup.sh` so
-      `dots install` re-applies the theme — DECIDE trigger: install-time only
-      vs wallpaper change (old behavior). User's theming rework is DONE and
-      live (theme layering: catppuccin → wal → overrides.json → qs accent
-      export to hyprlock) — build on top of it, don't touch its internals.
-- [ ] nvim config: external repo `github.com/FjedorGaede/neovim-config` —
-      clone via setup script or stow component (DECIDE)
+- [x] Theming install-time wiring — DECIDED: none for now. Fresh machines get
+      dracula via bootstrap; afterwards `dots theme` is run manually when
+      wanted. Wallpaper-following colors: user will build it themselves if the
+      need arises (design stays: fixed scheme + accent from overrides.json).
+- [x] nvim config — DECIDED: stays its own repo (NOT stowed — stowing would
+      merge its history into dots and break pushing to neovim-config).
+      Distributed via packages/dev/setup/nvim-config/setup.sh: HTTPS clone on
+      fresh machines (public repo), ff-only pull when present, SSH-remote hint.
+      Live ~/.config/nvim is already the clone, in sync with origin.
 - [ ] Fonts: does the setup need a font install/fc-cache script? (ASK)
 
 ### Deferred (design doc open items)
