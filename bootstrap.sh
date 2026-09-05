@@ -77,11 +77,9 @@ chosen="$(gum choose --no-limit \
 [ -n "$chosen" ] || die "no categories selected"
 
 # core provisions yay (via its setup script) — without it no aur: package in
-# any category can install
-case " $chosen " in
-    *" core "*) ;;
-    *) die "category 'core' must be selected — it provisions yay" ;;
-esac
+# any category can install. chosen is newline-separated (gum multi-select).
+grep -qx "core" <<< "$chosen" \
+    || die "category 'core' must be selected — it provisions yay"
 
 # shellcheck disable=SC2086
 log "installing: $chosen"
