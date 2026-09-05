@@ -61,12 +61,12 @@
       `undefined/.cache/wal/colors.json` and always fell back. Also FileView
       `.text` is a function here, not a property. Verified live with
       `wal -l --theme catppuccin-latte`.
-- [ ] Calendar popup on the clock — right-click (or second click mode) on the
-      time opens a month calendar; NO built-in QML/quickshell calendar widget
-      exists (Qt Labs Calendar was dropped in Qt6) — needs a small custom
-      MonthGrid (~60–80 lines: GridLayout + Date math, prev/next month,
-      highlight today); several quickshell-dots repos on GitHub have these to
-      reference (e.g. search "quickshell calendar qml")
+- [x] Calendar popup on the clock — right-click opens a month calendar
+      (custom Grid + Date math, Qt6 has no calendar widget): Monday-first
+      locale-aware weekday header, < / > month navigation with robust month
+      names, today highlighted with accent, adjacent-month days shown dimmed.
+      NOTE: was briefly lost when a stow run overwrote the live file with the
+      old repo version — rewritten directly into the stow repo.
 - [ ] **B. Icon polish pass** — unify bar icon sizes (14px baseline: Sound 13,
       Bluetooth 15, battery 13 today); fix `IconButton` unset text color (renders
       black) + hover state; remove Power.qml `" "` spacing hack; OSD fallback
@@ -75,9 +75,13 @@
       stub!); two-click confirm for shutdown/reboot (button switches to
       checkmark state); styling: labels under icons, no harsh full-opacity
       1px border
-- [ ] **D. OSDs** — add mic-mute OSD (XF86AudioMicMute bound but silent);
-      consistent sizing/timeout; polish spacing with the peak meter; review
-      the 1s `audioReady` delay hack
+- [x] **D. OSDs (2026-09)** — mic-mute OSD added (`XF86AudioMicMute`, shows
+      mic icon + percent, red accents when muted, tracks `defaultAudioSource`);
+      single volume bar with the peak meter now drawn as a translucent overlay
+      INSIDE the bar (second bar removed); percentage text right of the bar
+      ("75%" / "Muted"), also for brightness; hide timer 1s→1.4s
+- [ ] OSD leftovers — review the 1s `audioReady` delay hack (startup noise
+      guard) and "xxx" fallback icon in getIcon()
 - [x] Notification toasts too small to read comfortably — bumped ~20–25%:
       width 340→420, summary 13→16, body 12→15, appName 10→12, icon 26→34,
       action buttons 24→30 tall / 11→13 font, CloseButton 30→36

@@ -32,9 +32,9 @@
       change (staging ONLY the touched category file — never unrelated config
       edits) with template messages (`packages(dev): add lazygit, bob (aur)`) and
       best-effort push (offline → warn, never fails the command)
-- [x] `dots commit [message] [--push]` — manual flow for config changes after
-      `dots edit`: stages everything, prompted/arg message, asks to push (or
-      --push). Verified end-to-end in a throwaway clone.
+- [x] `dots commit` opens lazygit in the repo (manual staging/commit/push;
+      a custom grouped gum picker was tried and deliberately replaced —
+      "don't hand-roll a worse lazygit")
 - [x] gum 2.0 quirks handled: `--header` not `--prompt`, `x` toggles multi-select (documented in menu hints), `--selected` takes comma-separated value
 
 ### Dogfood: package transfer (DONE)

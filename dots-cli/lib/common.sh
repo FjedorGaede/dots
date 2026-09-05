@@ -30,9 +30,8 @@ Usage:
                               dots-cli/theming/); no name = picker, -l = light
   dots edit [component]       Open $EDITOR in the stow tree (whole tree or one
                               component); edits land in the repo — commit them
-  dots commit [message] [--push]
-                              Commit all repo changes (message prompted if not
-                              given); --push pushes without asking
+  dots commit                 Open lazygit in the repo — stage/commit/push your
+                              config edits there (packages auto-commit on their own)
 
 Category layout (packages/ is scanned — a directory = one category):
   packages/<category>/packages.txt       one package per line, aur: prefix → yay
