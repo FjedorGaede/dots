@@ -42,7 +42,12 @@ grep -qE '^ID=(arch|cachyos)$' /etc/os-release 2>/dev/null \
 
 sudo -v   # ask for the password once, up front
 
-# --- 1. base tools (from official repos; yay is not available yet) -------------
+# --- 1. base tools + full system upgrade (from official repos; yay is not
+#        available yet). The upgrade avoids partial upgrades: everything after
+#        this installs against a current database.
+
+log "full system upgrade (pacman -Syu)"
+sudo pacman -Syu --noconfirm
 
 log "installing base tools (git gum stow base-devel)"
 sudo pacman -S --needed --noconfirm git gum stow base-devel
