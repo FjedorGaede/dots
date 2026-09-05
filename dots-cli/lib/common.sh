@@ -12,26 +12,31 @@ usage() {
     cat <<'EOF'
 dots — dotfiles CLI
 
-Usage:
+Machine setup (rare — new machine / migration):
   dots install [category...] [--no-setup]
-                              Install packages from categories (menu if none given);
-                              runs setup/ scripts unless --no-setup
+                              Install packages from categories (menu if none
+                              given); runs setup/ scripts unless --no-setup
+  dots stow [component...]    Stow components (menu, pre-selecting linked ones)
+  dots list [category]        Show tracked packages (all or one category)
+  dots sync                   Drift check: installed vs. tracked (print-only)
+
+Packages (tracking changes auto-commit + auto-push):
   dots add <pkg...> [--aur] [--category <name>]
                               Install package(s), then track them in a category
   dots add --setup <name> [--category <name>]
                               Scaffold a new setup script for a category
   dots remove [<category> <pkg...>] [--uninstall]
-                              Untrack package(s) from a category; --uninstall also
-                              removes from system; no arguments = searchable picker
-  dots list [category]        Show tracked packages (all or one category)
-  dots stow [component...]    Stow components (menu, pre-selecting linked ones)
-  dots sync                   Drift check: installed vs. tracked packages (print-only)
-  dots theme [-l] [name]      Apply a pywal16 colorscheme (+ per-app adapters in
-                              dots-cli/theming/); no name = picker, -l = light
+                              Untrack package(s); --uninstall also removes from
+                              system; no arguments = searchable picker
+
+Daily:
   dots edit [component]       Open $EDITOR in the stow tree (whole tree or one
                               component); edits land in the repo — commit them
-  dots commit                 Open lazygit in the repo — stage/commit/push your
-                              config edits there (packages auto-commit on their own)
+  dots theme [-l] [name]      Apply a pywal16 colorscheme (+ per-app adapters in
+                              dots-cli/theming/); no name = picker, -l = light
+
+Git (the only git door — lazygit: pull = p, push = Shift+P):
+  dots git                    Open lazygit in the repo
 
 Category layout (packages/ is scanned — a directory = one category):
   packages/<category>/packages.txt       one package per line, aur: prefix → yay
@@ -211,7 +216,7 @@ main() {
     [ $# -gt 0 ] && shift
 
     case "$cmd" in
-        install|add|remove|list|stow|sync|theme|edit|commit)
+        install|add|remove|list|stow|sync|theme|edit|git)
             # shellcheck source=/dev/null
             source "$LIB_DIR/$cmd.sh"
             "cmd_$cmd" "$@"
@@ -221,7 +226,7 @@ main() {
             ;;
         --subcommands)
             # for shell completion (e.g. zsh compdef) — one subcommand per line
-            printf '%s\n' install add remove list stow sync theme edit commit
+            printf '%s\n' install add remove list stow sync theme edit git
             ;;
         *)
             usage >&2

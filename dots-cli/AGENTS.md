@@ -18,7 +18,7 @@ dots-cli/
 │   ├── sync.sh       # cmd_sync
 │   ├── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
 │   ├── edit.sh       # cmd_edit
-│   └── commit.sh     # cmd_commit (thin: opens lazygit; auto-commit logic is
+│   └── git.sh        # cmd_git (thin: opens lazygit; auto-commit logic is
 │                     #   repo_commit_paths in common.sh)
 └── theming/          # theming engine + per-app adapters (see README.md + section below)
     ├── apply-theme.sh  # THE owner of all theming code: wal + adapters + notify
@@ -127,7 +127,8 @@ Flow of `apply-theme.sh`:
   (`dots commit` just opens it) — no custom staging logic.
 - **Interactive commands need gum or a dedicated TUI** — never hand-roll a
   worse version of an existing tool (lesson: the grouped commit picker was
-  replaced by lazygit).
+  replaced by lazygit). `dots git` is the ONLY git door — no dots pull/push
+  wrappers; lazygit's p / Shift+P cover it.
 - **Filesystem is the source of truth** — categories are discovered by scanning
   `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`, theme
   adapters by scanning `dots-cli/theming/adapters/*`; no registries.

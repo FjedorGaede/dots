@@ -21,7 +21,7 @@ anything.** This file is a summary + working rules, not a replacement.
   `setup/<name>/setup.sh` idempotent hooks; `aur:` prefix routes to yay),
   `stow/<component>/` (one folder per stow package),
   `dots-cli/` (the CLI), `bootstrap.sh` (minimal curl-pipe-bash entrypoint).
-- **`dots` CLI subcommands:** `install`, `add`, `remove`, `list`, `stow`, `sync`, `theme`, `edit`, `commit`.
+- **`dots` CLI subcommands:** `install`, `add`, `remove`, `list`, `stow`, `sync`, `theme`, `edit`, `git`.
 - **Conflict rule:** repo always wins; existing machine files get backed up to
   `~/.dotfiles-backup/`, never the reverse. `stow --adopt` is banned.
 - **Bootstrap:** ensure git/gum/stow via bare pacman → clone repo →
