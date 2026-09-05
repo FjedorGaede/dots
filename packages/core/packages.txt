@@ -17,3 +17,4 @@ zip
 aur:yay
 ghostty
 brightnessctl
+zsh
