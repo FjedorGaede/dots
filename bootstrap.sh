@@ -76,6 +76,13 @@ chosen="$(gum choose --no-limit \
     "${all_cats[@]}")"
 [ -n "$chosen" ] || die "no categories selected"
 
+# core provisions yay (via its setup script) — without it no aur: package in
+# any category can install
+case " $chosen " in
+    *" core "*) ;;
+    *) die "category 'core' must be selected — it provisions yay" ;;
+esac
+
 # shellcheck disable=SC2086
 log "installing: $chosen"
 # core's yay setup script builds yay from the AUR when missing — required
