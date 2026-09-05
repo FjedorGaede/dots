@@ -14,7 +14,6 @@ stow
 tmux
 unzip
 zip
-aur:yay
 ghostty
 brightnessctl
 zsh
