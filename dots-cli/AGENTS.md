@@ -7,15 +7,21 @@ doc describe *what* the CLI does; this file describes *how it's built*.
 
 ```
 dots-cli/
-├── bin/dots        # entrypoint: resolves DOTFILES_DIR/LIB_DIR, sources common.sh, calls main "$@"
-└── lib/
-    ├── common.sh   # helpers + main() dispatch — no commands live here
-    ├── install.sh  # cmd_install
-    ├── add.sh      # cmd_add
-    ├── remove.sh   # cmd_remove
-    ├── list.sh     # cmd_list
-    ├── stow.sh     # cmd_stow
-    └── sync.sh     # cmd_sync
+├── bin/dots          # entrypoint: resolves DOTFILES_DIR/LIB_DIR, sources common.sh, calls main "$@"
+├── lib/
+│   ├── common.sh     # helpers + main() dispatch — no commands live here
+│   ├── install.sh    # cmd_install
+│   ├── add.sh        # cmd_add
+│   ├── remove.sh     # cmd_remove
+│   ├── list.sh       # cmd_list
+│   ├── stow.sh       # cmd_stow
+│   ├── sync.sh       # cmd_sync
+│   └── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
+└── theming/          # theming engine + per-app adapters (see README.md + section below)
+    ├── apply-theme.sh  # THE owner of all theming code: wal + adapters + notify
+    ├── adapters/       # executable scripts run per theme change
+    │   └── hyprland.sh
+    └── README.md
 ```
 
 ## Dispatch mechanism
@@ -62,6 +68,49 @@ Unknown commands print usage and exit 1. There is no argument parsing in
    `common.sh`; if it's single-use, keep it file-local.
 6. Test with shellcheck and a dry run before committing.
 
+## Theming: `dots theme` and the adapter architecture
+
+Ownership: **all theming code lives in `dots-cli/theming/`** —
+`apply-theme.sh` is the engine (wal invocation, adapter iteration, notify);
+`lib/theme.sh` is only the CLI surface (flag parsing + `gum filter` picker)
+and invokes the engine. Other callers — e.g. a future
+`packages/<cat>/setup/theme/setup.sh` that re-applies the theme during
+`dots install` — likewise just call `apply-theme.sh [-l] <name>` directly.
+Adapters follow the same filesystem-as-registry pattern as `packages/` and
+`stow/`: the `theming/adapters/` directory listing IS the list, no config
+file.
+
+Flow of `apply-theme.sh`:
+
+1. Run `wal --theme <name>` — regenerates `~/.cache/wal` and renders
+   `~/.config/wal/templates/`. Anything that only consumes wal templates or
+   the cache needs NO adapter (example: quickshell's `Theme.qml` uses
+   `FileView watchChanges` on `colors.json` — reloads live, no adapter).
+2. Run every executable `theming/adapters/*.sh` in sorted order with the
+   theme name as `$1`. Adapter stdout/stderr goes to a temp log; a failed
+   adapter is a `warn`, remaining adapters still run; any failure makes the
+   script fail at the end.
+3. `notify-send` summary.
+
+### Extending theming to a new program — checklist
+
+1. Ask first: **does the app actually need an adapter?** If it reads wal
+   templates or watches `~/.cache/wal` live, wal already covers it. Only apps
+   that load wal colors once at startup (example: hyprland's `shared.lua`
+   parses `colors-hyprland.conf` at config load) or need an app-specific
+   reload action need one.
+2. Create `dots-cli/theming/adapters/<app>.sh`, executable. Keep it tiny and
+   idempotent:
+   - start with `set -euo pipefail`,
+   - exit 0 early when the app isn't installed or not running (adapters must
+     be no-ops on machines without the app — see `adapters/hyprland.sh`),
+   - do the app-specific reload/apply, print nothing on success.
+3. `chmod +x` it. **Disable** without deleting: `chmod -x <app>.sh`.
+4. Update the app table in `theming/README.md`.
+5. Test without touching the real colorscheme: `WAL_BIN=echo dots theme x`
+   (the `WAL_BIN` override stubs out wal itself), or invoke
+   `dots-cli/theming/apply-theme.sh` directly.
+
 ## Invariants (do not break)
 
 - **Repo wins on conflict.** `stow --adopt` is banned; conflicts are backed up
@@ -71,4 +120,5 @@ Unknown commands print usage and exit 1. There is no argument parsing in
   recorded.
 - **`sync` never mutates** — it prints, nothing else.
 - **Filesystem is the source of truth** — categories are discovered by scanning
-  `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`; no registries.
+  `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`, theme
+  adapters by scanning `dots-cli/theming/adapters/*`; no registries.
