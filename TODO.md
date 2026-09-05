@@ -43,7 +43,11 @@
       Distributed via packages/dev/setup/nvim-config/setup.sh: HTTPS clone on
       fresh machines (public repo), ff-only pull when present, SSH-remote hint.
       Live ~/.config/nvim is already the clone, in sync with origin.
-- [ ] Fonts: does the setup need a font install/fc-cache script? (ASK)
+- [x] Fonts — DECIDED: `ttf-jetbrains-mono-nerd` from official extra repo (the
+      family "JetBrainsMono Nerd Font" used by quickshell/ghostty/terminal). No
+      setup script needed (pacman hooks fc-cache). USER ACTION: `dots add
+      ttf-jetbrains-mono-nerd`. Cleanup in retirement: remove the 205 MB manual
+      copy at ~/.local/share/fonts/NerdFonts/ (duplicates the packaged font).
 
 ### Deferred (design doc open items)
 - [ ] `dots sync --foreign` filter (1589 untracked is noisy)
