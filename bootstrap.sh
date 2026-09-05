@@ -5,12 +5,12 @@
 #
 # or, when the repo is already around:  ~/dots/bootstrap.sh
 #
-# Flow: base tools (bare pacman) → clone/pull repo → build yay if missing
-# (makepkg, hence: never run as root) → pick categories (core+hyprland
-# pre-selected) → dots install → dots stow everything → first-run fixes
+# Flow: base tools (pacman) → clone/pull repo → build yay from AUR if missing
+# (makepkg, therefore: never run as root) → pick categories (core+hyprland
+# pre-selected) → dots install → dots stow all components → first-run setup
 # (dracula theme, zsh login shell).
 #
-# The default theme is always dracula; the custom accent comes from the stowed
+# The default theme is dracula; the custom accent comes from the stowed
 # quickshell theme layering (theme/overrides.json), not from wal.
 
 set -euo pipefail
@@ -27,11 +27,11 @@ die() { if command -v gum >/dev/null 2>&1; then gum log --level error "$*" >&2; 
 grep -qE '^ID=(arch|cachyos)$' /etc/os-release 2>/dev/null \
     || die "not an Arch-based system (/etc/os-release says otherwise)"
 
-[ "$(id -u)" -ne 0 ] || die "run as a regular user — yay is built via makepkg, which refuses root"
+[ "$(id -u)" -ne 0 ] || die "run as a regular user — makepkg (yay build) refuses root"
 
 sudo -v   # ask for the password once, up front
 
-# --- 1. base tools (bare pacman — no yay yet) ---------------------------------
+# --- 1. base tools (from official repos; yay is not available yet) -------------
 
 log "installing base tools (git gum stow base-devel)"
 sudo pacman -S --needed --noconfirm git gum stow base-devel
@@ -46,7 +46,7 @@ else
     git clone "$REPO_URL" "$DOTFILES_DIR"
 fi
 
-# --- 3. yay, if missing (the chicken-egg: built from AUR via makepkg) ----------
+# --- 3. build yay from the AUR if it is not installed --------------------------
 
 if ! command -v yay >/dev/null 2>&1; then
     log "yay not found — building from AUR (this can take a few minutes)"
@@ -78,7 +78,7 @@ log "installing: $chosen"
 # shellcheck disable=SC2086
 "$DOTS" install $chosen
 
-# --- 5. stow everything (fresh machine: nothing to break) ---------------------
+# --- 5. stow all components -----------------------------------------------------
 
 mapfile -t components < <(find "$DOTFILES_DIR/stow" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
 [ ${#components[@]} -gt 0 ] || die "no stow components found"
@@ -87,16 +87,16 @@ log "stowing all components: ${components[*]}"
 # shellcheck disable=SC2086
 "$DOTS" stow ${components[@]}
 
-# --- 6. first-run fixes ---------------------------------------------------------
+# --- 6. first-run setup ---------------------------------------------------------
 
-# wal cache: the stowed commonshellrc sources ~/.cache/wal/colors.sh — without
-# a first theme application every new shell would error.
+# the stowed commonshellrc sources ~/.cache/wal/colors.sh — generate the
+# initial colorscheme so new shells don't error before the first theme run.
 if [ ! -f "$HOME/.cache/wal/colors.sh" ]; then
-    log "generating initial colorscheme ($DEFAULT_THEME — your accent comes from the quickshell theme overrides)"
+    log "generating initial colorscheme ($DEFAULT_THEME — the accent comes from the quickshell theme overrides)"
     "$DOTS" theme "$DEFAULT_THEME"
 fi
 
-# login shell: fresh machines default to bash
+# fresh Arch installs default to bash; set zsh as the login shell
 if [ "${SHELL:-}" != "$(command -v zsh)" ]; then
     if gum confirm "Set zsh as your login shell? (runs chsh)"; then
         chsh -s "$(command -v zsh)"
