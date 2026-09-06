@@ -26,7 +26,10 @@ bindMainShift("W",  hl.dsp.exec_cmd("pkill waybar && waybar"))
 bindMainShift("N",  hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 
 -- AGS Overlay Window
-bindMainShift("H",  hl.dsp.exec_cmd("astal -t " .. agsWindowName))
+-- (bind freed 2026-09: astal/AGS is dead, Super+Shift+H now opens the quickshell
+--  home menu — see PowerMenu.qml IpcHandler "home"; plain Super+H stays "focus left")
+-- bindMainShift("H",  hl.dsp.exec_cmd("astal -t " .. agsWindowName))
+bindMainShift("H",  hl.dsp.exec_cmd("qs ipc call home toggle"))
 
 -- ── LID CLOSE ─────────────────────────────────────────
 hl.bind("switch:Lid Switch", hl.dsp.exec_cmd("systemctl suspend"), { locked = true })

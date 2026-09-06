@@ -25,5 +25,10 @@ hl.animation({ leaf = "windowsOut", enabled = true, speed = 7,  bezier = "defaul
 hl.animation({ leaf = "border",     enabled = true, speed = 10, bezier = "default" })
 hl.animation({ leaf = "fade",       enabled = true, speed = 7,  bezier = "default" })
 
+-- Layer surfaces (quickshell popups/menus) — default speed 1.7 felt sluggish.
+-- Open and close are both instant (no fade).
+hl.animation({ leaf = "fadeLayersIn",  enabled = false })
+hl.animation({ leaf = "fadeLayersOut", enabled = false })
+
 -- Disable workspace animations
 hl.animation({ leaf = "workspaces", enabled = false })
