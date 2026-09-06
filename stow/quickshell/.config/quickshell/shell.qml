@@ -4,6 +4,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import './theme'
+
 PanelWindow {
     id: root
     anchors.top: true
@@ -35,7 +37,8 @@ PanelWindow {
             anchors.left: clockElement.right
             anchors.leftMargin: 6
             anchors.verticalCenter: parent.verticalCenter
-            MediaPlayer {}
+            visible: mediaPlayer.activePlayer !== null
+            MediaPlayer { id: mediaPlayer }
         }
 
         RowLayout {
@@ -57,6 +60,45 @@ PanelWindow {
             BarElement {
                 Layout.fillHeight: true
                 SystemTray {}
+            }
+
+            // Coffee cup — only visible while "stay awake" is on (suspend
+            // inhibited); click turns it off again. Own pill (same look as
+            // BarElement) so the padding is identical on both sides.
+            Rectangle {
+                id: stayAwakePill
+                Layout.fillHeight: true
+                visible: StayAwakeService.enabled
+                color: Theme.background
+                radius: 6
+                // Ink is 1.2em wide (≈15.6px at size 13); pill = ink + 16
+                implicitWidth: 32
+                implicitHeight: stayIcon.implicitHeight + 16
+
+                // The mug-saucer glyph's ink hangs right of its 0.6em advance
+                // cell (ink starts at cell origin), so place the box so the
+                // ink — not the cell — sits centered: 8 + 15.6/2 = ~12 from
+                // pill left → horizontalCenterOffset ≈ -4
+                Text {
+                    id: stayIcon
+                    anchors.centerIn: parent
+                    text: "\uF0F4"
+                    color: Theme.mainAccent
+                    font { family: Theme.fontFamily; pixelSize: 13 }
+                }
+
+                TapHandler { onTapped: StayAwakeService.toggle() }
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                    onHoveredChanged: stayTooltip.visible = hovered
+                }
+
+                Tooltip {
+                    id: stayTooltip
+                    anchorItem: stayAwakePill
+                    tooltipText: "Stay awake — suspend inhibited (click to disable)"
+                }
             }
 
             BarElement {

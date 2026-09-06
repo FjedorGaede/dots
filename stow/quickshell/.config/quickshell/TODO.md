@@ -1,5 +1,31 @@
 # TODO
 
+## Done (2026-09 session, later)
+
+- [x] **Stay awake / home menu (2026-09)** — power menu became a home menu:
+      "Stay awake" toggle row on top (coffee cup + on/off state, click toggles
+      + closes), divider, power buttons below (shrunk 72→56, glyph now scales
+      with button size). Implementation: `StayAwakeService.qml` singleton with
+      file-backed flag (`~/.cache/quickshell/stay-awake.json`, JsonAdapter,
+      survives reloads) + hourly reminder notification; hypridle suspend
+      listener now runs `scripts/suspend-or-skip.sh` which greps the flag and
+      skips suspend with a notification (IdleInhibitor idea dropped — hypridle
+      uses ext-idle-notify and ignores Wayland inhibitors). Coffee-cup bar
+      indicator (StatusBar) only while on, click = off. NOTE: new files must
+      be created in the stow repo + manually symlinked (relative depth differs
+      per directory!); new root-level pragma Singletons only register after a
+      full `qs` restart, not on hot reload.
+
+- [x] Media pill empty state — `BarElement` wrapper in shell.qml now hides with
+      the `MediaPlayer` (`visible: mediaPlayer.activePlayer !== null`), so no
+      empty pill is left next to the clock when nothing is playing
+- [x] Power menu buttons dead (click = menu just closed) — `IconButton`'s
+      passive `TapHandler` was canceled by the card click-absorber `MouseArea`'s
+      exclusive grab; replaced with a `MouseArea` (exclusive grab, button stacked
+      above the absorber wins). Removed the redundant full-screen `Item` +
+      `TapHandler` closer (backdrop `MouseArea` + Escape remain); DEBUG text and
+      console.log lines removed
+
 ## Done (2026-09 session)
 
 - [x] Network/Bluetooth robustness pass (null-safety, toggle binding fixes, native
@@ -71,15 +97,6 @@
       icon on click; "looks awful, no benefits"). Quickshell `Quickshell.Services.Pipewire`
       gives sinks/sources/streams: output + input device volumes, default device
       switcher, per-app volumes; reuse PopupBase + ListItem styling
-- [ ] Suspend control ("stay awake") — user case: long-running agents get
-      killed by auto-suspend when away. Previously postponed, now wanted.
-      AGREED DESIGN (2026-09): toggle lives OUT of the way (e.g. "Stay awake"
-      row in the power menu next to Sleep); while active, a small coffee-cup
-      indicator appears in the bar (click = turn off again). Hidden otherwise
-      so the bar stays clean. Implementation: hypridle reacts to the Wayland
-      idle event, so Quickshell.Wayland.IdleInhibitor attached to the bar
-      window should suffice; hypridle config rewrite is the fallback lever.
-      State needs to survive shell reloads (file-backed).
 - [ ] **B. Icon polish pass** — unify bar icon sizes (14px baseline: Sound 13,
       Bluetooth 15, battery 13 today); fix `IconButton` unset text color (renders
       black) + hover state; remove Power.qml `" "` spacing hack; OSD fallback

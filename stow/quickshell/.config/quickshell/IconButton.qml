@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: iconButton
 
-    property int size: 72
+    property int size: 56
 
     property string icon: "xxxx"
     property var tapCallback
@@ -15,12 +15,18 @@ Rectangle {
 
     Behavior on opacity { NumberAnimation { duration: 100 } }
 
-    TapHandler { onTapped: if (iconButton.tapCallback) iconButton.tapCallback() }
+    // MouseArea (not TapHandler!) so it takes an exclusive grab and wins
+    // against any MouseArea stacked below (e.g. the power menu click absorber)
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: if (iconButton.tapCallback) iconButton.tapCallback()
+    }
 
     HoverHandler { id: hoverHandler; cursorShape: Qt.PointingHandCursor }
 
     Text {
-        font { pixelSize: 32 }
+        font { pixelSize: Math.max(12, Math.round(iconButton.size * 0.44)) }
         anchors.centerIn: parent
         text: iconButton.icon
     }
