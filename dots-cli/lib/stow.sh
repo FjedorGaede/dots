@@ -23,6 +23,12 @@ cmd_stow() {
     else
         require_gum
         chosen=($(select_components))
+        # 'all' selected in the menu → expand to every component
+        local has_all=false
+        for c in "${chosen[@]}"; do
+            [ "$c" = "all" ] && has_all=true
+        done
+        $has_all && chosen=("${all[@]}")
         [ ${#chosen[@]} -gt 0 ] || { info "nothing selected"; return 0; }
     fi
 
@@ -37,7 +43,7 @@ cmd_stow() {
 
 # Multi-select menu; pre-selects linked components when gum supports --selected.
 select_components() {
-    local -a linked=() options=()
+    local -a linked=() options=("all")
     local comp
     for comp in "${all[@]}"; do
         if is_linked "$comp"; then
