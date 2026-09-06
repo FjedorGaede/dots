@@ -43,6 +43,29 @@
 
 ## Bugs (log noise / small)
 
+- [ ] **UNEXPLAINED: "no gap below the tray" / mystery CPU-RAM strip (2026-09)**
+      USER-OBSERVED, CAUSE UNKNOWN. Do not re-diagnose from the armchair —
+      capture state when it is visible:
+      `sh -c 'grim /tmp/state.png; hyprctl layers > /tmp/layers.txt; hyprctl clients -j > /tmp/clients.json'`
+      Facts established so far:
+      - User repeatedly sees (screenshots 22:04, 22:15, 22:35, 22:40): no
+        vertical gap between the bar's right side (tray/system-stats pills) and
+        the window below; left side (workspaces/clock/media) shows a gap. Also
+        a strip of colored pills (CPU %, RAM, date-time, battery) below the
+        bar on the right side in some screenshots.
+      - After removing `Layout.fillHeight` from the right-side BarElements:
+        tray icon glyphs y12–27 vs workspaces y11–24 (physical px) — pills
+        measured centered and symmetric.
+      - Bar layer verified 1920x30 logical (full width at scale 1.333);
+        tiled windows start at y=30; only 2 quickshell layer surfaces exist
+        (bar + toasts/popup window at 1476,68 436x700); single qs instance.
+      - Ruled out: waybar/conky/eww/astal processes, second quickshell
+        instance, any CPU/RAM element in the config (none exists).
+      - The colored strip's origin is UNCONFIRMED. Candidate explanations
+        offered during the session (tmux status line, waybar, reload
+        artifacts) were REJECTED by the user or did not hold up. Treat all
+        prior theories as unproven.
+
 - [x] `Sound.qml` / `OSD.qml`: `TypeError: Cannot read property 'audio' of null`
       — guarded (`defaultSink?.audio`, fallback 0/false)
 - [x] `ListItem.qml` (~line 127): removed invalid write to global property `accepted`
