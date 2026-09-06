@@ -80,8 +80,11 @@ main() {
     fi
     rm -f "$THEME_LOG"
 
-    command -v notify-send >/dev/null 2>&1 && \
-        notify-send -t 5000 "Theme Updated" "Color theme was updated to $name"
+    # notification is best-effort — never fail the theme over it (e.g. no
+    # dbus/machine-id in containers or headless sessions)
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send -t 5000 "Theme Updated" "Color theme was updated to $name" || true
+    fi
     success "theme applied: $name"
 }
 
