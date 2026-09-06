@@ -11,11 +11,15 @@ cmd_stow() {
 
     local -a chosen=()
     if [ ${#args[@]} -gt 0 ]; then
-        local c
-        for c in "${args[@]}"; do
-            [ -d "$STOW_DIR/$c" ] || die "no such component: '$c' (existing: ${all[*]})"
-            chosen+=("$c")
-        done
+        if [ "${args[0]}" = "all" ]; then
+            chosen=("${all[@]}")
+        else
+            local c
+            for c in "${args[@]}"; do
+                [ -d "$STOW_DIR/$c" ] || die "no such component: '$c' (existing: ${all[*]})"
+                chosen+=("$c")
+            done
+        fi
     else
         require_gum
         chosen=($(select_components))

@@ -16,7 +16,8 @@ Machine setup (rare — new machine / migration):
   dots install [category...] [--no-setup]
                               Install packages from categories (menu if none
                               given); runs setup/ scripts unless --no-setup
-  dots stow [component...]    Stow components (menu, pre-selecting linked ones)
+  dots stow [component...|all] Stow components (menu, pre-selecting linked ones;
+                              'all' links every component without the menu)
   dots list [category]        Show tracked packages (all or one category)
   dots sync                   Drift check: installed vs. tracked (print-only)
 
