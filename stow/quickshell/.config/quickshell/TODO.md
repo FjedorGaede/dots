@@ -93,10 +93,29 @@
       names, today highlighted with accent, adjacent-month days shown dimmed.
       NOTE: was briefly lost when a stow run overwrote the live file with the
       old repo version — rewritten directly into the stow repo.
-- [ ] Own audio control panel — replace pavucontrol (launched by the Sound bar
-      icon on click; "looks awful, no benefits"). Quickshell `Quickshell.Services.Pipewire`
-      gives sinks/sources/streams: output + input device volumes, default device
-      switcher, per-app volumes; reuse PopupBase + ListItem styling
+- [x] **Own audio control panel (2026-09, v1)** — replaced pavucontrol on the
+      Sound bar icon. `AudioPanel.qml` (PopupBase anchored to the Sound icon,
+      also `qs ipc call audio toggle|open|close`): OUTPUT/INPUT sections, each
+      with volume slider + mute button + device picker (active device =
+      ListItem.Active ✓, click switches via `Pipewire.preferredDefaultAudioSink
+      /Source`; monitor sources filtered out).
+      GOTCHAS (all learned the hard way):
+      - QQC2 Slider is NOT draggable inside quickshell popup windows — use a
+        hand-rolled MouseArea slider (like omarchy quattro's PanelSlider)
+      - Slider sync must be imperative (no binding on `value` — it snaps back)
+      - PwObjectTracker must bind all candidate nodes (properties invalid
+        otherwise)
+      - OSD is suppressed while the panel is open (`ShellState.audioPanelOpen`
+        singleton): OSD map/unmap churn dismisses the grabFocus popup ~1.4s
+        after a drag
+      - Mute glyph variants have different advance widths → fixed 22px hit box
+        so toggling mute doesn't push the slider
+      - Mute must NOT gray the slider (red glyph shows state); mic boost >100%
+        is normal, so overshoot coloring is on both rows, red zone is only
+        15% opacity
+      Per-app streams postponed. pavucontrol still installed but unused.
+      Reference: omarchy quattro `shell/plugins/panels/audio` (MIT, Model.js
+      logic cribbed); omarchy master's answer is the wiremix TUI.
 - [ ] **B. Icon polish pass** — unify bar icon sizes (14px baseline: Sound 13,
       Bluetooth 15, battery 13 today); fix `IconButton` unset text color (renders
       black) + hover state; remove Power.qml `" "` spacing hack; OSD fallback

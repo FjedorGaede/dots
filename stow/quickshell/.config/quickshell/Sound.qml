@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 
 import './theme'
@@ -55,7 +56,7 @@ RowLayout {
     }
 
     TapHandler {
-        onTapped: Quickshell.execDetached(["sh", "-c", "GTK_THEME=Adwaita-dark pavucontrol -t 3"])
+        onTapped: audioPanel.visible = !audioPanel.visible
     }
 
     HoverHandler {
@@ -67,5 +68,28 @@ RowLayout {
         id: audioTooltip
         anchorItem: sound
         tooltipText: sound.currentVolume + "%"
+    }
+
+    AudioPanel {
+        id: audioPanel
+        anchorItem: sound
+        onVisibleChanged: ShellState.audioPanelOpen = visible
+    }
+
+    // Keybinds: qs ipc call audio toggle / open / close
+    IpcHandler {
+        target: "audio"
+
+        function toggle(): void {
+            audioPanel.visible = !audioPanel.visible;
+        }
+
+        function open(): void {
+            audioPanel.visible = true;
+        }
+
+        function close(): void {
+            audioPanel.visible = false;
+        }
     }
 }

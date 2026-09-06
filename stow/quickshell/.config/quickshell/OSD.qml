@@ -69,6 +69,10 @@ PanelWindow {
     }
 
     function show() {
+        // While the audio panel is open the OSD is redundant, and mapping/
+        // unmapping this window dismisses the panel's popup grab (focus
+        // churn) — see ShellState.audioPanelOpen
+        if (ShellState.audioPanelOpen) return;
         visible = true
         hideTimer.restart()
     }
