@@ -49,7 +49,10 @@ PanelWindow {
 
             BarElement {
                 id: statusBarElement
-                Layout.fillHeight: true
+                // Layout.fillHeight removed: it stretched right-side pills to the tallest
+                // sibling, making them flush with the window below (left pills keep
+                // natural height + centered, which leaves the bottom gap)
+
                 Layout.preferredWidth: statusBar.implicitWidth > 0 ? -1 : 0
                 clip: true
                 StatusBar {
@@ -58,7 +61,10 @@ PanelWindow {
             }
 
             BarElement {
-                Layout.fillHeight: true
+                // Layout.fillHeight removed: it stretched right-side pills to the tallest
+                // sibling, making them flush with the window below (left pills keep
+                // natural height + centered, which leaves the bottom gap)
+
                 SystemTray {}
             }
 
@@ -67,7 +73,10 @@ PanelWindow {
             // BarElement) so the padding is identical on both sides.
             Rectangle {
                 id: stayAwakePill
-                Layout.fillHeight: true
+                // Layout.fillHeight removed: it stretched right-side pills to the tallest
+                // sibling, making them flush with the window below (left pills keep
+                // natural height + centered, which leaves the bottom gap)
+
                 visible: StayAwakeService.enabled
                 color: Theme.background
                 radius: 6
@@ -102,7 +111,10 @@ PanelWindow {
             }
 
             BarElement {
-                Layout.fillHeight: true
+                // Layout.fillHeight removed: it stretched right-side pills to the tallest
+                // sibling, making them flush with the window below (left pills keep
+                // natural height + centered, which leaves the bottom gap)
+
                 SystemStats {}
             }
         }
