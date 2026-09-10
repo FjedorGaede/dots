@@ -24,9 +24,15 @@
       builds from AUR when missing) → stow all → first-run (dracula + chsh zsh)
 
 ### Open — Phase 1
-- [ ] Test bootstrap in an Arch container (`~/test-bootstrap.sh`) — BLOCKED:
-      user must reboot first (running kernel 7.1.3 is outdated, its modules
-      were deleted; docker can't start until then)
+- [x] Test bootstrap in an Arch container — DONE 2026-09-05 (user verdict:
+      "good enough"). Flow verified end-to-end: -Syu → base tools → clone →
+      picker → pacman installs → yay built via core setup → aur: categories →
+      setups → stow → dracula theme (adapters no-op headless as designed).
+      Fixes found by the test: interactive stdin needs `bash <(curl …)` not
+      piping; DOTFILES_BRANCH override; core must be selected (provisions
+      yay); aur:yay removed from packages.txt (paradox); neovim setup needs
+      explicit nvim path; notify-send best-effort. Test script:
+      ~/test-bootstrap.sh (local mount, script -qec for a real pty).
 - [x] `dots install dev` verified by user 2026-09-05: bob setup + nvim-config
       setup (clone pull path: "Already up to date") both ran clean
 - [x] Post-bootstrap manual checklist documented in README.md (SSH keys, remote
@@ -54,13 +60,15 @@
 - [ ] `dots remove --uninstall` orphan-dependency check (`pacman -Qtdq`)
 - [ ] Multi-machine variation (stow per-host overrides vs templating)
 
-## Phase 2 — Migrate (mostly done)
+## Phase 2 — Migrate (verification: user has been running the migrated system
+## all day — quickshell/hypr edits, theming, git flow; done)
 - [x] Live dotfiles backed up via `dots stow` conflict flow (~/.dotfiles-backup/)
-- [x] `dots install` + `dots stow` on the live machine — done, all 9 components
-- [ ] Verify after reboot: Hyprland session, quickshell bar, theming, shell,
-      tmux, tools, Ctrl+P palette, `dots theme`
+- [x] `dots install` + `dots stow` on the live machine — done, all 10 components
+- [x] Session verified in daily use (quickshell, hypr, theming, shell, git flow)
+- [x] `dots stow all` + `all` entry in the stow menu (expands to every component)
 - [ ] Retire leftovers: `dots-old` copy in ~/.local/bin/custom-commands/,
-      ~/.config/__BACKUP__hypr, ~/.config/__OLD__nvim, ~/.local/scripts
+      ~/.config/__BACKUP__hypr, ~/.config/__OLD__nvim, ~/.local/scripts,
+      205 MB manual fonts in ~/.local/share/fonts/NerdFonts/
 - [ ] GitHub housekeeping: make `refactor/rework-system` the `main` branch
 - [ ] Replace AGENTS.md + TODO.md with permanent versions; delete the backup
       older-than-needed ~/.dotfiles-backup entries
