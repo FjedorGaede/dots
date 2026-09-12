@@ -175,7 +175,10 @@ PanelWindow {
             Text {
                 text: contentLayout.getIcon();
                 color: contentLayout.getIconColor();
-                font { pixelSize: 24 }
+                // NB: font.family is REQUIRED — nerd glyphs are private-use
+                // codepoints; without it Qt falls back to a random font that
+                // happens to cover them (rendered as unrelated icons)
+                font { pixelSize: 24; family: Theme.fontFamily }
                 // Fixed box so the OSD doesn't resize when the glyph changes
                 Layout.preferredWidth: 28
                 horizontalAlignment: Text.AlignHCenter
