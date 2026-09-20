@@ -10,4 +10,8 @@ Singleton {
     // While the audio panel is open, the OSD is redundant — and mapping/
     // unmapping the OSD layer surface dismisses the panel's popup grab.
     property bool audioPanelOpen: false
+
+    // Network device list overlay (NetworkDevices.qml). Set from the home
+    // menu's network button and the network panel's own IPC target.
+    property bool networkPanelOpen: false
 }

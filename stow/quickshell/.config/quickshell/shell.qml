@@ -122,5 +122,7 @@ PanelWindow {
 
     OSD {}
 
+    NetworkDevices {}
+
     NotificationToasts {}
 }

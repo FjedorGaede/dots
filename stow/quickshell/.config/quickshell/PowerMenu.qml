@@ -85,7 +85,7 @@ PanelWindow {
         property int spacing: 18
         property int padding: 18
 
-        width: Math.max(stayRow.implicitWidth, row.implicitWidth) + card.padding * 2
+        width: Math.max(stayRow.implicitWidth, netRow.implicitWidth, row.implicitWidth) + card.padding * 2
         height: column.implicitHeight + card.padding * 2
 
         anchors.centerIn: parent
@@ -140,6 +140,50 @@ PanelWindow {
                     onClicked: {
                         StayAwakeService.toggle();
                         powerMenu.visible = false; // coffee cup in the bar is the feedback
+                    }
+                }
+            }
+
+            // ── Network ──
+            Rectangle {
+                id: netRow
+                Layout.fillWidth: true
+                implicitWidth: netRowLayout.implicitWidth + 24
+                implicitHeight: netRowLayout.implicitHeight + 16
+                radius: 8
+                color: netHover.hovered ? Theme.hoverOverlay : "transparent"
+
+                RowLayout {
+                    id: netRowLayout
+                    anchors.centerIn: parent
+                    spacing: 10
+
+                    Text {
+                        text: "\uF1EB"
+                        color: Theme.cyan
+                        font { family: Theme.fontFamily; pixelSize: 20 }
+                    }
+
+                    Text {
+                        text: "Network devices"
+                        color: Theme.foreground
+                        font { family: Theme.fontFamily; pixelSize: 14 }
+                    }
+
+                    Text {
+                        text: ShellState.networkPanelOpen ? "close" : "scan"
+                        color: Theme.dimForeground
+                        font { family: Theme.fontFamily; pixelSize: 12 }
+                    }
+                }
+
+                MouseArea {
+                    id: netHover
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        ShellState.networkPanelOpen = !ShellState.networkPanelOpen;
+                        powerMenu.visible = false;
                     }
                 }
             }
