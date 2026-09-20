@@ -1,2 +1,4 @@
 BACKUP_DO_NEVER_DELETE/
 stow/pi/**/node_modules/
+*.log
+*.sock

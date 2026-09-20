@@ -1,0 +1,131 @@
+{
+  "version": 3,
+  "workspaces": [
+    {
+      "id": "w3",
+      "custom_name": "Herdr Setup",
+      "identity_cwd": "/home/fjedor",
+      "public_pane_numbers": {
+        "3": 1,
+        "6": 2
+      },
+      "next_public_pane_number": 4,
+      "public_tab_numbers": [
+        1,
+        2
+      ],
+      "next_public_tab_number": 3,
+      "tabs": [
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 3
+          },
+          "panes": {
+            "3": {
+              "cwd": "/home/fjedor",
+              "label": "was weiß ich",
+              "agent_session": {
+                "source": "herdr:pi",
+                "agent": "pi",
+                "kind": "path",
+                "value": "/home/fjedor/.config/pi/agent/sessions/--home-fjedor--/2026-09-20T12-27-54-371Z_01a0bec9-8a83-767c-b33f-c9e2d9e9cd35.jsonl"
+              }
+            }
+          },
+          "zoomed": false,
+          "focused": 3,
+          "root_pane": 3
+        },
+        {
+          "custom_name": null,
+          "layout": {
+            "Pane": 6
+          },
+          "panes": {
+            "6": {
+              "cwd": "/home/fjedor"
+            }
+          },
+          "zoomed": false,
+          "focused": 6,
+          "root_pane": 6
+        }
+      ],
+      "active_tab": 0
+    },
+    {
+      "id": "w4",
+      "custom_name": "Configuration",
+      "identity_cwd": "/home/fjedor/.config",
+      "public_pane_numbers": {
+        "4": 1,
+        "14": 2,
+        "15": 3
+      },
+      "next_public_pane_number": 4,
+      "public_tab_numbers": [
+        1,
+        2,
+        3
+      ],
+      "next_public_tab_number": 4,
+      "tabs": [
+        {
+          "custom_name": "Code",
+          "layout": {
+            "Pane": 4
+          },
+          "panes": {
+            "4": {
+              "cwd": "/home/fjedor/.config"
+            }
+          },
+          "zoomed": false,
+          "focused": 4,
+          "root_pane": 4
+        },
+        {
+          "custom_name": "PI",
+          "layout": {
+            "Pane": 14
+          },
+          "panes": {
+            "14": {
+              "cwd": "/home/fjedor/.config",
+              "agent_session": {
+                "source": "herdr:pi",
+                "agent": "pi",
+                "kind": "path",
+                "value": "/home/fjedor/.config/pi/agent/sessions/--home-fjedor-.config--/2026-09-20T15-27-49-964Z_01a0bf6e-44cc-7c18-8914-b337a13eba19.jsonl"
+              }
+            }
+          },
+          "zoomed": false,
+          "focused": 14,
+          "root_pane": 14
+        },
+        {
+          "custom_name": "Terminal",
+          "layout": {
+            "Pane": 15
+          },
+          "panes": {
+            "15": {
+              "cwd": "/home/fjedor/.config/herdr"
+            }
+          },
+          "zoomed": false,
+          "focused": 15,
+          "root_pane": 15
+        }
+      ],
+      "active_tab": 1
+    }
+  ],
+  "active": 1,
+  "selected": 1,
+  "sidebar_width": null,
+  "sidebar_section_split": null,
+  "collapsed_space_keys": []
+}
