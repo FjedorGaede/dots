@@ -106,6 +106,8 @@ tool, not a dotfile.
 | `dots remove [<category> <pkg>] [--uninstall]` | Untracks from the category file. Add `--uninstall` to also remove from the system (with confirm). No arguments → searchable picker over all tracked packages |
 | `dots list [category]` | Prints tracked packages, optionally scoped to one category |
 | `dots stow [component...]` | Menu over `stow/*`, pre-selecting already-linked components (via `stow -n` dry-run, not a state file); force-applies with backup on conflict |
+| `dots stow-add [--all] <name\|path> [path]` | Import a live config dir (default `~/.config/<name>`; a bare path also works — name = basename) into `stow/<name>/` as a new component: **whitelist selection** over the source's top-level entries (state-ish ones unselected; `--all` = everything except sockets), nested `.git` dirs vendored, then backup-on-conflict stow + surgical auto-commit. The import-side twin of `dots stow` |
+| `dots stow-remove [--yes] <component...>` | Detach: unstow, copy every tracked file back to its live path (replacing the symlinks — machine content == repo content, no backup involved), `rm -rf stow/<comp>`, auto-commit |
 | `dots sync` | Drift check — installed-but-untracked packages, printed only, never auto-modified |
 
 ### `dots add` — the day-to-day habit

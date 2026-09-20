@@ -18,6 +18,13 @@ Machine setup (rare — new machine / migration):
                               given); runs setup/ scripts unless --no-setup
   dots stow [component...|all] Stow components (menu, pre-selecting linked ones;
                               'all' links every component without the menu)
+  dots stow-add [--all] <name|path> [path]
+                              Import a live config (default ~/.config/<name>)
+                              as a new stow component: pick what to track from
+                              a list, nested .git is vendored, then stow + commit
+  dots stow-remove [--yes] <component...>
+                              Detach a component: unstow, copy repo content back
+                              over the live symlinks, remove from repo + commit
   dots list [category]        Show tracked packages (all or one category)
   dots sync                   Drift check: installed vs. tracked (print-only)
 
@@ -222,12 +229,22 @@ main() {
             source "$LIB_DIR/$cmd.sh"
             "cmd_$cmd" "$@"
             ;;
+        stow-add)
+            # explicit mapping — unquoted cmd_stow-add would parse as
+            # "cmd_stow minus add"
+            source "$LIB_DIR/stow-add.sh"
+            cmd_stow_add "$@"
+            ;;
+        stow-remove)
+            source "$LIB_DIR/stow-remove.sh"
+            cmd_stow_remove "$@"
+            ;;
         help|-h|--help)
             usage
             ;;
         --subcommands)
             # for shell completion (e.g. zsh compdef) — one subcommand per line
-            printf '%s\n' install add remove list stow sync theme edit git
+            printf '%s\n' install add remove list stow stow-add stow-remove sync theme edit git
             ;;
         *)
             usage >&2

@@ -15,6 +15,9 @@ dots-cli/
 │   ├── remove.sh     # cmd_remove
 │   ├── list.sh       # cmd_list
 │   ├── stow.sh       # cmd_stow
+│   ├── stow-add.sh   # cmd_stow_add (import a live config as a new component,
+│   │                 #   whitelist selection, vendoring of nested .git)
+│   ├── stow-remove.sh  # cmd_stow_remove (detach: unstow + restore + remove)
 │   ├── sync.sh       # cmd_sync
 │   ├── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
 │   ├── edit.sh       # cmd_edit

@@ -8,13 +8,18 @@ from this repo — packages, configs, theming, and the CLI that ties it together
 ```
 Machine setup (rare):     dots install · dots stow · dots list · dots sync
 Packages (auto-commit):   dots add · dots remove
+Components:               dots stow · dots stow-add · dots stow-remove
 Daily:                    dots edit · dots theme
 Git:                      dots git   (lazygit — pull = p, push = Shift+P)
 ```
 
 - `dots install [category...]` — install packages, run `packages/<cat>/setup/*/setup.sh`
 - `dots stow [component...]` — link configs into $HOME (conflicts are backed up to `~/.dotfiles-backup/`)
-- `dots add` / `dots remove` — track packages; tracking changes commit & push automatically
+- `dots stow-add [--all] <name|path> [path]` — import a live config (default `~/.config/<name>`)
+  as a new stow component: pick what to track from a list, nested .git is vendored;
+  stows + commits + pushes
+- `dots stow-remove [--yes] <component...>` — detach a component (unstow, copy
+  repo content back over the live symlinks, remove from repo)
 - `dots edit [component]` — open $EDITOR in the stow tree (descends into the real config folder)
 - `dots theme [name]` — apply a pywal16 colorscheme (dracula by default; accent via quickshell overrides)
 
