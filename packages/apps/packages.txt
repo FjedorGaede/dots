@@ -1,0 +1,10 @@
+vivaldi
+audacity
+freecad
+obsidian
+signal-desktop
+telegram-desktop
+aur:bambustudio-bin
+aur:bazecor
+aur:mqtt-explorer
+aur:spotify

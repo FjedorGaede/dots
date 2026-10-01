@@ -1,7 +1,0 @@
---- 
-- name: "Install base system packages"
-  ansible.builtin.include_role:
-    name: package_installer
-  vars:
-    packages_to_install: "{{ arch_packages }}"
-    aur_packages_to_install: "{{ aur_packages }}"

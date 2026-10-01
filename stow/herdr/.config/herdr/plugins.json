@@ -1,0 +1,129 @@
+[
+  {
+    "plugin_id": "focus-history",
+    "name": "Focus History",
+    "version": "0.1.0",
+    "min_herdr_version": "0.9.0",
+    "description": "Vim-style back/forward history for workspace and agent focus",
+    "manifest_path": "/home/fjedor/projects/herdr-focus-history/herdr-plugin.toml",
+    "plugin_root": "/home/fjedor/projects/herdr-focus-history",
+    "enabled": true,
+    "platforms": [
+      "linux",
+      "macos"
+    ],
+    "actions": [
+      {
+        "id": "agent-back",
+        "title": "Jump to previous agent",
+        "command": [
+          "bash",
+          "src/navigate.sh",
+          "agent",
+          "back"
+        ]
+      },
+      {
+        "id": "agent-forward",
+        "title": "Jump to next agent",
+        "command": [
+          "bash",
+          "src/navigate.sh",
+          "agent",
+          "forward"
+        ]
+      },
+      {
+        "id": "workspace-back",
+        "title": "Jump to previous workspace",
+        "command": [
+          "bash",
+          "src/navigate.sh",
+          "workspace",
+          "back"
+        ]
+      },
+      {
+        "id": "workspace-forward",
+        "title": "Jump to next workspace",
+        "command": [
+          "bash",
+          "src/navigate.sh",
+          "workspace",
+          "forward"
+        ]
+      }
+    ],
+    "events": [
+      {
+        "on": "pane.closed",
+        "command": [
+          "bash",
+          "src/close.sh",
+          "agent"
+        ]
+      },
+      {
+        "on": "pane.focused",
+        "command": [
+          "bash",
+          "src/record.sh",
+          "agent"
+        ]
+      },
+      {
+        "on": "workspace.closed",
+        "command": [
+          "bash",
+          "src/close.sh",
+          "workspace"
+        ]
+      },
+      {
+        "on": "workspace.focused",
+        "command": [
+          "bash",
+          "src/record.sh",
+          "workspace"
+        ]
+      }
+    ],
+    "source": {
+      "kind": "local"
+    }
+  },
+  {
+    "plugin_id": "palette",
+    "name": "Command Palette",
+    "version": "0.2.0",
+    "min_herdr_version": "0.7.5",
+    "description": "Fuzzy palette over every Herdr action, showing the shortcut beside each one.",
+    "manifest_path": "/home/fjedor/.config/herdr/plugins/github/palette-19e4bd2d806b/herdr-plugin.toml",
+    "plugin_root": "/home/fjedor/.config/herdr/plugins/github/palette-19e4bd2d806b",
+    "enabled": true,
+    "platforms": [
+      "macos",
+      "linux"
+    ],
+    "panes": [
+      {
+        "id": "palette",
+        "title": "Command Palette",
+        "placement": "popup",
+        "width": "70%",
+        "height": "60%",
+        "command": [
+          "./bin/herdr-palette"
+        ]
+      }
+    ],
+    "source": {
+      "kind": "github",
+      "owner": "fabiogaliano",
+      "repo": "herdr-command-palette",
+      "resolved_commit": "556a03bf9cc031d7cebd38e6d22c23ab8d4f487c",
+      "managed_path": "/home/fjedor/.config/herdr/plugins/github/palette-19e4bd2d806b",
+      "installed_unix_ms": 1789910786552
+    }
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "lastChangelogVersion": "0.87.1",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-5-5",
+  "defaultThinkingLevel": "high",
+  "modelThinkingLevels": {
+    "anthropic/claude-opus-5-5": "medium"
+  },
+  "theme": "dracula",
+  "quietStartup": true,
+  "doubleEscapeAction": "tree",
+  "compaction": {
+    "enabled": true,
+    "keepRecentTokens": 20000
+  },
+  "shellCommandPrefix": "export EDITOR=nvim",
+  "packages": [
+    "git:github.com/badlogic/pi-skills",
+    "npm:pi-mcp-adapter"
+  ],
+  "hideThinkingBlock": false
+}
