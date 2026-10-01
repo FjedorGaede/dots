@@ -1,0 +1,90 @@
+# herdr configuration — migrated from tmux (~/.tmux.conf)
+
+onboarding = false
+
+[theme]
+name = "dracula"
+
+[ui]
+tab_bar_position = "top"          # tmux: status-position top
+# Optional right-side status entries, e.g.:
+# tab_bar_right = [{ type = "datetime" }]
+
+[keys]
+# Keep tmux muscle memory (ctrl+t).
+# Side benefit: frees ctrl+b for copy-mode page-up (docs recommend a non-ctrl+b prefix).
+prefix = "ctrl+t"
+
+# Pane navigation — prefix-only (user is not pane-focused).
+focus_pane_left  = "prefix+h"
+focus_pane_down  = "prefix+j"
+focus_pane_up    = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# Session/workspace picker — tmux's prefix+s (choose-session) habit.
+# herdr's default prefix+w is kept as well.
+workspace_picker = ["prefix+w", "prefix+s"]
+
+# Workspaces — vertical alt family: alt+j/k = workspace down/up, from anywhere.
+next_workspace     = "alt+j"
+previous_workspace = "alt+k"
+navigate_workspace_up   = ["up", "alt+k"]
+navigate_workspace_down = ["down", "alt+j"]
+
+# Vim-style agent cycling in the sidebar agent panel (unset by default in herdr).
+# alt+shift+j/k = prefix-free, matching the alt+j/k workspace family.
+previous_agent = ["prefix+shift+k", "alt+shift+k"]
+next_agent     = ["prefix+shift+j", "alt+shift+j"]
+
+# Splits — side-by-side on v (tmux habit). Top/bottom on minus (herdr default;
+# prefix+h is pane-left). Splits are also in the right-click menu.
+split_vertical   = "prefix+v"     # side-by-side (matches tmux `bind v split-window -h`)
+split_horizontal = "prefix+minus" # top/bottom
+
+# Tabs — old tmux M-h/M-L habit, prefix-free, with documented-safe fallbacks.
+previous_tab = ["prefix+p", "alt+h", "ctrl+alt+left"]
+next_tab     = ["prefix+n", "alt+l", "ctrl+alt+right"]
+
+# Command palette plugin (fabiogaliano/herdr-command-palette) — VS Code-style.
+[[keys.command]]
+key = "prefix+space"
+type = "shell"
+command = "herdr plugin pane open --plugin palette --entrypoint palette"
+description = "Command palette"
+
+# Workspace and agent focus history (vim-style back/forward jumplist).
+[[keys.command]]
+key = "ctrl+alt+k"
+type = "plugin_action"
+command = "focus-history.workspace-back"
+description = "Jump to previous workspace"
+
+[[keys.command]]
+key = "ctrl+alt+j"
+type = "plugin_action"
+command = "focus-history.workspace-forward"
+description = "Jump to next workspace"
+
+[[keys.command]]
+key = "alt+shift+p"
+type = "plugin_action"
+command = "focus-history.agent-back"
+description = "Jump to previous agent"
+
+[[keys.command]]
+key = "alt+shift+n"
+type = "plugin_action"
+command = "focus-history.agent-forward"
+description = "Jump to next agent"
+
+# pi-quick research assistant as an overlay popup (replaces tmux session switch).
+# Closes when pi exits; does not disturb the current tab layout.
+[[keys.command]]
+key = "prefix+o"
+type = "popup"
+command = "pi --no-builtin-tools --no-context-files --session-dir $HOME/.local/share/pi-quick/sessions --system-prompt 'You are a quick-research assistant. Answer questions concisely and directly. Use web search to find current information when needed. Do not write code or create files unless explicitly asked. Keep responses brief and to the point - think of yourself as a smarter search engine.'"
+width = "80%"
+height = "80%"
+
+[ui.sound]
+enabled = false

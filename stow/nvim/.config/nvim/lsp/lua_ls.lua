@@ -1,0 +1,14 @@
+---@type vim.lsp.Config
+return {
+    settings = {
+        Lua = {
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true)
+            },
+            diagnostics = {
+                -- Disable specific diagnostics
+                disable = { 'trailing-space' }
+            } 
+        }
+    }
+}
