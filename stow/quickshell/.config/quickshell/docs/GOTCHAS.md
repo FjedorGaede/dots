@@ -148,6 +148,10 @@ original comments stay next to the code they explain.
   `PopupPanel.open` → `visible` is synced imperatively, and the panel writes
   back with `onVisibleChanged: PanelService.setOpen(<id>, visible)`
   (AudioPanel, WifiPanel, BluetoothPanel, NotificationCenter).*
+- **A `Process` child's stdin is an open pipe, not a tty.** → *Tools that
+  switch behaviour on that hang silently: `slurp` waits to read predefined
+  boxes from stdin and never shows its overlay. Redirect `</dev/null`
+  (`scripts/screenrec-select.sh`).*
 - **`IpcHandler` targets are per instance** → `qs ipc -p <path> call …`
   addresses a specific instance.
 
@@ -187,6 +191,18 @@ original comments stay next to the code they explain.
   the old `hyprctl dispatch dpms off` fails under the Lua config.
 - **The bar layer's exclusive zone** is what places windows at y=30; a second
   top-anchored layer (preview instance) stacks directly below it.
+- **Screen recording can't hide our own layers.** → *gpu-screen-recorder's
+  portal capture (`-w portal`) fails here: xdph and gsr can't agree on a
+  dmabuf ("DMA-BUF fixation failed … falling back to SHM") and gsr refuses SHM
+  frames. KMS capture (`-w <monitor>` / `-w region`) works but grabs the
+  composited output — every layer is in it. Hyprland's `no_screen_share`
+  layer rule only affects screencopy/portal clients and paints the layer
+  **black**, it doesn't remove it (tested with grim). So there is no
+  floating recording control; the bar indicator is the only one (the bar is
+  in full-screen recordings anyway).*
+- **gsr `-region WxH+X+Y` takes global logical coordinates** (scales them
+  itself: 600x300 at scale 1.33 → 800x400 video) — slurp's output is passed
+  through unchanged (`scripts/screenrec-select.sh`).
 
 ## Services / system
 

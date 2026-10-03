@@ -29,6 +29,10 @@ PopupPanel {
     }
 
     // ── Content ──
+    PanelHeader { title: "AUDIO" }
+
+    Divider {}
+
     SubHeader { text: "OUTPUT" }
 
     VolumeRow {

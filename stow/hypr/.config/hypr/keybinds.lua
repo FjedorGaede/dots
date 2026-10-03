@@ -23,7 +23,9 @@ bindMainShift("L",  hl.dsp.exec_cmd("hyprlock"))
 -- (wlogout / waybar are dropped: Super+Shift+Q = quickshell home menu with the
 --  lock/suspend/logout/reboot/shutdown buttons, Super+Shift+W = restart the bar)
 bindMainShift("Q",  hl.dsp.exec_cmd("qs ipc call home toggle"))
-bindMainShift("W",  hl.dsp.exec_cmd("qs kill -c default; qs -d"))
+-- `qs kill` only kills ONE instance → a leftover one stacked a second bar
+-- below the first; kill them all (process name is qs or quickshell)
+bindMainShift("W",  hl.dsp.exec_cmd("pkill -x qs; pkill -x quickshell; sleep 0.3; qs -d"))
 bindMainShift("N",  hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 
 -- quickshell home menu (services/PanelService.qml, IPC target "home");
@@ -38,6 +40,13 @@ bindMain("PRINT",       hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
 hl.bind("PRINT",        hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
 hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/screenshot-region.sh"))
 bindMainShift("S",  hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/screenshot-region.sh"))
+
+-- ── SCREEN RECORDING ──────────────────────────────────
+-- quickshell recorder (services/RecorderService.qml, IPC target "recording"):
+-- menu when idle, stop while recording (pause/resume: buttons in the bar)
+bindMain("R",  hl.dsp.exec_cmd("qs ipc call recording toggle"))
+-- straight to the region drag, no menu (audio as last set in the menu)
+bindMainShift("R",  hl.dsp.exec_cmd("qs ipc call recording start region"))
 
 -- ── FOCUS (vim-style) ─────────────────────────────────
 bindMain("H", hl.dsp.focus({ direction = "left" }))
@@ -72,14 +81,3 @@ bindMain("C", hl.dsp.exec_cmd("pgrep qalculate-gtk && hyprctl dispatch togglespe
 bindMain("S", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/spotify.sh"))
 bindMain("T", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/telegram.sh"))
 bindMain("O", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/obsidian.sh"))
-
--- ── SUBMAP: RESIZE ────────────────────────────────────
-bindMain("R", hl.dsp.submap("resize"))
-
-hl.define_submap("resize", function()
-    hl.bind("L",      hl.dsp.window.resize({ x =  10, y =   0, relative = true }), { repeating = true })
-    hl.bind("H",      hl.dsp.window.resize({ x = -10, y =   0, relative = true }), { repeating = true })
-    hl.bind("K",      hl.dsp.window.resize({ x =   0, y = -10, relative = true }), { repeating = true })
-    hl.bind("J",      hl.dsp.window.resize({ x =   0, y =  10, relative = true }), { repeating = true })
-    hl.bind("ESCAPE", hl.dsp.submap("reset"))
-end)

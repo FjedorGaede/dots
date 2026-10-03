@@ -20,4 +20,6 @@ Bar {
     LanDevices {}
 
     Toasts {}
+
+    RecorderMenu {}
 }

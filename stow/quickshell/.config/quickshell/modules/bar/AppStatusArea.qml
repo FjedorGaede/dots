@@ -12,6 +12,7 @@ RowLayout {
     id: root
     spacing: Theme.bar.iconSpacing
 
+    Recording {}
     Sunshine {}
     // Add more status indicators here as needed
 }

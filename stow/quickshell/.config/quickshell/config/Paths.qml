@@ -26,6 +26,9 @@ Singleton {
     // Calendar settings: which calendars are shown ({ "<google id>": bool })
     readonly property string calendarVisibility: root.home + "/.local/share/quickshell/calendar-visibility.json"
 
+    // Screen recordings (RecorderService; created on first recording)
+    readonly property string recordings: root.home + "/Videos/Recordings"
+
     // Accent export for hyprlock (hyprlock.conf sources this exact path — keep it)
     readonly property string themeCache: root.cache + "/quickshell-theme"
     readonly property string hyprlockConf: root.themeCache + "/hyprlock.conf"

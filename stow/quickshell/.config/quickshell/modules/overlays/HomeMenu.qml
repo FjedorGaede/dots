@@ -128,6 +128,54 @@ ModalOverlay {
         }
     }
 
+    // ── Screen recording ──
+    // Opens the recorder menu; while recording it stops instead
+    Rectangle {
+        id: recRow
+        Layout.fillWidth: true
+        implicitWidth: recRowLayout.implicitWidth + 24
+        implicitHeight: recRowLayout.implicitHeight + 16
+        radius: Theme.radius.md
+        color: recHover.containsMouse ? Theme.hoverOverlay : "transparent"
+
+        RowLayout {
+            id: recRowLayout
+            anchors.centerIn: parent
+            spacing: 10
+
+            StyledText {
+                text: "\uF03D"
+                color: Theme.red
+                font.pixelSize: Theme.fontSize.icon
+            }
+
+            StyledText {
+                text: "Screen recording"
+                font.pixelSize: Theme.fontSize.lg
+            }
+
+            StyledText {
+                text: RecorderService.active ? "stop" : "start"
+                color: RecorderService.active ? Theme.red : Theme.dimForeground
+                font.pixelSize: Theme.fontSize.md
+            }
+        }
+
+        MouseArea {
+            id: recHover
+            anchors.fill: parent
+            hoverEnabled: true   // MouseArea has no `hovered` — containsMouse needs this
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                PanelService.close("home");
+                if (RecorderService.active)
+                    RecorderService.stop();
+                else
+                    PanelService.open("recorder");
+            }
+        }
+    }
+
     Divider { dividerColor: Theme.overlay }
 
     // ── Power ──

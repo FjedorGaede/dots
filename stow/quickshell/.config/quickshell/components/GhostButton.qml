@@ -55,7 +55,12 @@ Rectangle {
     Loader {
         anchors.fill: parent
         active: root.exclusiveGrab
-        sourceComponent: MouseArea { onClicked: root.clicked() }
+        // cursorShape: this MouseArea sits above the HoverHandler and would
+        // otherwise reset the pointer to an arrow
+        sourceComponent: MouseArea {
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.clicked()
+        }
     }
 
     StyledText {
