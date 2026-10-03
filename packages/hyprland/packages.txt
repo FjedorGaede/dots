@@ -24,3 +24,4 @@ gpu-screen-recorder
 slurp
 libnotify
 xdg-desktop-portal-hyprland
+wl-clipboard
