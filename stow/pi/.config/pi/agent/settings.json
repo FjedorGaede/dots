@@ -1,10 +1,10 @@
 {
-  "lastChangelogVersion": "0.87.1",
-  "defaultProvider": "anthropic",
+  "lastChangelogVersion": "1.0.1",
+  "defaultProvider": "claude-bridge",
   "defaultModel": "claude-opus-5-5",
   "defaultThinkingLevel": "high",
   "modelThinkingLevels": {
-    "anthropic/claude-opus-5-5": "medium"
+    "claude-bridge/claude-opus-5-5": "medium"
   },
   "theme": "dracula",
   "quietStartup": true,
@@ -16,7 +16,8 @@
   "shellCommandPrefix": "export EDITOR=nvim",
   "packages": [
     "git:github.com/badlogic/pi-skills",
-    "npm:pi-mcp-adapter"
+    "npm:pi-mcp-adapter",
+    "npm:pi-claude-agent-sdk"
   ],
   "hideThinkingBlock": false
 }
