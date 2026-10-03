@@ -20,3 +20,7 @@ aur:elephant-files
 aur:elephant-symbols
 aur:elephant-todo
 aur:elephant-clipboard
+gpu-screen-recorder
+slurp
+libnotify
+xdg-desktop-portal-hyprland
