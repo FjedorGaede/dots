@@ -1,54 +1,45 @@
 # dots
 
-Personal dotfiles: bash + GNU stow + gum. Everything on the machine is managed
-from this repo — packages, configs, theming, and the CLI that ties it together.
+My dotfiles for CachyOS + Hyprland: packages, configs, theming and the `dots`
+CLI. Built on bash + GNU stow + gum.
+
+## New machine
+
+1. Install CachyOS without a desktop, log in on the TTY (WiFi: `nmtui`).
+2. Run:
+   ```
+   bash <(curl -fsSL https://dots.fjedor.de/bootstrap.sh)
+   ```
+3. Reboot.
+
+Afterwards:
+
+- SSH key: `ssh-keygen -t ed25519` → add at github.com/settings/keys, then
+  `git -C ~/dots remote set-url origin git@github.com:FjedorGaede/dots.git`
+- `gh auth login`
+- `sudo hostnamectl set-hostname <name>`
+- `dots setup` (calendar login)
 
 ## The CLI
 
 ```
-Machine setup (rare):     dots install · dots stow · dots list · dots sync
-Packages (auto-commit):   dots add · dots remove
-Components:               dots stow · dots stow-add · dots stow-remove
-Per-machine:              dots setup · dots calendar
-Daily:                    dots edit · dots theme
-Git:                      dots git   (lazygit — pull = p, push = Shift+P)
+dots install [category] [--pick]   install packages + install scripts
+dots add <pkg> [--aur]             install + track a package (auto-commit)
+dots remove                        untrack a package
+dots stow [component]              link configs into $HOME
+dots setup                         per-machine steps (logins)
+dots theme [name]                  apply a colorscheme
+dots edit                          edit the configs
+dots git                           lazygit in the repo
 ```
 
-- `dots install [category...] [--pick]` — install packages, run `packages/<cat>/install/*/install.sh` (`--pick`: choose packages + install scripts from one menu)
-- `dots setup [name]` — interactive per-machine steps from `setup/` (calendar login); no name = menu with ✔/✘ status
-- `dots stow [component...]` — link configs into $HOME (conflicts are backed up to `~/.dotfiles-backup/`)
-- `dots stow-add [--all] <name|path> [path]` — import a live config (default `~/.config/<name>`)
-  as a new stow component: pick what to track from a list, nested .git is vendored;
-  stows + commits + pushes
-- `dots stow-remove [--yes] <component...>` — detach a component (unstow, copy
-  repo content back over the live symlinks, remove from repo)
-- `dots edit [component]` — open $EDITOR in the stow tree (descends into the real config folder)
-- `dots theme [name]` — apply a pywal16 colorscheme (dracula by default; accent via quickshell overrides)
-
-New machine: run `bootstrap.sh` (see below), then this README's checklist.
+`dots help` shows everything.
 
 ## Layout
 
 ```
-packages/<category>/packages.txt   one package per line, aur: prefix → yay
-packages/<category>/install/       idempotent install scripts (yay, neovim, ly, claude, pi)
-setup/<name>/                      interactive per-machine steps for `dots setup` (calendar)
-stow/<component>/                  one stow package per config area
-dots-cli/                          the CLI (see dots-cli/AGENTS.md for internals)
-dots-cli/theming/                  theme engine + per-app adapters
+packages/<category>/   packages.txt + optional install/<name>/install.sh
+setup/<name>/          per-machine steps for `dots setup`
+stow/<component>/      the configs
+dots-cli/              the CLI (internals: dots-cli/AGENTS.md)
 ```
-
-## Fresh machine after bootstrap
-
-bootstrap.sh covers packages, configs and the first theme. Manual follow-ups:
-
-1. **SSH key for GitHub**: `ssh-keygen -t ed25519` → add at github.com/settings/keys
-2. **Switch the dots remote to SSH** (push access):
-   `git -C ~/dots remote set-url origin git@github.com:FjedorGaede/dots.git`
-3. `gh auth login` (for `my-repos` and GitHub CLI usage)
-4. brave-search skill deps: `cd ~/.config/pi/agent/skills/brave-search && npm ci`
-5. hostname: `sudo hostnamectl set-hostname <name>`
-6. `dots setup` — calendar login
-
-That's it — no special cases. Every config (including neovim) lives in `stow/`,
-is edited via `dots edit` and committed via `dots git`.
