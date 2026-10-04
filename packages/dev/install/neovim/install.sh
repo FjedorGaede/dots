@@ -12,6 +12,15 @@ if ! command -v bob >/dev/null 2>&1; then
     exit 1
 fi
 
+# Without this key, `bob use` asks "Add bob-managed Neovim binary to your
+# $PATH automatically?" — not needed: the nvim link below + .commonshellrc
+# cover PATH. jq merge keeps any other keys in the config.
+BOB_CONFIG_FILE="$HOME/.config/bob/config.json"
+mkdir -p "$(dirname "$BOB_CONFIG_FILE")"
+[ -s "$BOB_CONFIG_FILE" ] || echo '{}' > "$BOB_CONFIG_FILE"
+jq '.add_neovim_binary_to_path = false' "$BOB_CONFIG_FILE" > "$BOB_CONFIG_FILE.tmp"
+mv "$BOB_CONFIG_FILE.tmp" "$BOB_CONFIG_FILE"
+
 # Idempotent: re-running installs/updates to the latest of each channel.
 bob install stable
 bob install nightly
