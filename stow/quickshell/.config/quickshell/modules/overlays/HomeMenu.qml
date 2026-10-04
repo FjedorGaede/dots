@@ -84,6 +84,50 @@ ModalOverlay {
         }
     }
 
+    // ── Laptop keyboard ──
+    Rectangle {
+        id: kbRow
+        Layout.fillWidth: true
+        implicitWidth: kbRowLayout.implicitWidth + 24
+        implicitHeight: kbRowLayout.implicitHeight + 16
+        radius: Theme.radius.md
+        color: kbHover.containsMouse ? Theme.hoverOverlay : "transparent"
+
+        RowLayout {
+            id: kbRowLayout
+            anchors.centerIn: parent
+            spacing: 10
+
+            StyledText {
+                text: "\uF11C"
+                color: KeyboardService.disabled ? Theme.mainAccent : Theme.dimForeground
+                font.pixelSize: Theme.fontSize.icon
+            }
+
+            StyledText {
+                text: "Laptop keyboard"
+                font.pixelSize: Theme.fontSize.lg
+            }
+
+            StyledText {
+                text: KeyboardService.disabled ? "off" : "on"
+                color: KeyboardService.disabled ? Theme.mainAccent : Theme.dimForeground
+                font.pixelSize: Theme.fontSize.md
+            }
+        }
+
+        MouseArea {
+            id: kbHover
+            anchors.fill: parent
+            hoverEnabled: true   // MouseArea has no `hovered` — containsMouse needs this
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                KeyboardService.toggle();
+                PanelService.close("home"); // keyboard icon in the bar is the feedback
+            }
+        }
+    }
+
     // ── Network ──
     Rectangle {
         id: netRow

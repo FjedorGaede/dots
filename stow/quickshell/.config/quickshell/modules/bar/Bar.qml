@@ -75,6 +75,9 @@ PanelWindow {
             // Coffee cup (only while "stay awake" is on) — own pill
             StayAwake {}
 
+            // Keyboard (only while the laptop keyboard is disabled) — own pill
+            LaptopKeyboard {}
+
             Pill {
                 StatusArea {}
             }
