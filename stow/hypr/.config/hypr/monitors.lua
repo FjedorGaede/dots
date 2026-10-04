@@ -9,6 +9,14 @@ hl.monitor({
     scale    = 1.333,
 })
 
+-- TUXEDO InfinityBook display: BOE 15.3" 2560x1600, same scale as above
+hl.monitor({
+    output   = "desc:BOE NE153QDM-NZ2",
+    mode     = "preferred",
+    position = "auto",
+    scale    = 1.333,
+})
+
 -- External LG WQHD monitor
 hl.monitor({
     output   = "desc:LG Electronics LG HDR WQHD 102NTUW9D902",
