@@ -32,3 +32,9 @@ hl.monitor({
     position = "auto",
     scale    = 1,
 })
+
+-- Machine-local overrides saved by the quickshell Displays menu (not in git).
+-- Loaded last so they win; silently skipped if the file doesn't exist.
+local overrides = (os.getenv("XDG_STATE_HOME") or os.getenv("HOME") .. "/.local/state") .. "/hypr/monitors.lua"
+local chunk = loadfile(overrides)
+if chunk then pcall(chunk) end

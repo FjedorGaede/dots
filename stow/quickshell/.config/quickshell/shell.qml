@@ -22,4 +22,6 @@ Bar {
     Toasts {}
 
     RecorderMenu {}
+
+    DisplaysMenu {}
 }

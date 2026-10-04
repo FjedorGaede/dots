@@ -32,6 +32,10 @@ Singleton {
     // Screen recordings (RecorderService; created on first recording)
     readonly property string recordings: root.home + "/Videos/Recordings"
 
+    // Machine-local monitor rules saved by DisplaysMenu (not in git;
+    // hypr/monitors.lua loads it — keep the path in sync there)
+    readonly property string monitorOverrides: root.home + "/.local/state/hypr/monitors.lua"
+
     // Accent export for hyprlock (hyprlock.conf sources this exact path — keep it)
     readonly property string themeCache: root.cache + "/quickshell-theme"
     readonly property string hyprlockConf: root.themeCache + "/hyprlock.conf"

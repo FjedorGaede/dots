@@ -6,7 +6,7 @@ import Quickshell.Io
 // Open/close state for every panel + their IPC targets (replaces ShellState
 // and the six copy-pasted IpcHandler blocks).
 //
-//   qs ipc call <audio|wifi|bluetooth|notifications|home|network|calendar|recorder> <toggle|open|close>
+//   qs ipc call <audio|wifi|bluetooth|notifications|home|network|calendar|recorder|displays> <toggle|open|close>
 //
 // Per-panel booleans on purpose (not a single `current` string): several
 // panels may be open at the same time, exactly as before — mutual exclusion
@@ -14,7 +14,7 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    readonly property var panels: ["audio", "wifi", "bluetooth", "notifications", "home", "network", "calendar", "recorder"]
+    readonly property var panels: ["audio", "wifi", "bluetooth", "notifications", "home", "network", "calendar", "recorder", "displays"]
 
     // name → bool. Replaced (never mutated) so bindings on isOpen() update.
     property var openPanels: ({})

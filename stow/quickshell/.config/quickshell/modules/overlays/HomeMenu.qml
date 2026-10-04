@@ -128,6 +128,50 @@ ModalOverlay {
         }
     }
 
+    // ── Displays ──
+    Rectangle {
+        id: dispRow
+        Layout.fillWidth: true
+        implicitWidth: dispRowLayout.implicitWidth + 24
+        implicitHeight: dispRowLayout.implicitHeight + 16
+        radius: Theme.radius.md
+        color: dispHover.containsMouse ? Theme.hoverOverlay : "transparent"
+
+        RowLayout {
+            id: dispRowLayout
+            anchors.centerIn: parent
+            spacing: 10
+
+            StyledText {
+                text: "\uF108"
+                color: Theme.blue
+                font.pixelSize: Theme.fontSize.icon
+            }
+
+            StyledText {
+                text: "Displays"
+                font.pixelSize: Theme.fontSize.lg
+            }
+
+            StyledText {
+                text: "settings"
+                color: Theme.dimForeground
+                font.pixelSize: Theme.fontSize.md
+            }
+        }
+
+        MouseArea {
+            id: dispHover
+            anchors.fill: parent
+            hoverEnabled: true   // MouseArea has no `hovered` — containsMouse needs this
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                PanelService.close("home");
+                PanelService.open("displays");
+            }
+        }
+    }
+
     // ── Screen recording ──
     // Opens the recorder menu; while recording it stops instead
     Rectangle {
