@@ -74,8 +74,11 @@ Rectangle {
             }
         }
 
+        // exclusiveGrab: else the click also reaches the row's TapHandler and
+        // runs the step a second time (docs/GOTCHAS.md "MouseArea vs TapHandler")
         GhostButton {
             visible: !root.done
+            exclusiveGrab: true
             icon: root.ignored ? Icons.setup.unignore : Icons.setup.ignore
             text: root.ignored ? "Unignore" : "Ignore"
             onClicked: root.toggleIgnore()
@@ -83,6 +86,7 @@ Rectangle {
 
         GhostButton {
             visible: !root.done
+            exclusiveGrab: true
             text: "Run"
             bold: true
             idleColor: Theme.alpha(Theme.warning, 0.15)
