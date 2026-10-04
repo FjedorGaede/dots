@@ -14,7 +14,7 @@ alias egrep='egrep --color=auto'
 NVM_SYMLINK_CURRENT=true
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh  # nvm via pacman
 
 # Set locale to English
 export LANG=en_US.UTF-8

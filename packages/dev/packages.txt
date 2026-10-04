@@ -1,3 +1,4 @@
 lazygit
 bob
 tree-sitter-cli
+nvm
