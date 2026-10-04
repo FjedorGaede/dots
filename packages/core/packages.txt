@@ -3,6 +3,7 @@ curl
 fd
 fzf
 git
+github-cli
 gum
 htop
 jq
