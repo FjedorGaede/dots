@@ -18,24 +18,31 @@ Item {
     // Round the x position (the play/pause glyph did, the note didn't)
     property bool roundX: false
 
-    readonly property rect ink: metrics.tightBoundingRect
+    // TextMetrics snaps the ink box outwards to whole pixels, so glyphs with
+    // the same visual centre got boxes 1px apart → measure at 16x and scale
+    readonly property real oversample: 16
+    readonly property rect ink: Qt.rect(metrics.tightBoundingRect.x / oversample,
+                                        metrics.tightBoundingRect.y / oversample,
+                                        metrics.tightBoundingRect.width / oversample,
+                                        metrics.tightBoundingRect.height / oversample)
 
     anchors.fill: parent
 
     TextMetrics {
         id: metrics
         text: glyph.text
-        font: glyph.font
+        font.family: glyph.font.family
+        font.pixelSize: glyph.font.pixelSize * root.oversample
     }
 
     StyledText {
         id: glyph
-        readonly property real inkX: (root.width - metrics.tightBoundingRect.width) / 2
-                                     - metrics.tightBoundingRect.x + root.opticalShift
+        readonly property real inkX: (root.width - root.ink.width) / 2
+                                     - root.ink.x + root.opticalShift
         x: root.roundX ? Math.round(inkX) : inkX
         // tightBoundingRect.y is relative to the baseline
-        y: Math.round((root.height - metrics.tightBoundingRect.height) / 2
-                      - (baselineOffset + metrics.tightBoundingRect.y)
+        y: Math.round((root.height - root.ink.height) / 2
+                      - (baselineOffset + root.ink.y)
                       + root.opticalShiftY)
     }
 }

@@ -10,8 +10,6 @@ BarButton {
     icon: "󰐥"
     // Thin outline glyph — optically small at the shared 14px
     iconSize: 16
-    // The stem pokes above the ring, so ink-centering leaves the ring low
-    iconShiftY: -1
     tooltipText: "Power Menu"
     onClicked: PanelService.open("home")
 
