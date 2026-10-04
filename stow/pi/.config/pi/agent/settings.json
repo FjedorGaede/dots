@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.0.1",
+  "lastChangelogVersion": "1.0.2",
   "defaultProvider": "claude-bridge",
   "defaultModel": "claude-opus-5-5",
   "defaultThinkingLevel": "high",
@@ -19,5 +19,8 @@
     "npm:pi-mcp-adapter",
     "npm:pi-claude-agent-sdk"
   ],
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "extensions": [
+    "-builtin:mcp"
+  ]
 }
