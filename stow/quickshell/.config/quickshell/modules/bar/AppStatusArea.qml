@@ -14,5 +14,6 @@ RowLayout {
 
     Recording {}
     Sunshine {}
+    Setup {}
     // Add more status indicators here as needed
 }

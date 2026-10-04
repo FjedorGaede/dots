@@ -26,8 +26,13 @@ Singleton {
     // (`dots` is only on PATH via stow/shell/.commonshellrc); the window stays
     // open afterwards so the result can be read.
     function runInTerminal(command) {
-        Quickshell.execDetached(["ghostty", "--wait-after-command=true", "-e",
-                                 Quickshell.env("SHELL") || "sh", "-ic", command])
+        Quickshell.execDetached(root.terminalCommand(command))
+    }
+    // The argv behind runInTerminal — for callers that run it as a Process to
+    // notice when the window is closed (SetupService)
+    function terminalCommand(command) {
+        return ["ghostty", "--wait-after-command=true", "-e",
+                Quickshell.env("SHELL") || "sh", "-ic", command]
     }
     function notify(summary, body) {
         Quickshell.execDetached(["notify-send", "-a", "quickshell", summary, body])

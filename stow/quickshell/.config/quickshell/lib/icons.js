@@ -64,3 +64,6 @@ var forget = "󰌸";
 
 // ── Calendar ──
 var calendar = { refresh: "󰑐", external: "󰏌", video: "󰕧", warning: "󰀦", settings: "󰒓", today: "󰃶", back: "󰁍", check: "󰄬", hide: "󰂛" };
+
+// ── Setup (dots setup steps) ──
+var setup = { indicator: "󰖷", open: "󰗖", done: "󰄬", ignored: "󰈉", ignore: "󰈉", unignore: "󰈈" };
