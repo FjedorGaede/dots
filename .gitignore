@@ -11,3 +11,10 @@ stow/pi/.config/pi/agent/mcp-onboarding.json
 # packages installed by pi (reinstallable)
 stow/pi/.config/pi/agent/git/
 stow/pi/.config/pi/agent/npm/
+
+# herdr runtime state — written into the stowed dir, never commit
+stow/herdr/.config/herdr/*.log
+stow/herdr/.config/herdr/*.sock
+stow/herdr/.config/herdr/.plugins.lock
+stow/herdr/.config/herdr/session.json
+stow/herdr/.config/herdr/session-snapshots/
