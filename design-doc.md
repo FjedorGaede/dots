@@ -157,6 +157,8 @@ with the machine's state instead of the other way around.
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh)
+# fish (CachyOS's default login shell — no <( )):
+bash (curl -fsSL https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh | psub)
 ```
 
 (Not `curl ... | bash`: the script is interactive — sudo and gum need the

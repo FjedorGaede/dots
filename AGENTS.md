@@ -81,7 +81,8 @@ category file). Never hand-edit `packages/*/packages.txt` to bypass the CLI.
 
 ## Bootstrap
 
-`bash <(curl -fsSL .../bootstrap.sh)` — sanity check + sudo keepalive →
+`bash <(curl -fsSL .../bootstrap.sh)` (fish, CachyOS's default shell:
+`bash (curl -fsSL .../bootstrap.sh | psub)`) — sanity check + sudo keepalive →
 pacman base tools (git/gum/stow) → clone → **all questions up front** (git
 name/email, which optional categories, which items of each — core + hyprland
 are always installed) → `dots setup git` + `dots setup ssh` → unattended:

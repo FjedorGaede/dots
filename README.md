@@ -6,7 +6,11 @@ CLI. Built on bash + GNU stow + gum.
 ## New machine
 
 1. Install CachyOS without a desktop, log in on the TTY (WiFi: `nmtui`).
-2. Run:
+2. Run (fish — CachyOS's default shell):
+   ```
+   bash (curl -fsSL https://dots.fjedor.de/bootstrap.sh | psub)
+   ```
+   or from bash/zsh:
    ```
    bash <(curl -fsSL https://dots.fjedor.de/bootstrap.sh)
    ```

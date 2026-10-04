@@ -3,6 +3,10 @@
 #
 #   bash <(curl -fsSL https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh)
 #
+# fish (CachyOS's default login shell) has no <( ) — there:
+#
+#   bash (curl -fsSL https://raw.githubusercontent.com/FjedorGaede/dots/main/bootstrap.sh | psub)
+#
 # (NOT `curl ... | bash`: the script is interactive — sudo and gum need the
 # terminal on stdin, which piping cuts off.)
 # or, when the repo is already around:  ~/dots/bootstrap.sh
@@ -40,7 +44,7 @@ die() { if command -v gum >/dev/null 2>&1; then gum log --level error "$*" >&2; 
 
 # --- 0. sanity ----------------------------------------------------------------
 
-[ -t 0 ] || die "interactive terminal required — run via: bash <(curl -fsSL $REPO_URL_RAW)"
+[ -t 0 ] || die "interactive terminal required — run via: bash <(curl -fsSL $REPO_URL_RAW)  (fish: bash (curl -fsSL $REPO_URL_RAW | psub))"
 
 grep -qE '^ID=(arch|cachyos)$' /etc/os-release 2>/dev/null \
     || die "not an Arch-based system (/etc/os-release says otherwise)"
