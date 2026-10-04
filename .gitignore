@@ -1,2 +1,13 @@
 BACKUP_DO_NEVER_DELETE/
 stow/pi/**/node_modules/
+
+# pi runtime state — written into the stowed dir, never commit
+# (auth.json holds credentials)
+stow/pi/.config/pi/agent/auth.json
+stow/pi/.config/pi/agent/models-store.json
+stow/pi/.config/pi/agent/sessions/
+stow/pi/.config/pi/agent/claude-bridge.json
+stow/pi/.config/pi/agent/mcp-onboarding.json
+# packages installed by pi (reinstallable)
+stow/pi/.config/pi/agent/git/
+stow/pi/.config/pi/agent/npm/
