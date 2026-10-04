@@ -40,6 +40,10 @@ RowLayout {
     signal clicked()
     signal rightClicked()
 
+    // The tooltip is its own window: an indicator hidden while hovered
+    // (Setup after its last step is done) would otherwise leave it behind
+    onVisibleChanged: if (!visible) tip.visible = false
+
     spacing: 4
 
     // Layout height stays at the 14px base line height so every bar pill

@@ -18,7 +18,6 @@ BarButton {
     icon: Icons.setup.indicator
     iconColor: Theme.warning
     tooltipText: setup.open === 1 ? "1 setup step open" : setup.open + " setup steps open"
-    tooltipBlocked: setupPopup.visible
     onClicked: {
         setupPopup.visible = !setupPopup.visible;
         if (setupPopup.visible) SetupService.refresh();
