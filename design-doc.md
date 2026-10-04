@@ -107,7 +107,9 @@ login). `dots setup` shows a menu with each step's status; contract:
 `setup.sh status` prints one line, exit 0 = done; no argument = run it.
 Steps run their prerequisite when it's missing (dots-remote → github → ssh
 → git). git and ssh are part of bootstrap; github, dots-remote and calendar
-are left for later.
+are left for later. The quickshell bar shows a wrench while a step is open
+(`dots setup --status`, polled only while something is open); a step can
+be ignored (`dots setup --ignore`, the CLI's one local state file).
 
 ## The `dots` CLI
 

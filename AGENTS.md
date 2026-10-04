@@ -12,7 +12,8 @@ One repo, one CLI (`dots`), one-command bootstrap on a fresh machine.
 
 **Core principles (from `design-doc.md`, do not violate):**
 - **No DSL, no templating, no state files.** Bash, stow, gum only. The
-  filesystem + pacman/stow queries are the source of truth.
+  filesystem + pacman/stow queries are the source of truth. (Sole exception:
+  the local `dots setup --ignore` list, see `dots-cli/AGENTS.md`.)
 - **Repo always wins on conflict.** Existing machine files get backed up to
   `~/.dotfiles-backup/` and replaced by repo versions — never the reverse.
   `stow --adopt` is banned.
@@ -47,7 +48,7 @@ On `$PATH` via shell rc. Flat verbs:
 |---|---|
 | `dots install [category...] [--packages-only] [--pick]` | Install categories (menu if none given) + run install scripts (`--pick`: choose packages + install scripts from one menu) |
 | `dots install <category> --only <item,...>` | Non-interactive `--pick`: install only the named items (packages and/or install scripts) |
-| `dots setup [name...]` | Interactive per-machine steps from `setup/` (git, ssh, github, dots-remote, calendar); no name = menu with ✔/✘ status |
+| `dots setup [name...]` | Interactive per-machine steps from `setup/` (git, ssh, github, dots-remote, calendar); no name = menu with ✔/✘/– status. `--status`: tab-separated for quickshell; `--ignore`/`--unignore <name>`: hide a step from the bar's setup indicator (wrench, shown while a step is open; click = popup, row = run in terminal) |
 | `dots add <pkg...> [--aur] [--category <c>]` | Install + track (the day-to-day habit; replaces raw `pacman -S`) |
 | `dots remove [<cat> <pkg>] [--uninstall]` | Untrack (and optionally uninstall) |
 | `dots list [category]` | Print tracked packages (`--categories`: only category names; `<category> --items`: packages + install scripts, the names `--only` takes) |

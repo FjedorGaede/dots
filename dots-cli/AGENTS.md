@@ -11,7 +11,8 @@ dots-cli/
 ├── lib/
 │   ├── common.sh     # helpers + main() dispatch — no commands live here
 │   ├── install.sh    # cmd_install (--pick menu / --only list narrow a category)
-│   ├── setup.sh      # cmd_setup (interactive per-machine steps from setup/)
+│   ├── setup.sh      # cmd_setup (interactive per-machine steps from setup/;
+│   │                 #   --status for quickshell's SetupService, --ignore/--unignore)
 │   ├── add.sh        # cmd_add
 │   ├── remove.sh     # cmd_remove
 │   ├── list.sh       # cmd_list (--categories, <cat> --items: machine-readable for bootstrap)
@@ -62,7 +63,10 @@ Unknown commands print usage and exit 1. There is no argument parsing in
   require gum.
 - Flags before/after positionals are parsed per-command with a `while`/`case`
   loop (see `add.sh`); unknown flags `die` rather than being ignored.
-- No state files anywhere — query pacman/stow/filesystem instead.
+- No state files anywhere — query pacman/stow/filesystem instead. **One
+  deliberate exception:** `~/.local/state/dots/setup-ignored` (`dots setup
+  --ignore/--unignore`) — "ignore this step" is a user decision, nothing on
+  the system can be queried for it. Local to the machine, never in the repo.
 - `set -u` safety: always use `"${arr[@]:-}"` or check array length before
   expanding possibly-empty arrays; use `[ -n "${assoc[$k]:-}" ]` for
   associative lookups.

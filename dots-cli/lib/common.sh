@@ -24,6 +24,9 @@ Machine setup (rare — new machine / migration):
   dots setup [name...]        Interactive per-machine setup steps (git, ssh,
                               github, dots-remote, calendar) from setup/;
                               no name = menu with done/open status
+  dots setup --status | --ignore <name> | --unignore <name>
+                              Status lines for the bar indicator / hide a
+                              step from it
   dots stow [component...|all] Stow components (menu, pre-selecting linked ones;
                               'all' links every component without the menu)
   dots stow-add [--all] [--dry-run] <name|path> [path]
