@@ -64,8 +64,12 @@ PanelWindow {
                 }
             }
 
+            // Hidden while there are no tray items
             Pill {
-                Tray {}
+                visible: tray.numberOfSystemTrayItems > 0
+                Tray {
+                    id: tray
+                }
             }
 
             // Coffee cup (only while "stay awake" is on) — own pill
