@@ -46,10 +46,11 @@ On `$PATH` via shell rc. Flat verbs:
 | Command | Purpose |
 |---|---|
 | `dots install [category...] [--packages-only] [--pick]` | Install categories (menu if none given) + run install scripts (`--pick`: choose packages + install scripts from one menu) |
-| `dots setup [name...]` | Interactive per-machine steps from `setup/` (e.g. calendar login); no name = menu with ✔/✘ status |
+| `dots install <category> --only <item,...>` | Non-interactive `--pick`: install only the named items (packages and/or install scripts) |
+| `dots setup [name...]` | Interactive per-machine steps from `setup/` (git, ssh, github, dots-remote, calendar); no name = menu with ✔/✘ status |
 | `dots add <pkg...> [--aur] [--category <c>]` | Install + track (the day-to-day habit; replaces raw `pacman -S`) |
 | `dots remove [<cat> <pkg>] [--uninstall]` | Untrack (and optionally uninstall) |
-| `dots list [category]` | Print tracked packages |
+| `dots list [category]` | Print tracked packages (`--categories`: only category names; `<category> --items`: packages + install scripts, the names `--only` takes) |
 | `dots stow [component...]` | Menu over stow components; conflicts backed up to `~/.dotfiles-backup/` |
 | `dots stow-add [--all] [--dry-run] <name\|path> [path]` | Import a live config (default `~/.config/<name>`) as a new stow component: pick what to track in an fzf tree picker — whole dirs or single files at any depth (`x`/space toggle, `l` open dir, `h` back; state-ish entries unselected), nested .git vendored, then stow + auto-commit. On an existing component it **extends** it: tracked files are pre-selected (locked), only new picks are added. `--dry-run` (`-n`) only prints what would happen |
 | `dots stow-remove [--yes] <component...>` | Detach: unstow, copy the repo's files back over the live paths, remove from repo + auto-commit. Never touches `~/.dotfiles-backup/` |
@@ -79,11 +80,16 @@ category file). Never hand-edit `packages/*/packages.txt` to bypass the CLI.
 
 ## Bootstrap
 
-`bash <(curl -fsSL .../bootstrap.sh)` — sanity check → pacman base tools
-(git/gum/stow) → clone → gum category picker (core+hyprland pre-selected) →
-`dots install` → stow all → first-run (dracula theme + chsh zsh) → optional
-`dots install agents --pick` (claude, pi) → optional `dots install apps --pick`. Fresh
-machines get dracula automatically; afterwards `dots theme` is run manually.
+`bash <(curl -fsSL .../bootstrap.sh)` — sanity check + sudo keepalive →
+pacman base tools (git/gum/stow) → clone → **all questions up front** (git
+name/email, which optional categories, which items of each — core + hyprland
+are always installed) → `dots setup git` + `dots setup ssh` → unattended:
+`dots install core hyprland`, `dots install <cat> --only <items>` per pick →
+stow all → dracula theme → `sudo chsh` to zsh. Bootstrap only *uses* the CLI
+(`list --categories`, `list --items`, `install --only`) — no CLI behavior
+exists just for it. github, dots-remote and calendar stay for later
+(`dots setup`). Fresh machines get dracula automatically; afterwards
+`dots theme` is run manually.
 
 ## Roadmap / open ideas
 

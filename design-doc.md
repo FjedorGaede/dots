@@ -45,6 +45,10 @@ dots/
 │   └── gaming/
 │       └── packages.txt        # add a category by adding a dir — nothing else to register
 ├── setup/                      # interactive per-machine steps (dots setup)
+│   ├── git/setup.sh            # global user.name/user.email
+│   ├── ssh/setup.sh            # ~/.ssh/id_ed25519 (no passphrase)
+│   ├── github/setup.sh         # gh login + upload the ssh key
+│   ├── dots-remote/setup.sh    # ~/dots origin https → ssh
 │   └── calendar/setup.sh
 ├── stow/                       # one folder per stow "package"
 │   ├── hypr/.config/hypr/...
@@ -101,6 +105,9 @@ entry, package first).
 secrets — and so are not part of `dots install` (e.g. the calendar's Google
 login). `dots setup` shows a menu with each step's status; contract:
 `setup.sh status` prints one line, exit 0 = done; no argument = run it.
+Steps run their prerequisite when it's missing (dots-remote → github → ssh
+→ git). git and ssh are part of bootstrap; github, dots-remote and calendar
+are left for later.
 
 ## The `dots` CLI
 
@@ -111,11 +118,12 @@ tool, not a dotfile.
 | Command | Behavior |
 |---|---|
 | `dots install [category...] [--packages-only] [--pick]` | Installs packages from given categories (all, via a menu, if none given), then runs the categories' install scripts |
+| `dots install <category> --only <item,...>` | Non-interactive twin of `--pick`: installs only the named packages/install scripts of one category; unknown names abort |
 | `dots setup [name...]` | Runs interactive per-machine steps from `setup/` (no name = menu with ✔/✘ status) |
 | `dots add <pkg...> [--aur] [--category <name>]` | Installs the package(s) in one call, then tracks them. No `--category` → prompts via `gum choose` (existing categories + "+ new category") |
 | `dots add --script <name> [--category <name>]` | Scaffolds `packages/<cat>/install/<name>/install.sh` |
 | `dots remove [<category> <pkg>] [--uninstall]` | Untracks from the category file. Add `--uninstall` to also remove from the system (with confirm). No arguments → searchable picker over all tracked packages |
-| `dots list [category]` | Prints tracked packages, optionally scoped to one category |
+| `dots list [category]` | Prints tracked packages, optionally scoped to one category. `--categories`: category names only; `<category> --items`: packages + install scripts (the names `--only` takes) |
 | `dots stow [component...]` | Menu over `stow/*`, pre-selecting already-linked components (via `stow -n` dry-run, not a state file); force-applies with backup on conflict |
 | `dots stow-add [--all] [--dry-run] <name\|path> [path]` | Import a live config dir (default `~/.config/<name>`; a bare path also works — name = basename) into `stow/<name>/` as a new component: **whitelist selection** in an fzf tree picker — toggle a dir to track it whole (`x`/space) or open it (`l`, back with `h`) to pick single files/subdirs at any depth (state-ish ones unselected; `--all` = everything except sockets), on an existing component it extends it (tracked files pre-selected + locked, only new files copied), nested `.git` dirs vendored, then backup-on-conflict stow + surgical auto-commit (`--dry-run`/`-n`: picker + report, nothing written). The import-side twin of `dots stow` |
 | `dots stow-remove [--yes] <component...>` | Detach: unstow, copy every tracked file back to its live path (replacing the symlinks — machine content == repo content, no backup involved), `rm -rf stow/<comp>`, auto-commit |
@@ -154,19 +162,26 @@ terminal on stdin. `DOTFILES_BRANCH=<branch>` clones another branch.)
 
 `bootstrap.sh` stays thin — all real logic lives in `dots-cli/`:
 
-1. Sanity checks (interactive TTY, Arch/CachyOS, not root), `sudo -v`
+1. Sanity checks (interactive TTY, Arch/CachyOS, not root), `sudo -v` plus a
+   background keepalive so long AUR builds never stop at a sudo prompt
 2. `pacman -Syu`, then bare `pacman` for `git gum stow base-devel`
    (chicken/egg — `dots` lives inside the repo being cloned)
 3. Clone `~/dots` (or `git pull --ff-only` if it already exists)
-4. gum category picker (core + hyprland pre-selected; core is required — its
-   yay install script provisions the AUR helper), then `dots install`
-5. `dots stow all`
-6. First run: dracula theme via `dots theme` (only when wal is installed),
-   optional `chsh` to zsh
-7. Optional `dots install agents --pick`, then optional
-   `dots install apps --pick`
+4. **All questions up front**: git name + email; which optional categories
+   to choose from (`dots list --categories` minus the always-installed
+   `core` + `hyprland`); per chosen category, which items
+   (`dots list <cat> --items`, nothing pre-selected)
+5. `dots setup git` (answers passed via `GIT_NAME`/`GIT_EMAIL`) and
+   `dots setup ssh` — no prompts; from here on it runs unattended
+6. `dots install core hyprland` (core first — its yay install script
+   provisions the AUR helper), then `dots install <cat> --only <items>`
+7. `dots stow all`
+8. First run: dracula theme via `dots theme` (only when wal is installed),
+   `sudo chsh` to zsh
 
-Interactive per-machine steps (`dots setup`) are deliberately not part of it.
+Bootstrap only consumes the CLI; it never gets CLI behavior of its own. The
+remaining `dots setup` steps (github, dots-remote, calendar) need a browser
+or more and are deliberately left for later.
 
 If the one-liner ever breaks, the fallback is always manual: clone the
 repo, run `dots-cli/bin/dots install` directly.

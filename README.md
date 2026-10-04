@@ -10,15 +10,15 @@ CLI. Built on bash + GNU stow + gum.
    ```
    bash <(curl -fsSL https://dots.fjedor.de/bootstrap.sh)
    ```
+   It asks everything up front (git name/email, which optional categories and
+   what from them), sets up git + an ssh key, then runs unattended.
 3. Reboot.
 
-Afterwards:
+Afterwards, `dots setup` shows the open per-machine steps and runs them:
 
-- SSH key: `ssh-keygen -t ed25519` → add at github.com/settings/keys, then
-  `git -C ~/dots remote set-url origin git@github.com:FjedorGaede/dots.git`
-- `gh auth login`
-- `sudo hostnamectl set-hostname <name>`
-- `dots setup` (calendar login)
+- `github` — gh login (browser / device code) + upload the ssh key
+- `dots-remote` — switch `~/dots` origin to ssh
+- `calendar` — Google calendar login
 
 ## The CLI
 
@@ -27,7 +27,7 @@ dots install [category] [--pick]   install packages + install scripts
 dots add <pkg> [--aur]             install + track a package (auto-commit)
 dots remove                        untrack a package
 dots stow [component]              link configs into $HOME
-dots setup                         per-machine steps (logins)
+dots setup [name]                  per-machine steps (git, ssh, github, ...)
 dots theme [name]                  apply a colorscheme
 dots edit                          edit the configs
 dots git                           lazygit in the repo
