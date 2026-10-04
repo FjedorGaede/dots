@@ -1,0 +1,1 @@
+../../../dots/stow/hypr/.config/hypr/scripts/brightness.sh
