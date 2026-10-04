@@ -1,23 +1,35 @@
 # cmd_install — dots install [category...] [--packages-only] [--pick]
+#                dots install <category> --only <item,item,...>
 # Installs packages from the given categories, then runs the categories'
 # install/ scripts (skipped with --packages-only). --pick shows one menu per
-# category with its packages and install scripts to choose from. With no category arguments,
+# category with its packages and install scripts to choose from. --only is
+# the non-interactive twin of --pick: installs just the named items (names as
+# printed by 'dots list <cat> --items'). With no category arguments,
 # shows a multi-select menu of all categories.
 
 cmd_install() {
-    local packages_only=false pick=false
+    local packages_only=false pick=false only=""
     local -a wanted=()
 
     while [ $# -gt 0 ]; do
         case "$1" in
             --packages-only) packages_only=true ;;
             --pick) pick=true ;;
+            --only)
+                shift
+                [ $# -gt 0 ] || die "usage: dots install <category> --only <item,...>"
+                only="$1"
+                ;;
             -*) die "unknown flag: $1" ;;
             *) wanted+=("$1") ;;
         esac
         shift
     done
     ! $pick || require_gum
+    if [ -n "$only" ]; then
+        ! $pick || die "use either --pick or --only, not both"
+        [ ${#wanted[@]} -eq 1 ] || die "exactly one category with --only — usage: dots install <category> --only <item,...>"
+    fi
 
     local -a chosen
     if [ ${#wanted[@]} -eq 0 ]; then
@@ -42,6 +54,7 @@ cmd_install() {
         mapfile -t pkgs < <(packages_in_category "$cat")
         $packages_only || mapfile -t scripts < <(install_scripts "$cat")
         $pick && pick_items "$cat" pkgs scripts
+        [ -z "$only" ] || only_items "$cat" "$only" pkgs scripts
 
         install_packages "$cat" "${pkgs[@]}"
         if $packages_only; then
@@ -49,7 +62,7 @@ cmd_install() {
         else
             run_install_scripts "$cat" "${scripts[@]}"
         fi
-        if $pick; then
+        if $pick || [ -n "$only" ]; then
             report_picked "$cat" pkgs scripts
         else
             success "category '$cat' installed"
@@ -93,6 +106,36 @@ pick_items() {
     done
     _pkgs=("${keep_pkgs[@]}")
     _scripts=("${keep_scripts[@]}")
+}
+
+# only_items <cat> <item,item,...> <pkgs-array-name> <scripts-array-name>
+# Narrows both arrays in place to the named items, like pick_items without
+# the menu. An item naming a package and a script selects both. Unknown
+# names die — a typo must not silently install nothing.
+only_items() {
+    local cat="$1" list="$2"
+    local -n _opkgs="$3" _oscripts="$4"
+    local -a names=() keep_pkgs=() keep_scripts=()
+    local name line s found
+
+    IFS=',' read -ra names <<< "$list"
+    for name in "${names[@]}"; do
+        found=false
+        is_listed "$name" "${_opkgs[@]}" && found=true
+        for s in "${_oscripts[@]}"; do
+            [ "$s" = "$name" ] && found=true
+        done
+        $found || die "'$cat' has no item '$name' (see: dots list $cat --items)"
+    done
+
+    for line in "${_opkgs[@]}"; do
+        is_picked "$(pkg_name "$line")" "${names[@]}" && keep_pkgs+=("$line")
+    done
+    for s in "${_oscripts[@]}"; do
+        is_picked "$s" "${names[@]}" && keep_scripts+=("$s")
+    done
+    _opkgs=("${keep_pkgs[@]}")
+    _oscripts=("${keep_scripts[@]}")
 }
 
 # report_picked <cat> <pkgs-array-name> <scripts-array-name> — what --pick did

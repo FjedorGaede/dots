@@ -18,9 +18,12 @@ Machine setup (rare — new machine / migration):
                               given) + run their install/ scripts (skipped
                               with --packages-only); --pick = choose packages
                               + install scripts from a menu
-  dots setup [name...]        Interactive per-machine setup steps (e.g.
-                              calendar login) from setup/; no name = menu
-                              with done/open status
+  dots install <category> --only <item,...>
+                              Install only the named items of one category
+                              (names from 'dots list <category> --items')
+  dots setup [name...]        Interactive per-machine setup steps (git, ssh,
+                              github, dots-remote, calendar) from setup/;
+                              no name = menu with done/open status
   dots stow [component...|all] Stow components (menu, pre-selecting linked ones;
                               'all' links every component without the menu)
   dots stow-add [--all] [--dry-run] <name|path> [path]
@@ -33,6 +36,9 @@ Machine setup (rare — new machine / migration):
                               Detach a component: unstow, copy repo content back
                               over the live symlinks, remove from repo + commit
   dots list [category]        Show tracked packages (all or one category)
+  dots list --categories      Category names, one per line
+  dots list <category> --items
+                              Installable items (packages + install scripts)
   dots sync                   Drift check: installed vs. tracked (print-only)
 
 Packages (tracking changes auto-commit + auto-push):

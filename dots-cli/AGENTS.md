@@ -10,11 +10,11 @@ dots-cli/
 ├── bin/dots          # entrypoint: resolves DOTFILES_DIR/LIB_DIR, sources common.sh, calls main "$@"
 ├── lib/
 │   ├── common.sh     # helpers + main() dispatch — no commands live here
-│   ├── install.sh    # cmd_install
+│   ├── install.sh    # cmd_install (--pick menu / --only list narrow a category)
 │   ├── setup.sh      # cmd_setup (interactive per-machine steps from setup/)
 │   ├── add.sh        # cmd_add
 │   ├── remove.sh     # cmd_remove
-│   ├── list.sh       # cmd_list
+│   ├── list.sh       # cmd_list (--categories, <cat> --items: machine-readable for bootstrap)
 │   ├── stow.sh       # cmd_stow
 │   ├── stow-add.sh   # cmd_stow_add (import a live config as a new component
 │   │                 #   or extend an existing one,
