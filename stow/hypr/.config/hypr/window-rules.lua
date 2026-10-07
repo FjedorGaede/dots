@@ -91,13 +91,16 @@ hl.window_rule({
     workspace = "special:telegram",
 })
 
--- ── SLACK (Special workspace, vivaldi web app) ────────
+-- ── SLACK (desktop app) + HUDDLES ────────────────────
+-- Every Slack window has class "slack"; huddle windows are told apart by
+-- title (TODO: verify the exact huddle title on the first huddle)
 hl.window_rule({
-    match     = { class = "vivaldi-app\\.slack\\.com__client-Default" },
-    float     = true,
-    center    = true,
-    size      = { "monitor_w * 0.9", "monitor_h * 0.9" },
-    workspace = "special:slack",
+    match     = { class = "slack", title = "negative:.*[Hh]uddle.*" },
+    workspace = "name:slack",
+})
+hl.window_rule({
+    match     = { class = "slack", title = ".*[Hh]uddle.*" },
+    workspace = "name:huddle",
 })
 
 -- ── SMART GAPS (No gaps when only one window) ─────────

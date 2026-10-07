@@ -1,12 +1,17 @@
 #!/bin/bash
-# Slack is a vivaldi --app web app (packages/apps/install/slack) — no daemon,
-# so it's either a window or not running.
+# Slack desktop app (aur:slack-desktop); window rules put the main window on
+# workspace "slack" and huddle windows on workspace "huddle".
+#   slack.sh          Super+Z        — go to slack (launch if not running)
+#   slack.sh huddle   Super+Shift+Z  — go to the huddle
+# Pressing the key again while on that workspace goes back where you came from.
+WS="${1:-slack}"
 
-# Check if a Slack window exists in Hyprland
-if hyprctl clients -j | jq -e '.[] | select(.class == "vivaldi-app.slack.com__client-Default")' > /dev/null 2>&1; then
-  # Window exists → toggle special workspace
-  hyprctl dispatch 'hl.dsp.workspace.toggle_special("slack")'
-else
-  # Not running → fresh launch
-  gtk-launch slack &
+active=$(hyprctl activeworkspace -j | jq -r '.name')
+
+if [ "$active" = "$WS" ]; then
+    hyprctl dispatch 'hl.dsp.focus({workspace="previous"})'
+elif [ "$WS" = "slack" ] && ! hyprctl clients -j | jq -e 'any(.[]; .class == "slack")' > /dev/null; then
+    hyprctl dispatch 'hl.dsp.exec_cmd("slack")'
+elif hyprctl workspaces -j | jq -e --arg w "$WS" 'any(.[]; .name == $w)' > /dev/null; then
+    hyprctl dispatch 'hl.dsp.focus({workspace="name:'"$WS"'"})'
 fi

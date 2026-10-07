@@ -10,7 +10,7 @@ RowLayout {
 
     spacing: 10
 
-    property var nameIconMap: {"obsidian": "󰇈"};
+    property var nameIconMap: {"obsidian": "󰇈", "slack": "󰒱", "huddle": "󰏲"};
 
     function iconOrName(name) {
         return nameIconMap[name] ?? name;
