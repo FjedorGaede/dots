@@ -44,7 +44,7 @@ BarButton {
 
     icon: network.getWifiIcon()
     tooltipText: network.getTooltipText()
-    onClicked: PanelService.toggle("wifi")
+    onClicked: PanelService.toggle("wifi", wifiManager.screenName)
 
     WifiPanel {
         id: wifiManager

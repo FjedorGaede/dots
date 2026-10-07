@@ -12,10 +12,10 @@ PopupPanel {
     // Adapter + device groups come from BluetoothService
 
     // Open state (+ `qs ipc call bluetooth …`) lives in PanelService
-    open: PanelService.isOpen("bluetooth")
+    open: PanelService.isOpenOn("bluetooth", screenName)
 
     onVisibleChanged: {
-        PanelService.setOpen("bluetooth", visible)
+        PanelService.setOpen("bluetooth", visible, screenName)
         if (!BluetoothService.adapter) return
 
         if (visible) {

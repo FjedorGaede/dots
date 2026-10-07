@@ -41,10 +41,10 @@ PopupPanel {
     }
 
     // Open state (+ `qs ipc call wifi …`) lives in PanelService
-    open: PanelService.isOpen("wifi")
+    open: PanelService.isOpenOn("wifi", screenName)
 
     onVisibleChanged: {
-        PanelService.setOpen("wifi", visible)
+        PanelService.setOpen("wifi", visible, screenName)
         if (wifiDevice)
             wifiDevice.scannerEnabled = visible
         if (!visible)

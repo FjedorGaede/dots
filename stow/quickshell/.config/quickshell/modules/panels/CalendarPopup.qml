@@ -121,9 +121,9 @@ PopupPanel {
     onSelectedChanged: resetScroll()
 
     // Open state in PanelService (`qs ipc call calendar …`), synced both ways
-    open: PanelService.isOpen("calendar")
+    open: PanelService.isOpenOn("calendar", screenName)
     onVisibleChanged: {
-        PanelService.setOpen("calendar", visible);
+        PanelService.setOpen("calendar", visible, screenName);
         if (visible) {
             viewMonth = Dates.firstOfMonth(today);
             selected = today;

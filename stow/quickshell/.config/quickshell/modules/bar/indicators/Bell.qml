@@ -12,9 +12,10 @@ BarButton {
 
     icon: bell.count > 0 ? Icons.bell.unread : Icons.bell.empty
     tooltipText: bell.count > 0 ? bell.count + " notifications" : "No notifications"
-    onClicked: PanelService.toggle("notifications")
+    onClicked: PanelService.toggle("notifications", notificationCenter.screenName)
 
     NotificationCenter {
+        id: notificationCenter
         anchorItem: bell
     }
 }

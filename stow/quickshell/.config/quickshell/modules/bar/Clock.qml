@@ -25,7 +25,7 @@ RowLayout {
             cursorShape: Qt.PointingHandCursor
             onClicked: (mouse) => {
                 if (mouse.button === Qt.RightButton) {
-                    PanelService.toggle("calendar");
+                    PanelService.toggle("calendar", calendarPopup.screenName);
                 } else {
                     clockText.showDate = !clockText.showDate;
                 }

@@ -1,3 +1,4 @@
+import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
@@ -9,6 +10,9 @@ RowLayout {
     id: root
 
     spacing: 10
+
+    // Every screen has a bar: show only the workspaces on this bar's monitor
+    readonly property string screenName: QsWindow.window?.screen?.name ?? ""
 
     property var nameIconMap: {"obsidian": "󰇈", "slack": "󰒱", "huddle": "󰏲"};
 
@@ -29,11 +33,13 @@ RowLayout {
     }
 
     Repeater {
-        model: root.sortSpecialAndNamedWorkspacesToBack(Hyprland.workspaces.values.filter(it => it.id >= 0 || root.isWhitelistedName(it.name)))
+        model: root.sortSpecialAndNamedWorkspacesToBack(Hyprland.workspaces.values.filter(it => it.monitor?.name === root.screenName
+                                                       && (it.id >= 0 || root.isWhitelistedName(it.name))))
 
         StyledText {
             required property var modelData
-            property bool isActive: Hyprland.focusedWorkspace?.id === modelData.id
+            // the one this monitor shows (focused or not)
+            property bool isActive: modelData.active
             text: isActive ? "󱓻" : root.iconOrName(modelData.name)
             Layout.preferredWidth: 15
             horizontalAlignment: Text.AlignHCenter

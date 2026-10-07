@@ -228,5 +228,6 @@ original comments stay next to the code they explain.
   under an existing window (happened on a hot reload). Windows that belong to
   a screen are created by a `Variants` over that screen (shell.qml): changing
   the main monitor destroys them and creates fresh ones. Inside a window, take
-  the screen from the window itself (`item.QsWindow.window.screen`, see
-  `indicators/Home.qml`) — fixed for that window's lifetime.
+  the screen from the window itself (`QsWindow.window.screen` in an item,
+  `anchor.window.screen` in a popup — see `bar/Workspaces.qml`,
+  `components/PopupPanel.qml`) — fixed for that window's lifetime.

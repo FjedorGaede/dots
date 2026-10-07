@@ -19,7 +19,7 @@ BarButton {
 
     icon: sound.getIcon()
     tooltipText: sound.currentVolume + "%"
-    onClicked: PanelService.toggle("audio")
+    onClicked: PanelService.toggle("audio", audioPanel.screenName)
 
     AudioPanel {
         id: audioPanel

@@ -12,8 +12,8 @@ import qs.modules.notifications
 PopupPanel {
     id: center
     // Open state (+ `qs ipc call notifications …`) lives in PanelService
-    open: PanelService.isOpen("notifications")
-    onVisibleChanged: PanelService.setOpen("notifications", visible)
+    open: PanelService.isOpenOn("notifications", screenName)
+    onVisibleChanged: PanelService.setOpen("notifications", visible, screenName)
     minWidth: 360
     property int maxListHeight: 400
 

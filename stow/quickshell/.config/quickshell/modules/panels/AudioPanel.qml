@@ -16,8 +16,8 @@ PopupPanel {
 
     // Open state (+ `qs ipc call audio …`) lives in PanelService;
     // Osd.qml reads it to stay hidden while this panel is open
-    open: PanelService.isOpen("audio")
-    onVisibleChanged: PanelService.setOpen("audio", visible)
+    open: PanelService.isOpenOn("audio", screenName)
+    onVisibleChanged: PanelService.setOpen("audio", visible, screenName)
 
     // Nodes, device labels and the PwObjectTracker live in AudioService
 

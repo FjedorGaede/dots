@@ -42,7 +42,7 @@ BarButton {
     iconSize: 16
     tooltipText: bluetooth.bluetoothTooltipText()
     rightClickable: true
-    onClicked: PanelService.toggle("bluetooth")
+    onClicked: PanelService.toggle("bluetooth", btManager.screenName)
     onRightClicked: Apps.bluetoothManager()
 
     BluetoothPanel {

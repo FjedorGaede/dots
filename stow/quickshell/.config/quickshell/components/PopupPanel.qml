@@ -28,6 +28,10 @@ PopupWindow {
     property bool open: false
     onOpenChanged: visible = open
 
+    // Screen of the bar this popup hangs from (every screen has a bar) —
+    // for PanelService.isOpenOn(name, screenName)
+    readonly property string screenName: anchor.window?.screen?.name ?? ""
+
     anchor.item: anchorItem
     anchor.edges: Edges.Bottom
     anchor.gravity: Edges.Bottom
