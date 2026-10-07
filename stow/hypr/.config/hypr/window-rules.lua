@@ -92,15 +92,16 @@ hl.window_rule({
 })
 
 -- ── SLACK (desktop app) + HUDDLES ────────────────────
--- Every Slack window has class "slack"; huddle windows are told apart by
--- title (TODO: verify the exact huddle title on the first huddle)
+-- Every Slack window has class "slack"; a huddle window opens titled
+-- "Slack - Huddle Preview" (rules match the title at open) and starts fullscreen
 hl.window_rule({
     match     = { class = "slack", title = "negative:.*[Hh]uddle.*" },
     workspace = "name:slack",
 })
 hl.window_rule({
-    match     = { class = "slack", title = ".*[Hh]uddle.*" },
-    workspace = "name:huddle",
+    match      = { class = "slack", title = ".*[Hh]uddle.*" },
+    workspace  = "name:huddle",
+    fullscreen = true,
 })
 
 -- ── SMART GAPS (No gaps when only one window) ─────────

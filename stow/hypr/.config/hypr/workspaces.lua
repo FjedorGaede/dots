@@ -82,6 +82,18 @@ local function apply()
             end
         end
     end
+
+    -- After a hotplug the main monitor may show another screen's workspace
+    -- (10 after unplugging) or one Hyprland made up for it (11, 12, ...):
+    -- show the lowest of 1-9 instead
+    local shown = main.active_workspace
+    if not shown or shown.id > 9 then
+        local lowest
+        for _, ws in ipairs(hl.get_workspaces()) do
+            if ws.id >= 1 and ws.id <= 9 and (not lowest or ws.id < lowest) then lowest = ws.id end
+        end
+        if lowest then main:set_workspace({ workspace = lowest }) end
+    end
 end
 
 -- Monitors may not exist yet while the config loads at startup
