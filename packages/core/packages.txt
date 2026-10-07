@@ -28,3 +28,9 @@ bluez-utils
 wireguard-tools
 yazi
 tree
+xdg-terminal-exec
+7zip
+resvg
+ffmpegthumbnailer
+poppler
+imagemagick
