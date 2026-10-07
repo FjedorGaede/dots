@@ -6,7 +6,7 @@
   "modelThinkingLevels": {
     "claude-bridge/claude-opus-5-5": "medium"
   },
-  "theme": "dracula",
+  "theme": "wal",
   "quietStartup": true,
   "doubleEscapeAction": "tree",
   "compaction": {
