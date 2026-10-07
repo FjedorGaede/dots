@@ -8,3 +8,4 @@ aur:bambustudio-bin
 aur:bazecor
 aur:mqtt-explorer
 aur:spotify
+aur:slack-desktop
