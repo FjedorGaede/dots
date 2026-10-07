@@ -7,8 +7,9 @@
 #
 # What it does:
 #   1. wal regenerates ~/.cache/wal and renders ~/.config/wal/templates/
-#   2. runs every executable adapter in adapters/ with the theme name as $1
-#   3. notify-send summary
+#   2. resolves the theme's main accent (accents file) to ~/.cache/wal/accent
+#   3. runs every executable adapter in adapters/ with the theme name as $1
+#   4. notify-send summary
 #
 # Adapter contract: see README.md. WAL_BIN env override stubs wal (testing).
 
@@ -28,6 +29,25 @@ source "$LIB_DIR/common.sh"
 
 THEME_ADAPTERS_DIR="$(cd "$(dirname "$SOURCE")/adapters" && pwd)"
 WAL_BIN="${WAL_BIN:-wal}"
+ACCENTS_FILE="$(dirname "$THEME_ADAPTERS_DIR")/accents"
+WAL_CACHE="$HOME/.cache/wal"
+
+resolve_accent() { # resolve_accent <theme-name> -> prints #rrggbb
+    local theme="$1" spec
+
+    # the theme's own line, else `default`, else color5
+    spec="$(awk -v t="$theme" '$1 == t { print $2; exit }' "$ACCENTS_FILE")"
+    [ -n "$spec" ] || spec="$(awk '$1 == "default" { print $2; exit }' "$ACCENTS_FILE")"
+    [ -n "$spec" ] || spec="color5"
+
+    case "$spec" in
+        color[0-9]*)
+            spec="$(sed -n "s/^$spec='\(.*\)'$/\1/p" "$WAL_CACHE/colors.sh")" ;;
+    esac
+
+    [[ $spec =~ ^#[0-9a-fA-F]{6}$ ]] || return 1
+    echo "$spec"
+}
 
 run_adapters() { # run_adapters <theme-name> -> 0 if all adapters succeeded
     local theme="$1" adapter failed=0 total=0
@@ -73,6 +93,14 @@ main() {
         die "wal failed to apply theme '$name'"
     fi
     success "wal: colors generated and templates rendered"
+
+    local accent
+    if ! accent="$(resolve_accent "$name")"; then
+        rm -f "$THEME_LOG"
+        die "could not resolve the main accent for '$name' (see $ACCENTS_FILE)"
+    fi
+    echo "$accent" > "$WAL_CACHE/accent"
+    success "accent: $accent"
 
     if ! run_adapters "$name"; then
         rm -f "$THEME_LOG"

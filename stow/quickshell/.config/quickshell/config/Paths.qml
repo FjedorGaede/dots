@@ -12,6 +12,8 @@ Singleton {
 
     // pywal scheme (Theme.qml watches it)
     readonly property string walColors: root.cache + "/wal/colors.json"
+    // Main accent, one #rrggbb line written by `dots theme` (Theme.qml watches it)
+    readonly property string walAccent: root.cache + "/wal/accent"
 
     // Stay-awake state (persists across reloads; read by StayAwakeService)
     readonly property string stayAwakeFlag: root.cache + "/quickshell/stay-awake.json"

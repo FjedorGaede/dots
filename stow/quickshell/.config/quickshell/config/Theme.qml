@@ -7,8 +7,10 @@ import Quickshell.Io
 //   0. static Catppuccin Mocha  — hardcoded fallback below
 //   1. pywal scheme             — ~/.cache/wal/colors.json, watched live
 //   2. user overrides           — overrides.json next to this file, watched live
-//        { "mainAccent": "#f6aede",  // fixed hex → always mine
-//          "highlight":  "color13" } // "colorN"  → follow the wal scheme
+//        { "highlight": "color13" }  // "colorN" → wal slot, hex → fixed
+//
+// mainAccent is NOT an override: it comes from ~/.cache/wal/accent, which
+// `dots theme` resolves per theme (dots-cli/theming/accents), watched live.
 //
 // The resolved accent/highlight are exported to hyprlock through
 //   ~/.cache/quickshell-theme/hyprlock.conf  ($qs_accent / $qs_highlight),
@@ -115,9 +117,10 @@ Singleton {
     property color color14: root.walColors.color14 ?? "#94e2d5"
     property color color15: root.walColors.color15 ?? "#a6adc8"
 
-    // Custom accent — never comes from wal directly; either a fixed color of
-    // yours or a reference into the current scheme (see overrides.json)
-    readonly property color mainAccent: resolveOverride(overrides.mainAccent, "#f6aede")
+    // Main accent — resolved per theme by `dots theme` (dots-cli/theming/accents);
+    // until the first run there's no file → the scheme's color5
+    property string accentFile: ""
+    readonly property color mainAccent: /^#[0-9a-fA-F]{6}$/.test(accentFile) ? accentFile : color5
     readonly property color highlight:  resolveOverride(overrides.highlight,  "#f5c2e7")
 
     // Translucent helpers
@@ -163,6 +166,14 @@ Singleton {
     }
 
     FileView {
+        id: accentView
+        path: Paths.walAccent
+        watchChanges: true
+        onFileChanged: reload()
+        onTextChanged: root.accentFile = text().trim()
+    }
+
+    FileView {
         id: overridesView
         path: Qt.resolvedUrl("overrides.json")
         watchChanges: true
@@ -170,7 +181,6 @@ Singleton {
 
         JsonAdapter {
             id: overrides
-            property string mainAccent: ""
             property string highlight:  ""
         }
     }

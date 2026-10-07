@@ -53,6 +53,20 @@ for k, v in pairs(wal_colors) do
     _G[k] = v
 end
 
+-- Main accent: one #rrggbb line resolved per theme by `dots theme`
+-- (dots-cli/theming/accents); falls back to color5 before the first run
+local function read_accent(path)
+    local file = io.open(path, "r")
+    if not file then return nil end
+    local hex = (file:read("*l") or ""):match("^#(%x%x%x%x%x%x)$")
+    file:close()
+    if not hex then return nil end
+    return string.format("rgba(%d,%d,%d,1.0)",
+        tonumber(hex:sub(1, 2), 16), tonumber(hex:sub(3, 4), 16), tonumber(hex:sub(5, 6), 16))
+end
+
+accent = read_accent(os.getenv("HOME") .. "/.cache/wal/accent") or color5
+
 -- Fonts
 mainFont = "JetBrainsMono NFP"
 mainFontSemiBold = "JetBrainsMono NFP SemiBold"

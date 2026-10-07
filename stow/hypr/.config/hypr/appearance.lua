@@ -10,7 +10,7 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = color5,
+            active_border   = accent,
             inactive_border = color8,
         },
 

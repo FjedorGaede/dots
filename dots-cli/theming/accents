@@ -1,0 +1,10 @@
+# Main accent per theme — the single source of truth for the accent color.
+#
+#   <theme-name>  <#rrggbb | colorN>
+#
+# colorN = a slot of the theme's wal scheme. Themes without a line use
+# `default`. apply-theme.sh resolves it to ~/.cache/wal/accent (one hex line),
+# which quickshell, hyprland and yazi read.
+
+default  color5
+dracula  #f6aede
