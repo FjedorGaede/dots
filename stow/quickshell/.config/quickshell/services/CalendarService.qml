@@ -14,7 +14,8 @@ import qs.config
 // default = checked in Google's sidebar).
 //
 // Event: { id, cal, title, location, allDay, start, end (epoch ms; all-day end
-// is the exclusive local midnight), url (Google edit link), join (meet url) }
+// is the exclusive local midnight), url (Google edit link), join (meeting url:
+// Google Meet, Teams, Zoom, Jitsi) }
 Singleton {
     id: root
 
@@ -135,7 +136,25 @@ Singleton {
     }
 
     function open(ev) { Apps.openUrl(ev.url) }
-    function join(ev) { Apps.openUrl(ev.join) }
+    // Meeting behind ev.join: "teams" (opens in the Teams web app), "meet",
+    // "other" (Zoom, Jitsi, … → browser) or "" (no link)
+    function meetingKind(ev) {
+        const url = ev?.join ?? "";
+        if (/^https:\/\/teams\.(microsoft|live)\.com\//.test(url)) return "teams";
+        if (/^https:\/\/meet\.google\.com\//.test(url)) return "meet";
+        return url !== "" ? "other" : "";
+    }
+
+    function joinLabel(ev) {
+        const kind = root.meetingKind(ev);
+        return kind === "teams" ? "Join in Teams"
+             : kind === "meet" ? "Join Google Meet" : "Join meeting";
+    }
+
+    function join(ev) {
+        if (root.meetingKind(ev) === "teams") Apps.openTeams(ev.join);
+        else Apps.openUrl(ev.join);
+    }
     function openDay(d) {
         Apps.openUrl("https://calendar.google.com/calendar/r/day/"
                      + d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate());

@@ -80,13 +80,15 @@ RowLayout {
         GhostButton {
             visible: !!announcementMenu.ev?.join
             Layout.fillWidth: true
+            leftAligned: true
             icon: Icons.calendar.video
-            text: "Join meeting"
+            text: CalendarService.joinLabel(announcementMenu.ev)
             onClicked: { CalendarService.join(announcementMenu.ev); announcementMenu.visible = false; }
         }
 
         GhostButton {
             Layout.fillWidth: true
+            leftAligned: true
             icon: Icons.calendar.external
             text: "Open in Google Calendar"
             onClicked: { CalendarService.open(announcementMenu.ev); announcementMenu.visible = false; }
@@ -94,6 +96,7 @@ RowLayout {
 
         GhostButton {
             Layout.fillWidth: true
+            leftAligned: true
             icon: Icons.calendar.hide
             text: "Hide from the bar"
             onClicked: { CalendarService.dismiss(announcementMenu.ev); announcementMenu.visible = false; }

@@ -22,6 +22,13 @@ Singleton {
     // (terminal = shared.lua `terminal`)
     function connectionEditor()   { Quickshell.execDetached(["ghostty", "-e", "nmtui", "edit"]) }
     function openUrl(url)         { Quickshell.execDetached(["xdg-open", url]) }
+    // Teams link → the Teams web app window (~/.local/bin/teams-webapp, written
+    // by dots' packages/apps/install/teams); the browser if it isn't installed
+    function openTeams(url) {
+        Quickshell.execDetached(["sh", "-c",
+            'app="$HOME/.local/bin/teams-webapp"; [ -x "$app" ] || app=xdg-open; exec "$app" "$1"',
+            "sh", url])
+    }
     // Shell command in a terminal. Interactive shell → the rc's PATH applies
     // (`dots` is only on PATH via stow/shell/.commonshellrc); the window stays
     // open afterwards so the result can be read.

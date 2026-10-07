@@ -35,6 +35,8 @@ Rectangle {
     // false: the single glyph/label is centered directly — fixed-size buttons
     // (a RowLayout would shift a fractional-width text by up to 1 px).
     property bool rowContent: true
+    // Content at the left edge (+ hPadding) instead of centered — menu entries
+    property bool leftAligned: false
 
     readonly property bool hovered: hover.hovered
 
@@ -74,7 +76,10 @@ Rectangle {
     RowLayout {
         id: content
         visible: root.rowContent
-        anchors.centerIn: parent
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: root.leftAligned ? undefined : parent.horizontalCenter
+        anchors.left: root.leftAligned ? parent.left : undefined
+        anchors.leftMargin: root.hPadding
         spacing: 4
 
         StyledText {

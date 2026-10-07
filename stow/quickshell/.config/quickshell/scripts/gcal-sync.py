@@ -49,7 +49,7 @@ FUTURE_DAYS = 180
 JOIN_RE = re.compile(
     r"https://(?:meet\.google\.com/[a-z0-9-]+"
     r"|[\w.-]*zoom\.us/(?:j|my)/[^\s<>\"']+"
-    r"|teams\.microsoft\.com/l/meetup-join/[^\s<>\"']+"
+    r"|teams\.microsoft\.com/(?:l/meetup-join|meet)/[^\s<>\"']+"
     r"|teams\.live\.com/meet/[^\s<>\"']+"
     r"|meet\.jit\.si/[^\s<>\"']+)")
 
