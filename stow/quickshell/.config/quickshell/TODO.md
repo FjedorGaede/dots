@@ -219,8 +219,9 @@
       "connecting…/forgetting…" state tracking that confirms BlueZ actually
       applied the action)
 - [ ] Bluetooth pairing agent for numeric-comparison devices (phones/keyboards):
-      native confirm dialog would need a D-Bus agent (~200 lines) — currently
-      such devices fail silently; interim fix: run `blueman-agent` in background
+      native confirm dialog would need a D-Bus agent (~200 lines). Interim:
+      `bt-agent -c NoInputNoOutput` (bluez-tools) autostarted in hypr/autostart.lua
+      auto-accepts — no confirm dialog yet
 - [ ] Native polkit agent (0.3.0 Polkit support) — replace hyprpolkitagent
       someday for full visual consistency
       ASSESSMENT (2026-09): easy. Quickshell exposes the whole flow as a QML
