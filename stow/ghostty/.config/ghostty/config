@@ -1,1 +1,4 @@
 keybind = shift+enter=text:\x1b\r
+
+# wal colors (rendered by dots theme; ? = fine if missing before the first run)
+config-file = ?~/.cache/wal/colors-ghostty
