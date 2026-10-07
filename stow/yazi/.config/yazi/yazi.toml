@@ -1,0 +1,6 @@
+# Only overrides — yazi merges these over its built-in defaults.
+[mgr]
+ratio = [2, 4, 3]
+linemode = "mtime"   # formatted by init.lua
+show_hidden = true
+title_format = "Yazi: {cwd}"
