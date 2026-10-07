@@ -3,7 +3,15 @@
 onboarding = false
 
 [theme]
-name = "dracula"
+# "terminal" = use the host terminal's ANSI palette — ghostty takes it from
+# wal (~/.cache/wal/colors-ghostty), so herdr follows `dots theme`.
+name = "terminal"
+
+[theme.custom]
+# Only named colors = ANSI slots of the terminal palette, so they follow
+# `dots theme`. herdr does NOT get the main accent (it can't read
+# ~/.cache/wal/accent). darkgray = wal color8, the scheme's selection color.
+active_row_bg = "darkgray"   # active space + focused agent row
 
 [ui]
 tab_bar_position = "top"          # tmux: status-position top
