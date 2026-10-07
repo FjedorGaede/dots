@@ -13,4 +13,9 @@ hl.on("hyprland.start", function()
     -- passkey confirmations (no BlueZ agent API) — same approach as omarchy 4.x
     hl.exec_cmd("bt-agent -c NoInputNoOutput")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
+
+    -- startup layout: browser on 1, terminal running herdr on 2
+    -- (exec_cmd rules match by PID, so these must open their window directly)
+    hl.exec_cmd(browser, { workspace = "1 silent" })
+    hl.exec_cmd(terminal .. " -e " .. os.getenv("HOME") .. "/.local/bin/herdr", { workspace = "2 silent" })
 end)
