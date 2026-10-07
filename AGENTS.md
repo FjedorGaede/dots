@@ -56,10 +56,11 @@ On `$PATH` via shell rc. Flat verbs:
 | `dots stow-add [--all] [--dry-run] <name\|path> [path]` | Import a live config (default `~/.config/<name>`) as a new stow component: pick what to track in an fzf tree picker — whole dirs or single files at any depth (`x`/space toggle, `l` open dir, `h` back; state-ish entries unselected), nested .git vendored, then stow + auto-commit. On an existing component it **extends** it: tracked files are pre-selected (locked), only new picks are added. `--dry-run` (`-n`) only prints what would happen |
 | `dots stow-remove [--yes] <component...>` | Detach: unstow, copy the repo's files back over the live paths, remove from repo + auto-commit. Never touches `~/.dotfiles-backup/` |
 | `dots sync` | Drift check: installed-but-untracked packages (print-only) |
+| `dots update [--dry-run]` | Pull (ff-only, refuses on uncommitted changes), `stow -R` all linked components, report missing packages / unstowed components, reload Hyprland. The only pull path |
 | `dots theme` | Apply theming scheme (default: dracula; `WAL_BIN=echo` for dry-run) |
 | `dots calendar [client\|login\|logout\|list]` | Log Google accounts into the quickshell calendar (OAuth; client + tokens stay in `~/.local/share/quickshell/`, never in the repo). Thin wrapper around `stow/quickshell/.config/quickshell/scripts/gcal-sync.py` |
 | `dots edit` | Open repo files in editor |
-| `dots git` | lazygit in the repo — the only manual git door |
+| `dots git` | lazygit in the repo — the only manual git door (pull via `dots update`) |
 
 `add`/`remove` auto-commit + auto-push (surgically — only the touched
 category file). Never hand-edit `packages/*/packages.txt` to bypass the CLI.

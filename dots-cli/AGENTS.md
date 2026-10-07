@@ -23,6 +23,8 @@ dots-cli/
 │   │                 #   whole dirs / single files (h/l nav), vendoring of nested .git)
 │   ├── stow-remove.sh  # cmd_stow_remove (detach: unstow + restore + remove)
 │   ├── sync.sh       # cmd_sync
+│   ├── update.sh     # cmd_update (pull --ff-only + restow linked components
+│   │                 #   + report packages + reload Hyprland)
 │   ├── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
 │   ├── calendar.sh   # cmd_calendar (thin surface over quickshell's gcal-sync.py)
 │   ├── edit.sh       # cmd_edit
@@ -139,8 +141,10 @@ Flow of `apply-theme.sh`:
   (`dots git` just opens it) — no custom staging logic.
 - **Interactive commands need gum or a dedicated TUI** — never hand-roll a
   worse version of an existing tool (lesson: the grouped commit picker was
-  replaced by lazygit). `dots git` is the ONLY git door — no dots pull/push
-  wrappers; lazygit's p / Shift+P cover it.
+  replaced by lazygit). `dots git` is the ONLY manual git door — no push or
+  commit wrappers. Sole exception: `dots update` pulls, because a pull is
+  useless without the restow that follows it; it is fast-forward only and
+  refuses on uncommitted changes or divergence (those go to lazygit).
 - **Filesystem is the source of truth** — categories are discovered by scanning
   `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`, theme
   adapters by scanning `dots-cli/theming/adapters/*`; no registries.

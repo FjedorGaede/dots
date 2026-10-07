@@ -54,6 +54,9 @@ Packages (tracking changes auto-commit + auto-push):
                               system; no arguments = searchable picker
 
 Daily:
+  dots update [--dry-run]     Pull the repo (fast-forward only), restow every
+                              linked component, report packages to install,
+                              reload Hyprland; --dry-run = preview only
   dots edit [component]       Open $EDITOR in the stow tree (whole tree or one
                               component); edits land in the repo — commit them
   dots theme [-l] [name]      Apply a pywal16 colorscheme (+ per-app adapters in
@@ -62,7 +65,7 @@ Daily:
                               Google account login for the quickshell
                               calendar (OAuth); no command = menu
 
-Git (the only git door — lazygit: pull = p, push = Shift+P):
+Git (pushing + everything else — lazygit: pull = p, push = Shift+P):
   dots git                    Open lazygit in the repo
 
 Category layout (packages/ is scanned — a directory = one category):
@@ -242,7 +245,7 @@ main() {
     [ $# -gt 0 ] && shift
 
     case "$cmd" in
-        install|setup|add|remove|list|stow|sync|theme|calendar|edit|git)
+        install|setup|add|remove|list|stow|sync|update|theme|calendar|edit|git)
             # shellcheck source=/dev/null
             source "$LIB_DIR/$cmd.sh"
             "cmd_$cmd" "$@"
@@ -262,7 +265,7 @@ main() {
             ;;
         --subcommands)
             # for shell completion (e.g. zsh compdef) — one subcommand per line
-            printf '%s\n' install setup add remove list stow stow-add stow-remove sync theme calendar edit git
+            printf '%s\n' install setup add remove list stow stow-add stow-remove sync update theme calendar edit git
             ;;
         *)
             usage >&2

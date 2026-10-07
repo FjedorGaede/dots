@@ -31,6 +31,7 @@ dots install [category] [--pick]   install packages + install scripts
 dots add <pkg> [--aur]             install + track a package (auto-commit)
 dots remove                        untrack a package
 dots stow [component]              link configs into $HOME
+dots update [--dry-run]            pull + restow + report what to install
 dots setup [name]                  per-machine steps (git, ssh, github, ...)
 dots theme [name]                  apply a colorscheme
 dots edit                          edit the configs
