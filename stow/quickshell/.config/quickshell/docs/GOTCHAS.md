@@ -223,3 +223,10 @@ original comments stay next to the code they explain.
   `audioReady` delay guards against a spurious OSD at startup.
 - **Mic boost > 100 % is normal** → overshoot coloring on both audio rows, red
   zone only 15 % opacity; mute must not gray the slider (the red glyph shows it).
+- **Never re-bind `screen:` of a live window** → Quickshell 0.3.1 segfaults in
+  `QWindow::setScreen` when e.g. `screen: DisplayService.mainScreen` changes
+  under an existing window (happened on a hot reload). Windows that belong to
+  a screen are created by a `Variants` over that screen (shell.qml): changing
+  the main monitor destroys them and creates fresh ones. Inside a window, take
+  the screen from the window itself (`item.QsWindow.window.screen`, see
+  `indicators/Home.qml`) — fixed for that window's lifetime.

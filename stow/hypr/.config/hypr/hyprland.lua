@@ -10,3 +10,4 @@ require("input")         -- Keyboard, mouse, touchpad, gestures
 require("autostart")     -- Startup applications
 require("keybinds")      -- Keybindings and submaps
 require("window-rules")  -- Window rules and workspace rules
+require("workspaces")    -- Main monitor gets 1-9, other monitors one workspace each

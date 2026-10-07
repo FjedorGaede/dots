@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 
 import qs.components
 import qs.services
@@ -15,5 +16,7 @@ BarButton {
 
     HomeMenu {
         id: homeMenu
+        // the screen of the bar this button sits in (fixed per bar)
+        screen: home.QsWindow.window?.screen ?? null
     }
 }

@@ -37,6 +37,7 @@ ModalOverlay {
     readonly property var currentRes: resolutions.find(r => r.width === monitor?.width && r.height === monitor?.height) ?? null
     readonly property bool busy: DisplayService.pending !== null
     readonly property bool isSaved: !!monitor && !!DisplayService.saved[DisplayService.outputOf(monitor)]
+    readonly property bool isMain: !!monitor && monitor.name === DisplayService.mainName
     property bool resOpen: false
     onSelectedNameChanged: resOpen = false
 
@@ -107,7 +108,7 @@ ModalOverlay {
 
             Chip {
                 required property var modelData
-                label: modelData.name
+                label: (modelData.name === DisplayService.mainName ? "󰓎 " : "") + modelData.name
                 selected: modelData.name === menu.monitor?.name
                 locked: menu.busy
                 onClicked: menu.selectedName = modelData.name
@@ -132,6 +133,29 @@ ModalOverlay {
             text: "saved"
             color: Theme.mainAccent
             font.pixelSize: Theme.fontSize.sm
+        }
+    }
+
+    // ── Main monitor: gets workspaces 1-9, slack, huddle (hypr/workspaces.lua) ──
+    RowLayout {
+        visible: DisplayService.monitors.length > 1
+        Layout.fillWidth: true
+        spacing: 8
+
+        StyledText {
+            Layout.fillWidth: true
+            text: menu.isMain ? "Main monitor — workspaces 1–9 live here"
+                              : "Second screen — managed by hand"
+            color: Theme.dimForeground
+            font.pixelSize: Theme.fontSize.sm
+            elide: Text.ElideRight
+        }
+
+        Chip {
+            label: menu.isMain ? "󰓎 Main" : "Make main"
+            selected: menu.isMain
+            locked: menu.busy
+            onClicked: DisplayService.setMain(menu.monitor)
         }
     }
 

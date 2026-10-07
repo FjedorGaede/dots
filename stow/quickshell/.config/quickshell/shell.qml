@@ -9,19 +9,35 @@ import qs.modules.notifications
 import qs.services
 
 // Wiring only. Layout: docs/REFACTOR.md §2 (config/ services/ components/
-// modules/ lib/ scripts/). The OSD, LAN-devices overlay and toasts stay
-// children of the bar window, as they were before the folder move.
-Bar {
+// modules/ lib/ scripts/).
+//
+// Everything lives on the main monitor (DisplayService.mainScreen, picked in
+// the Displays menu). Variants creates the windows for that screen and, when
+// the main monitor changes, destroys them and creates fresh ones on the new
+// one — never bind `screen:` of a live window to something that can change:
+// Quickshell 0.3.1 segfaults in QWindow::setScreen (docs/GOTCHAS.md).
+Scope {
     // Idle handling (dim/lock/screen-off/suspend, lock-before-sleep) — see services/IdleService.qml
     Component.onCompleted: IdleService.start()
 
-    Osd {}
+    Variants {
+        model: DisplayService.mainScreen ? [DisplayService.mainScreen] : []
 
-    LanDevices {}
+        delegate: Scope {
+            id: main
+            required property var modelData
 
-    Toasts {}
+            Bar { screen: main.modelData }
 
-    RecorderMenu {}
+            Osd { screen: main.modelData }
 
-    DisplaysMenu {}
+            LanDevices { screen: main.modelData }
+
+            Toasts { screen: main.modelData }
+
+            RecorderMenu { screen: main.modelData }
+
+            DisplaysMenu { screen: main.modelData }
+        }
+    }
 }

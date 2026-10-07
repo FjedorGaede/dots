@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 
 import qs.config
 
@@ -30,6 +31,30 @@ Singleton {
     property int countdown: 0
 
     property string lastError: ""
+
+    // Main monitor (hypr/workspaces.lua gives it workspaces 1-9): the saved
+    // description if that monitor is connected, else the laptop panel, else
+    // the first monitor — same fallback order as workspaces.lua
+    property string mainDescription: ""
+    readonly property string mainName: {
+        const ms = Hyprland.monitors.values;
+        const m = ms.find(m => root.mainDescription !== "" && m.description === root.mainDescription)
+               ?? ms.find(m => m.name.startsWith("eDP"))
+               ?? ms[0];
+        return m?.name ?? "";
+    }
+    // Its Quickshell screen — shell.qml's Variants creates the bar, OSD,
+    // toasts and overlays there (never bind a live window's `screen:` to it)
+    readonly property var mainScreen: Quickshell.screens.find(s => s.name === root.mainName) ?? null
+
+    function setMain(m) {
+        if (!m?.description || m.name === root.mainName) return;
+        root.mainDescription = m.description;
+        mainProc.command = ["sh", "-c",
+            'mkdir -p "$(dirname "$1")" && printf "%s\\n" "$2" > "$1.tmp" && mv "$1.tmp" "$1" && hyprctl reload',
+            "sh", Paths.mainMonitor, m.description];
+        mainProc.running = true;
+    }
 
     function refresh() { listProc.running = true }
 
@@ -225,6 +250,21 @@ Singleton {
             if (code !== 0) root.lastError = "Could not save " + Paths.monitorOverrides;
             else if (writeProc.reloadAfter) reloadProc.running = true;
         }
+    }
+
+    Process {
+        id: mainProc
+        onExited: code => {
+            if (code !== 0) root.lastError = "Could not save " + Paths.mainMonitor;
+        }
+    }
+
+    FileView {
+        path: Paths.mainMonitor
+        printErrors: false   // no file = laptop panel is main
+        watchChanges: true   // also follow edits made outside the menu
+        onFileChanged: reload()
+        onLoaded: root.mainDescription = text().trim()
     }
 
     Process {
