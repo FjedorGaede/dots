@@ -62,7 +62,7 @@ wallpaper1 = os.getenv("HOME") .. "/.config/hypr/wallpapers/DSD-Universe.png"
 
 -- Programs
 terminal     = "ghostty"
-fileManager  = "nautilus"
+fileManager  = terminal .. " --confirm-close-surface=false -e yazi"
 browser      = "vivaldi-stable"
 menu         = "walker"
 
