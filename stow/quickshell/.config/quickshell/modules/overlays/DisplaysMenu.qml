@@ -36,6 +36,8 @@ ModalOverlay {
     readonly property var resolutions: DisplayService.resolutions(monitor)
     readonly property var currentRes: resolutions.find(r => r.width === monitor?.width && r.height === monitor?.height) ?? null
     readonly property bool busy: DisplayService.pending !== null
+    readonly property real currentRate: (currentRes?.rates ?? []).reduce((best, r) =>
+        best === -1 || Math.abs(r - monitor.refreshRate) < Math.abs(best - monitor.refreshRate) ? r : best, -1)
     readonly property bool isSaved: !!monitor && !!DisplayService.saved[DisplayService.outputOf(monitor)]
     readonly property bool isMain: !!monitor && monitor.name === DisplayService.mainName
     property bool resOpen: false
@@ -283,8 +285,10 @@ ModalOverlay {
 
             Chip {
                 required property var modelData
-                label: Math.round(modelData) + " Hz"
-                selected: Math.abs(modelData - (menu.monitor?.refreshRate ?? 0)) < 0.5
+                // 59.94 next to 60: show decimals, mark only the closest rate
+                label: (Math.abs(modelData - Math.round(modelData)) < 0.005
+                        ? Math.round(modelData) : modelData.toFixed(2)) + " Hz"
+                selected: modelData === menu.currentRate
                 onClicked: menu.setMode(menu.monitor.width, menu.monitor.height, modelData)
             }
         }
