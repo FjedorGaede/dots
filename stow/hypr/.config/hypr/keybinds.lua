@@ -80,4 +80,5 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("~/.config/hypr/scripts/brightn
 bindMain("C", hl.dsp.exec_cmd("pgrep qalculate-gtk && hyprctl dispatch togglespecialworkspace calculator || qalculate-gtk &"))
 bindMain("S", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/spotify.sh"))
 bindMain("T", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/telegram.sh"))
+bindMain("Z", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/slack.sh"))
 bindMain("O", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/obsidian.sh"))

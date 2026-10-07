@@ -91,6 +91,15 @@ hl.window_rule({
     workspace = "special:telegram",
 })
 
+-- ── SLACK (Special workspace, vivaldi web app) ────────
+hl.window_rule({
+    match     = { class = "vivaldi-app\\.slack\\.com__client-Default" },
+    float     = true,
+    center    = true,
+    size      = { "monitor_w * 0.9", "monitor_h * 0.9" },
+    workspace = "special:slack",
+})
+
 -- ── SMART GAPS (No gaps when only one window) ─────────
 hl.workspace_rule({ workspace = "w[tv1]", gaps_out = 0, gaps_in = 0 })
 hl.workspace_rule({ workspace = "f[1]",   gaps_out = 0, gaps_in = 0 })
