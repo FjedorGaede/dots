@@ -1,15 +1,18 @@
-# If the user's terminal is in dark mode, Yazi will load `theme-dark.toml` on startup; otherwise, `theme-light.toml`.
-# You can override any parts of them that are not related to the dark/light mode in your own `theme.toml`.
-
-# If you want to dynamically override their content based on dark/light mode, you can specify two different flavors
-# for dark and light modes under `[flavor]`, and do so in those flavors instead.
-
-# vim:fileencoding=utf-8:foldmethod=marker
-
-# : Flavor {{{
+# yazi's preset theme only uses the 16 ANSI colors — ghostty takes those from
+# wal (~/.cache/wal/colors-ghostty), so yazi follows `dots theme`. The main
+# accent (hovered file) comes from the generated "wal" flavor, see
+# dots-cli/theming/adapters/yazi.sh. Never put hex colors here.
 
 [flavor]
-dark = "dracula"
-light = "dracula"
+dark  = "wal"
+light = "wal"
 
-# : }}}
+# The preset's "alt" segments (status bar size/percentage, inactive tabs) are
+# fg = blue/red on bg = gray (color7) — unreadable. Light text on color8 instead.
+[mode]
+normal_alt = { fg = "white", bg = "darkgray" }
+select_alt = { fg = "white", bg = "darkgray" }
+unset_alt  = { fg = "white", bg = "darkgray" }
+
+[tabs]
+inactive = { fg = "white", bg = "darkgray" }

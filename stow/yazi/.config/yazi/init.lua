@@ -1,5 +1,5 @@
 local function getFormattedTime(time)
-	return time and os.date("%d-%m-%Y %H:%M", time) or ""
+	return time and os.date("%d.%m.%Y %H:%M", time) or ""
 end
 
 function Linemode:mtime()
