@@ -74,3 +74,6 @@ unset editor preferred_editors
 
 # wal colors (also exports FZF_DEFAULT_OPTS) — absent until the first 'dots theme'
 [ -f ~/.cache/wal/colors.sh ] && source ~/.cache/wal/colors.sh
+
+# starship config with the main accent, rendered by 'dots theme' (adapters/starship.sh)
+[ -f ~/.cache/wal/starship.toml ] && export STARSHIP_CONFIG=~/.cache/wal/starship.toml
