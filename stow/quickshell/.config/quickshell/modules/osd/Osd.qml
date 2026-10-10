@@ -41,11 +41,22 @@ PanelWindow {
     enum Kind { Volume, Mute, Brightness, Mic }
 
     property int currentType: Osd.Volume
+    // Caps Lock view. A bool, not an enum kind: a new enum member reads as
+    // undefined after a Quickshell hot reload.
+    property bool showingCaps: false
 
     // Everything the OSD shows for the current kind, in one place.
     // NB (kept as-is): the bar fill is dimmed whenever the SINK is muted,
     // even for brightness / an unmuted mic.
     readonly property var view: {
+        if (osd.showingCaps) return {
+            icon: Icons.capsLock,
+            color: Theme.mainAccent,
+            percent: 0,
+            text: "Caps Lock on",
+            fill: Theme.foreground,
+            overlay: -1
+        };
         switch (osd.currentType) {
         case Osd.Brightness:
             return {
@@ -106,22 +117,31 @@ PanelWindow {
     }
 
     function showMutedOSD() {
+        osd.showingCaps = false
         osd.currentType = Osd.Mute
         show()
     }
 
     function showVolumeChangedOSD() {
+        osd.showingCaps = false
         osd.currentType = Osd.Volume
         show()
     }
 
     function showBrightnessChangedOSD() {
+        osd.showingCaps = false
         osd.currentType = Osd.Brightness
         show()
     }
 
     function showMicOSD() {
+        osd.showingCaps = false
         osd.currentType = Osd.Mic
+        show()
+    }
+
+    function showCapsLockOSD() {
+        osd.showingCaps = true
         show()
     }
 
@@ -157,6 +177,7 @@ PanelWindow {
             }
 
             ProgressBar {
+                visible: !osd.showingCaps
                 height: 12
                 percent: osd.view.percent
                 // Red overshoot segment when the audio signal clips
@@ -171,8 +192,9 @@ PanelWindow {
                 color: osd.view.color
                 font.pixelSize: Theme.fontSize.lg
                 // Fixed box so "9%" → "100%" doesn't shift the OSD size
-                Layout.preferredWidth: 44
-                horizontalAlignment: Text.AlignRight
+                // Caps Lock (no bar): the OSD wraps the text
+                Layout.preferredWidth: osd.showingCaps ? implicitWidth : 44
+                horizontalAlignment: osd.showingCaps ? Text.AlignLeft : Text.AlignRight
             }
         }
     }
@@ -198,6 +220,14 @@ PanelWindow {
 
         function onVolumeChanged() {
             if (osd.audioReady) osd.showMicOSD()
+        }
+    }
+
+    Connections {
+        target: CapsLockService
+
+        function onOnChanged() {
+            if (CapsLockService.on && osd.audioReady) osd.showCapsLockOSD();
         }
     }
 

@@ -15,13 +15,22 @@ PanelWindow {
     anchors.top: true
     anchors.right: true
     anchors.left: true
-    implicitHeight: Theme.bar.height
+    // Extra click-through room below the bar for the CAPS pill's pop
+    // (indicators/CapsLock.qml). Windows still only make room for the bar.
+    readonly property int popRoom: 15
+    implicitHeight: Theme.bar.height + popRoom
+    exclusiveZone: Theme.bar.height
+    mask: Region { item: barArea }
     color: "transparent"
 
     property int borderMargin: Theme.bar.edgeMargin
 
     Control {
-        anchors.fill: parent
+        id: barArea
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: Theme.bar.height
         background: null
 
         Pill {
@@ -34,6 +43,13 @@ PanelWindow {
             id: clockElement
             anchors.centerIn: parent
             Clock {}
+        }
+
+        // Accent "CAPS" pill, left of the clock (only while Caps Lock is on)
+        CapsLock {
+            anchors.right: clockElement.left
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
         }
 
         // Media readout, right of the clock (hidden when nothing plays)

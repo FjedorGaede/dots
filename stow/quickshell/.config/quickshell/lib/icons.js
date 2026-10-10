@@ -22,6 +22,7 @@ function volumeIcon(pct, muted) {
 
 var mic = { on: "󰍬", muted: "󰍭" };
 var brightness = "";
+var capsLock = "󰘲";
 
 // ── Network ──
 var wifi       = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"];
