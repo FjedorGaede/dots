@@ -48,11 +48,21 @@ hl.window_rule({
 })
 
 -- ── VIVALDI GOOGLE LOGIN ──────────────────────────────
-hl.window_rule({
-    match = { class = "vivaldi-stable", title = "^(Anmelden.*)$" },
-    float = true,
-    size  = { "monitor_w * 0.8", "monitor_h * 0.8" },
-})
+-- The popup maps as "Vivaldi - Vivaldi" and only later gets its
+-- "Anmelden – Google Konten" title, so a static rule never matches.
+-- Float/size/center it on title change instead (once per window).
+local google_login_done = {}
+local function float_google_login(w)
+    if not w or w.class ~= "vivaldi-stable" or not w.title:match("^Anmelden") then return end
+    if google_login_done[w.address] then return end
+    google_login_done[w.address] = true
+    hl.dispatch(hl.dsp.window.float({ action = "enable", window = w }))
+    hl.dispatch(hl.dsp.window.resize({ x = 600, y = 760, window = w }))
+    hl.dispatch(hl.dsp.window.center({ window = w }))
+end
+hl.on("window.open", float_google_login)
+hl.on("window.title", float_google_login)
+hl.on("window.close", function(w) if w then google_login_done[w.address] = nil end end)
 
 hl.window_rule({
     match = { class = "md\\.obsidian\\.Obsidian" },  -- Obsidian >= 1.13 (was "obsidian")
