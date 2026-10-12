@@ -51,6 +51,8 @@ Scope {
             RecorderMenu { screen: main.modelData }
 
             DisplaysMenu { screen: main.modelData }
+
+            SharePicker { screen: main.modelData }
         }
     }
 }

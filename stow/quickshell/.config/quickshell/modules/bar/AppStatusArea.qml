@@ -13,6 +13,7 @@ RowLayout {
     spacing: Theme.bar.iconSpacing
 
     Recording {}
+    ScreenShare {}
     Sunshine {}
     Setup {}
     // Add more status indicators here as needed
