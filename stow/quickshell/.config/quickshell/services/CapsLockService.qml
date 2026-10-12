@@ -1,54 +1,40 @@
 pragma Singleton
 
 import QtQuick
-import QtQml
 import Quickshell
 import Quickshell.Io
 
-// Caps Lock state from the keyboard LEDs (/sys/class/leds/*capslock).
-//
-// Hyprland emits no event for lock keys and sysfs LED files don't support
-// inotify, so the LEDs are polled. Every keyboard with a capslock LED gets
-// its own FileView; Caps Lock counts as on when any of them is lit.
+// Caps Lock state from Hyprland's main keyboard (`hyprctl devices -j`), the
+// same source end-4 / omarchy use. Hyprland emits no event for lock keys, so
+// it's polled. (The old /sys/class/leds approach broke on dock reconnects:
+// the keyboard got a new inputN, the watched LED file vanished and the empty
+// read counted as "on".)
 Singleton {
     id: root
 
     property bool on: false
-    property var ledPaths: []
 
-    // Resolve the LED files once (input numbers differ between boots)
     Process {
-        running: true
-        command: ["sh", "-c", "ls -d /sys/class/leds/*capslock 2>/dev/null"]
+        id: devicesProc
+        command: ["hyprctl", "devices", "-j"]
         stdout: StdioCollector {
-            onStreamFinished: root.ledPaths = text.split("\n").filter(p => p !== "")
-                .map(p => p + "/brightness")
-        }
-    }
-
-    Instantiator {
-        id: leds
-        model: root.ledPaths
-        delegate: FileView {
-            required property string modelData
-            path: modelData
-            blockLoading: true
-            printErrors: false
+            onStreamFinished: {
+                try {
+                    const kbs = JSON.parse(text).keyboards ?? [];
+                    const main = kbs.find(k => k.main) ?? kbs[0];
+                    root.on = main?.capsLock ?? false;
+                } catch (e) {
+                    // Half-read / hyprctl error → keep the current state
+                }
+            }
         }
     }
 
     Timer {
-        interval: 150
+        interval: 300
         repeat: true
-        running: root.ledPaths.length > 0
-        onTriggered: {
-            let lit = false;
-            for (let i = 0; i < leds.count; i++) {
-                const led = leds.objectAt(i);
-                led.reload();
-                if (led.text().trim() !== "0") lit = true;
-            }
-            root.on = lit;
-        }
+        running: true
+        triggeredOnStart: true
+        onTriggered: if (!devicesProc.running) devicesProc.running = true
     }
 }
