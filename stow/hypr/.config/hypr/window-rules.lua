@@ -64,6 +64,15 @@ hl.on("window.open", float_google_login)
 hl.on("window.title", float_google_login)
 hl.on("window.close", function(w) if w then google_login_done[w.address] = nil end end)
 
+-- ── VIVALDI SCREEN-SHARE BAR ("Freigabe beenden") ─────
+-- Chromium's sharing indicator has no class; title e.g.
+-- "meet.google.com hat ein Fenster geteilt." Pin it bottom-center.
+hl.window_rule({
+    match = { class = "^$", title = ".*(geteilt|frei)\\.?$" },
+    float = true,
+    move  = { "(monitor_w - window_w) / 2", "monitor_h - window_h - 20" },
+})
+
 hl.window_rule({
     match = { class = "md\\.obsidian\\.Obsidian" },  -- Obsidian >= 1.13 (was "obsidian")
     workspace = "name:obsidian"
