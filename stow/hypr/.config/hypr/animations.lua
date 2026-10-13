@@ -21,9 +21,12 @@ hl.curve("default", {
 
 -- Window animations
 hl.animation({ leaf = "windows",    enabled = true, speed = 7,  bezier = "myBezier" })
+-- No bounce on fullscreen/unfullscreen (myBezier overshoots): instant
+hl.animation({ leaf = "windowsMove", enabled = false })
 hl.animation({ leaf = "windowsOut", enabled = true, speed = 7,  bezier = "default",  style = "popin 80%" })
 hl.animation({ leaf = "border",     enabled = true, speed = 10, bezier = "default" })
-hl.animation({ leaf = "fade",       enabled = true, speed = 7,  bezier = "default" })
+-- No fading at all (window open/close, fullscreen, focus switch): instant
+hl.animation({ leaf = "fade",       enabled = false })
 
 -- Layer surfaces (quickshell popups/menus) — default speed 1.7 felt sluggish.
 -- Open and close are both instant (no fade).
