@@ -10,6 +10,8 @@
 #
 # Usage: benq-fix          set Limited (fix)
 #        benq-fix reset    set Automatic (undo)
+#        benq-fix --check  no root, changes nothing; prints one word for the
+#                          bar (BenqRangeService): absent | needed | ok
 
 set -euo pipefail
 
@@ -17,13 +19,15 @@ CARD=card1
 MONITOR="BenQ RD320U"
 SPARE_VT=9
 
+check=false
 case "${1:-}" in
-    "")    value=2 ;;
-    reset) value=0 ;;
-    *)     echo "usage: benq-fix [reset]"; exit 1 ;;
+    "")      value=2 ;;
+    reset)   value=0 ;;
+    --check) check=true ;;
+    *)       echo "usage: benq-fix [reset|--check]"; exit 1 ;;
 esac
 
-if [ "$UID" != "0" ]; then
+if ! $check && [ "$UID" != "0" ]; then
     exec sudo "$(realpath "$0")" "$@"
 fi
 
@@ -40,13 +44,24 @@ for dir in /sys/class/drm/$CARD-*/; do
 done
 
 if [ -z "$conn_id" ]; then
+    $check && { echo absent; exit 0; }
     echo "$MONITOR not connected - nothing changed"
     exit 1
 fi
 
-prop_id=$(modetest -M amdgpu -D /dev/dri/$CARD -c 2>/dev/null \
-    | awk -v c="$conn_id" '$1==c && $3 ~ /connected/ {f=1; next} f && /^[0-9]+\t/ {exit} f && /Broadcast RGB/ {print $1}' \
-    | tr -d ':')
+# read once: awk exiting early on a live pipe trips pipefail (SIGPIPE)
+connectors=$(modetest -M amdgpu -D /dev/dri/$CARD -c 2>/dev/null)
+# "<prop id> <current value>" of Broadcast RGB on our connector
+read -r prop_id current < <(awk -v c="$conn_id" '
+    $1==c && $3 ~ /connected/ {f=1; next}
+    f && /^[0-9]+\t/          {exit}
+    f && /Broadcast RGB/       {id=$1; sub(":", "", id); p=1}
+    p && /value:/              {print id, $2; exit}' <<< "$connectors") || true
+
+if $check; then
+    [ "$current" = "2" ] && echo ok || echo needed
+    exit 0
+fi
 
 if [ -z "$prop_id" ]; then
     echo "no 'Broadcast RGB' property on $conn_name - nothing changed"
