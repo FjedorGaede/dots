@@ -1,7 +1,7 @@
 -- Main-monitor workspace layout
 --
 -- One "main" monitor gets workspaces 1-9 plus the named ones (slack, huddle,
--- obsidian, ...) — Super+N always lands there and never touches the other
+-- teams, obsidian, ...) — Super+N always lands there and never touches the other
 -- screens. Every other monitor gets one workspace of its own (10, 11, ...,
 -- left to right), shown permanently; fill it by hand (Super+Shift+0 → 10).
 --
@@ -58,7 +58,7 @@ local function apply()
     for i = 1, 9 do
         rule({ workspace = tostring(i), monitor = main.name, default = (i == 1) })
     end
-    for _, name in ipairs({ "slack", "huddle", "obsidian" }) do
+    for _, name in ipairs({ "slack", "huddle", "teams", "obsidian" }) do
         rule({ workspace = "name:" .. name, monitor = main.name })
     end
     local own = {}  -- workspace id → monitor, for the other screens

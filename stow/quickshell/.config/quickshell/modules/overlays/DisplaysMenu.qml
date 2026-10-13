@@ -138,7 +138,7 @@ ModalOverlay {
         }
     }
 
-    // ── Main monitor: gets workspaces 1-9, slack, huddle (hypr/workspaces.lua) ──
+    // ── Main monitor: gets workspaces 1-9 + the named ones (hypr/workspaces.lua) ──
     RowLayout {
         visible: DisplayService.monitors.length > 1
         Layout.fillWidth: true

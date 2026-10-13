@@ -82,4 +82,5 @@ bindMain("S", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/specia
 bindMain("T", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/telegram.sh"))
 bindMain("Z", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/slack.sh"))
 bindMainShift("Z", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/slack.sh huddle"))
+bindMain("X", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/teams.sh"))
 bindMain("O", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/special-workspaces/obsidian.sh"))
