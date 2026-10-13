@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# benq-fix - send limited RGB range (16-235) to the BenQ RD320U behind the HDMI KVM
+#
+# The KVM turns USB-C/DP into HDMI and the BenQ then reads amdgpu's full-range
+# signal as limited, so light greys clip to white. Hyprland can't set
+# "Broadcast RGB", and the property can only be changed while no compositor owns
+# the screen, so this briefly switches to an empty console and back.
+# Nothing is written to disk; a reboot resets it.
+#
+# Usage: benq-fix          set Limited (fix)
+#        benq-fix reset    set Automatic (undo)
+
+set -euo pipefail
+
+CARD=card1
+MONITOR="BenQ RD320U"
+SPARE_VT=9
+
+case "${1:-}" in
+    "")    value=2 ;;
+    reset) value=0 ;;
+    *)     echo "usage: benq-fix [reset]"; exit 1 ;;
+esac
+
+if [ "$UID" != "0" ]; then
+    exec sudo "$(realpath "$0")" "$@"
+fi
+
+# find the external connector the BenQ is plugged into
+conn_id=""
+for dir in /sys/class/drm/$CARD-*/; do
+    [[ "$dir" == *eDP* ]] && continue
+    [ "$(cat "$dir/status" 2>/dev/null)" = "connected" ] || continue
+    if grep -aq "$MONITOR" "$dir/edid" 2>/dev/null; then
+        conn_id=$(cat "$dir/connector_id")
+        conn_name=$(basename "$dir")
+        break
+    fi
+done
+
+if [ -z "$conn_id" ]; then
+    echo "$MONITOR not connected - nothing changed"
+    exit 1
+fi
+
+prop_id=$(modetest -M amdgpu -D /dev/dri/$CARD -c 2>/dev/null \
+    | awk -v c="$conn_id" '$1==c && $3 ~ /connected/ {f=1; next} f && /^[0-9]+\t/ {exit} f && /Broadcast RGB/ {print $1}' \
+    | tr -d ':')
+
+if [ -z "$prop_id" ]; then
+    echo "no 'Broadcast RGB' property on $conn_name - nothing changed"
+    exit 1
+fi
+
+echo "$conn_name: setting Broadcast RGB to $value (screens go black for a moment)"
+
+# always switch back to the desktop, even if proptest fails
+back_vt=$(fgconsole)
+trap 'chvt "$back_vt"' EXIT
+
+chvt "$SPARE_VT"
+sleep 1
+proptest -M amdgpu -D /dev/dri/$CARD "$conn_id" connector "$prop_id" "$value"
+sleep 1
