@@ -10,3 +10,4 @@ aur:mqtt-explorer
 aur:spotify
 aur:slack-desktop
 aur:microsoft-edge-stable-bin
+aur:teams-for-linux
