@@ -100,7 +100,32 @@ end
 hl.on("hyprland.start", apply)
 hl.timer(apply, { timeout = 50, type = "oneshot" })
 
--- Hotplug: give the new monitor a moment to get its first workspace
-local function apply_soon() hl.timer(apply, { timeout = 500, type = "oneshot" }) end
+-- After a hotplug, moving workspaces between monitors can leave a stale render
+-- offset on a secondary screen (solitaryBlockedBy: "workspace offset"): its
+-- windows exist but are drawn ~one screen width off. Switching that screen to an
+-- empty temp workspace and back resets it (brief flicker).
+local BOUNCE_WS = 99
+
+local function bounce_others()
+    local monitors = hl.get_monitors()
+    if #monitors < 2 then return end
+    local main = main_monitor(monitors)
+    for _, m in ipairs(monitors) do
+        local ws = m.active_workspace
+        if m.name ~= main.name and ws and ws.id > 9 then
+            m:set_workspace({ workspace = BOUNCE_WS })
+            m:set_workspace({ workspace = ws.id })
+        end
+    end
+end
+
+-- Hotplug: give the new monitor a moment to get its first workspace, then let
+-- the workspace moves settle before bouncing
+local function apply_soon()
+    hl.timer(function()
+        apply()
+        hl.timer(bounce_others, { timeout = 200, type = "oneshot" })
+    end, { timeout = 500, type = "oneshot" })
+end
 hl.on("monitor.added", apply_soon)
 hl.on("monitor.removed", apply_soon)
