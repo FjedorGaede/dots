@@ -40,12 +40,22 @@ hl.window_rule({
     size  = { "monitor_w * 0.8", "monitor_h * 0.8" },
 })
 
--- ── VIVALDI BITWARDEN ─────────────────────────────────
-hl.window_rule({
-    match = { class = "vivaldi-stable", title = "(.*)Bitwarden(.*)" },
-    float = true,
-    size  = { "monitor_w * 0.8", "monitor_h * 0.8" },
-})
+-- ── VIVALDI BITWARDEN POPUP ───────────────────────────
+-- Same late-title problem as the Google login below: the extension popup
+-- maps as "Vivaldi - Vivaldi" and only then becomes "Bitwarden - Vivaldi".
+-- Float it as a tall, narrow window (once per window).
+local bitwarden_done = {}
+local function float_bitwarden(w)
+    if not w or w.class ~= "vivaldi-stable" or w.title ~= "Bitwarden - Vivaldi" then return end
+    if bitwarden_done[w.address] then return end
+    bitwarden_done[w.address] = true
+    hl.dispatch(hl.dsp.window.float({ action = "enable", window = w }))
+    hl.dispatch(hl.dsp.window.resize({ x = 480, y = 800, window = w }))
+    hl.dispatch(hl.dsp.window.center({ window = w }))
+end
+hl.on("window.open", float_bitwarden)
+hl.on("window.title", float_bitwarden)
+hl.on("window.close", function(w) if w then bitwarden_done[w.address] = nil end end)
 
 -- ── VIVALDI GOOGLE LOGIN ──────────────────────────────
 -- The popup maps as "Vivaldi - Vivaldi" and only later gets its
