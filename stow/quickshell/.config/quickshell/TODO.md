@@ -28,6 +28,9 @@
       Bar: from 15 min before until the event ends (upcoming beats running);
       title only once the event runs; right-click → Join / Open / Hide
       from the bar (per occurrence, `~/.cache/quickshell/calendar-dismissed.json`).
+      Clashes (2026-10-15): calendar-color dot + "+N" pill for the other
+      announced events; right-click / "+N" → menu with a section per event
+      (Join / Open / Hide each; hiding promotes the next one in the bar).
       Agenda: no now line while an event runs — it gets a progress bar instead.
       Not connected / login expired → buttons in the popup ("Connect Google
       account", "Log in again", "+ Add Google account" in ⚙) run `dots

@@ -48,11 +48,12 @@ Singleton {
     // The shell's one minute clock: bar clock, popup, countdowns, announcement
     readonly property date now: clock.date
 
-    // Bar announcement (timed events, minus the ones hidden via right-click):
-    // the next event starting within leadMinutes wins — a long running event
-    // must not hide an upcoming meeting — else the running event that started
-    // last (the most specific one).
-    readonly property var announcement: {
+    // Bar announcements (timed events, minus the ones hidden via right-click):
+    // every event running now or starting within leadMinutes. Upcoming first
+    // (soonest first) — a long running event must not hide an upcoming
+    // meeting — then the running ones, the one that started last (the most
+    // specific one) first. The bar shows [0] and "+N" for the rest.
+    readonly property var announcements: {
         const t = root.now.getTime();
         const evs = root.timedEvents;
         // Binary search (sorted by start): first event that can still be
@@ -62,15 +63,16 @@ Singleton {
             const mid = (lo + hi) >> 1;
             if (evs[mid].start > t - root.maxTimedDuration) hi = mid; else lo = mid + 1;
         }
-        let running = null;
+        const upcoming = [], running = [];
         for (let i = lo; i < evs.length && evs[i].start - t <= root.leadMinutes * 60000; i++) {
             const ev = evs[i];
             if (t >= ev.end || ev.id in root.dismissed) continue;
-            if (ev.start > t) return ev;  // upcoming — first one is the soonest
-            running = ev;                 // running — later starts overwrite
+            if (ev.start > t) upcoming.push(ev);
+            else running.unshift(ev);  // later starts first
         }
-        return running;
+        return upcoming.concat(running);
     }
+    readonly property var announcement: announcements[0] ?? null
 
     function inRange(d) {
         const t = d.getTime();
