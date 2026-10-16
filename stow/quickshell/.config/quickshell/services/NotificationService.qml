@@ -22,6 +22,18 @@ Singleton {
         stateView.writeAdapter();
     }
 
+    // No toasts while the screen is being captured (portal share or our own
+    // recording) — they would end up in the stream. History still fills.
+    readonly property bool capturing: ScreenShareService.active || RecorderService.active
+    readonly property bool suppressToasts: root.doNotDisturb || root.capturing
+
+    // Capture started → clear toasts already on screen (kept in history)
+    onCapturingChanged: {
+        if (!root.capturing) return;
+        const shown = root.toasts.slice();
+        for (let i = 0; i < shown.length; i++) root.hideToast(shown[i]);
+    }
+
     FileView {
         id: stateView
         path: Paths.notificationsState
@@ -112,7 +124,7 @@ Singleton {
             // elsewhere) → its toast goes too
             notification.closed.connect(() => root._removeToast(notification));
 
-            if (!root.doNotDisturb) {
+            if (!root.suppressToasts) {
                 root.pushToast(notification);
             }
         }
