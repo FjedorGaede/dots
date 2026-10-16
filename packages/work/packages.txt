@@ -1,0 +1,2 @@
+# No tracked packages: the citrix-secure-access install script pulls in its own
+# dependencies (gpgme-1, webkit2gtk-4.1) only when the Citrix .deb is present.
