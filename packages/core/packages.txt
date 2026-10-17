@@ -34,3 +34,4 @@ resvg
 ffmpegthumbnailer
 poppler
 imagemagick
+bluez-tools
