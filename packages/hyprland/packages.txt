@@ -26,4 +26,3 @@ libnotify
 xdg-desktop-portal-hyprland
 wl-clipboard
 spotify-player
-bluez-tools
