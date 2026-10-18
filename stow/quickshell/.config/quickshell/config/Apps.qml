@@ -41,6 +41,12 @@ Singleton {
         return ["ghostty", "--wait-after-command=true", "-e",
                 Quickshell.env("SHELL") || "sh", "-ic", command]
     }
+    // Same, as a centered floating window (hypr/window-rules.lua matches the
+    // class) — for short one-off commands like installing a missing package
+    function floatingTerminalCommand(command) {
+        return ["ghostty", "--class=dots.floating", "--wait-after-command=true", "-e",
+                Quickshell.env("SHELL") || "sh", "-ic", command]
+    }
     function notify(summary, body) {
         Quickshell.execDetached(["notify-send", "-a", "quickshell", summary, body])
     }

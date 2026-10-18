@@ -2,6 +2,9 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
+import Quickshell.Io
+
+import qs.config
 
 // Default adapter + device groups in ONE place (bar icon + panel).
 // The discovery keep-alive is tied to panel visibility and stays in
@@ -24,4 +27,35 @@ Singleton {
     // Bar icon/tooltip count (uses `device.connected`, as it always did)
     readonly property int connectedCount: devices.map(device => device?.connected)
                                                  .filter(it => !!it).length
+
+    // Pairing agent: bt-agent (bluez-tools) runs as bt-agent.service, set up by
+    // packages/core/install/bluez-tools. Without it, devices that need a pairing
+    // confirmation (keyboards, phones) fail silently — the panel shows a hint.
+    property bool agentInstalled: true   // optimistic: no hint flash at startup
+
+    function checkAgent() {
+        if (!agentCheck.running) agentCheck.running = true
+    }
+
+    // Floating terminal; closing it re-checks, so the hint disappears at once.
+    // bluez-tools is tracked in core: `--only bluez-tools` installs the package
+    // and runs its install script (enables bt-agent.service).
+    function installAgent() {
+        if (agentInstallProc.running) return
+        agentInstallProc.command = Apps.floatingTerminalCommand(
+            Paths.dotsCli + " install core --only bluez-tools")
+        agentInstallProc.running = true
+    }
+
+    Process {
+        id: agentCheck
+        running: true
+        command: ["sh", "-c", "command -v bt-agent"]
+        onExited: (code) => root.agentInstalled = code === 0
+    }
+
+    Process {
+        id: agentInstallProc
+        onExited: root.checkAgent()
+    }
 }

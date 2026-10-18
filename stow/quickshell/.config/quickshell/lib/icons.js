@@ -53,7 +53,7 @@ var arrowUp   = "";
 var arrowDown = "";
 
 // ── Bluetooth ──
-var bluetooth = { off: "󰂲", on: "󰂯", connected: "󰂱", battery: "󰂄" };
+var bluetooth = { off: "󰂲", on: "󰂯", connected: "󰂱", battery: "󰂄", warning: "󰀦" };
 
 // ── Notifications ──
 var bell = { empty: "󰂚", unread: "󱅫" };

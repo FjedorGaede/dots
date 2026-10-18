@@ -13,6 +13,16 @@ hl.window_rule({
     suppress_event = "maximize",
 })
 
+-- ── FLOATING TERMINAL ───────────────────────────────────
+-- ghostty --class=dots.floating: short one-off commands launched by
+-- quickshell (Apps.floatingTerminalCommand, e.g. installing bluez-tools)
+hl.window_rule({
+    match  = { class = "dots.floating" },
+    float  = true,
+    size   = { "monitor_w * 0.5", "monitor_h * 0.5" },
+    center = true,
+})
+
 -- ── BLUEMAN ───────────────────────────────────────────
 hl.window_rule({
     match = { class = "blueman-manager" },

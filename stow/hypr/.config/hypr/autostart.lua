@@ -9,9 +9,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("qs")
     hl.exec_cmd("elephant")
     hl.exec_cmd("walker --gapplication-service")
-    -- pairing agent: quickshell's bluetooth panel can pair but can't answer
-    -- passkey confirmations (no BlueZ agent API) — same approach as omarchy 4.x
-    hl.exec_cmd("bt-agent -c NoInputNoOutput")
+    -- bluetooth pairing agent: bt-agent.service (systemd user unit), set up by
+    -- packages/core/install/bluez-tools
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
 
     -- startup layout: browser on 1, terminal running herdr on 2

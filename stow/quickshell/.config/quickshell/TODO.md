@@ -223,8 +223,10 @@
       applied the action)
 - [ ] Bluetooth pairing agent for numeric-comparison devices (phones/keyboards):
       native confirm dialog would need a D-Bus agent (~200 lines). Interim:
-      `bt-agent -c NoInputNoOutput` (bluez-tools) autostarted in hypr/autostart.lua
-      auto-accepts — no confirm dialog yet
+      `bt-agent -c NoInputNoOutput` (bluez-tools) as bt-agent.service, set up by
+      packages/core/install/bluez-tools (omarchy approach) — auto-accepts while
+      the panel is open (adapter pairable only then); panel hints + installs it
+      when missing. No passkey/confirm dialog yet
 - [ ] Native polkit agent (0.3.0 Polkit support) — replace hyprpolkitagent
       someday for full visual consistency
       ASSESSMENT (2026-09): easy. Quickshell exposes the whole flow as a QML

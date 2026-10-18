@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import '../../lib/icons.js' as Icons
 import qs.components
 import qs.config
 import qs.services
@@ -16,14 +17,14 @@ PopupPanel {
 
     onVisibleChanged: {
         PanelService.setOpen("bluetooth", visible, screenName)
+        if (visible) BluetoothService.checkAgent()
         if (!BluetoothService.adapter) return
 
-        if (visible) {
-            // Start scanning right away, like omarchy's bluetooth panel
-            BluetoothService.adapter.discovering = true
-        } else {
-            BluetoothService.adapter.discovering = false
-        }
+        // Start scanning right away, like omarchy's bluetooth panel.
+        // Pairable only while open: bt-agent auto-accepts every pair request
+        // (NoInputNoOutput), so outside this window bluez must refuse them.
+        BluetoothService.adapter.discovering = visible
+        BluetoothService.adapter.pairable = visible
     }
 
     // BlueZ drops the discovery session after ~30s on its own — restart it
@@ -60,6 +61,16 @@ PopupPanel {
                 btToggle.checked = Qt.binding(() => BluetoothService.adapter?.enabled ?? false)
             }
         }
+    }
+
+    // No pairing agent → keyboards/phones can't pair. Click = install in a
+    // floating terminal (BluetoothService.installAgent)
+    ListItem {
+        visible: BluetoothService.hasAdapter && !BluetoothService.agentInstalled
+        size: ListItem.Small
+        icon: Icons.bluetooth.warning
+        label: "bluez-tools not installed — click to install"
+        onTapped: BluetoothService.installAgent()
     }
 
     Text {
