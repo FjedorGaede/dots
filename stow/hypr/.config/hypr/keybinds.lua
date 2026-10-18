@@ -27,6 +27,10 @@ bindMainShift("Q",  hl.dsp.exec_cmd("qs ipc call home toggle"))
 -- below the first; kill them all (process name is qs or quickshell)
 bindMainShift("W",  hl.dsp.exec_cmd("pkill -x qs; pkill -x quickshell; sleep 0.3; qs -d"))
 bindMainShift("N",  hl.dsp.exec_cmd("qs ipc call notifications toggle"))
+-- Re-enable the built-in keyboard even on the lock screen (KeyboardService /
+-- LaptopKeyboard.qml). locked = the bind also fires while hyprlock is up;
+-- the lock-screen label/return click is the visible route (hypr/hyprlock.conf).
+bindMainShift("K",  hl.dsp.exec_cmd("qs ipc call keyboard toggle"), { locked = true })
 
 -- quickshell home menu (services/PanelService.qml, IPC target "home");
 -- plain Super+H stays "focus left"

@@ -16,6 +16,14 @@ hl.config({
             natural_scroll = true,
         },
     },
+
+    -- Hide the cursor when idle / typing, bring it back on move. This is
+    -- compositor-level, so it also governs the hyprlock cursor — the lock-screen
+    -- keyboard label stays clickable because moving the mouse shows it again.
+    cursor = {
+        inactive_timeout  = 2,
+        hide_on_key_press = true,
+    },
 })
 
 -- Touchpad gestures: 3-finger horizontal swipe = workspace switch
