@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick
 
 import qs.components
@@ -10,6 +11,6 @@ BarButton {
     // Thin outline glyph — optically small at the shared 14px
     iconSize: 16
     tooltipText: "Power Menu"
-    // the home menu lives on the main monitor only (shell.qml)
-    onClicked: PanelService.open("home")
+    // opens on the screen of the bar that was clicked (shell.qml)
+    onClicked: PanelService.open("home", QsWindow.window?.screen?.name)
 }

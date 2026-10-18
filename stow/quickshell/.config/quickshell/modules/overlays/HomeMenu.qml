@@ -9,8 +9,9 @@ ModalOverlay {
     id: homeMenu
     // Open state (+ `qs ipc call home …`, Super+H) lives in PanelService.
     // Nothing hides this window behind our back (unlike PopupWindow grabs),
-    // so a plain binding is enough.
-    visible: PanelService.isOpen("home")
+    // so a plain binding is enough. One copy per screen (shell.qml); only
+    // the one on the screen it was opened on shows.
+    visible: PanelService.isOpenOn("home", screen?.name)
 
     // Two-click confirmation for the destructive actions: first click arms
     // the button (check mark, red), second click executes, 3s later it disarms.

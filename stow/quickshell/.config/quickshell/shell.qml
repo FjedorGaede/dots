@@ -12,8 +12,8 @@ import qs.services
 // modules/ lib/ scripts/).
 //
 // Every screen gets a bar; its popups (audio, wifi, calendar, ...) open on the
-// screen you clicked (PanelService.isOpenOn). The OSD, toasts, home menu and
-// the other overlays exist once, on the main monitor (DisplayService.mainScreen,
+// screen you clicked (PanelService.isOpenOn). So does the home menu. The OSD,
+// toasts and the other overlays exist once, on the main monitor (DisplayService.mainScreen,
 // picked in the Displays menu).
 //
 // Variants creates windows for a screen and, when the screens / main monitor
@@ -34,6 +34,15 @@ Scope {
     }
 
     Variants {
+        model: Quickshell.screens
+
+        delegate: HomeMenu {
+            required property var modelData
+            screen: modelData
+        }
+    }
+
+    Variants {
         model: DisplayService.mainScreen ? [DisplayService.mainScreen] : []
 
         delegate: Scope {
@@ -43,8 +52,6 @@ Scope {
             Osd { screen: main.modelData }
 
             Toasts { screen: main.modelData }
-
-            HomeMenu { screen: main.modelData }
 
             LanDevices { screen: main.modelData }
 
