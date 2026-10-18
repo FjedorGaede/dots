@@ -73,6 +73,7 @@ end
 nmap("gr", function() lsp_nav().references() end, "[G]o to [R]eferences")
 nmap("gd", go_to_definition_or_references, "[G]o to [D]efinition")
 nmap("gi", function() lsp_nav().implementations() end, "[G]o to [I]mplementations")
+nmap("gy", function() lsp_nav().type_definitions() end, "[G]o to T[y]pe Definition")
 keymap({ "n", "v" }, "<leader>ca", function() vim.lsp.buf.code_action() end, { desc = "[C]ode [A]ctions" })
 keymap('n', '<leader>oi', function()
   vim.lsp.buf.code_action({

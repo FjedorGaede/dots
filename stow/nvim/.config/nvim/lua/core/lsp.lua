@@ -138,4 +138,11 @@ function M.implementations()
     end)
 end
 
+--- Show deduplicated type definitions in a Snacks picker.
+function M.type_definitions()
+    M.request_all_locations("textDocument/typeDefinition", function(defs)
+        M.show_locations(defs, "Type Definitions")
+    end)
+end
+
 return M
