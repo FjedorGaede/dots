@@ -1,0 +1,24 @@
+[Unit]
+Description=Bluetooth pairing agent (auto-accept)
+Documentation=man:bt-agent(1)
+ConditionPathIsDirectory=/sys/class/bluetooth
+# bluez must be reachable on the system bus before we can register.
+After=dbus.socket
+Requires=dbus.socket
+
+[Service]
+Type=simple
+# No bluetoothd (VM, no usable adapter) → skip cleanly instead of a restart loop.
+ExecCondition=/usr/bin/systemctl is-active --quiet bluetooth.service
+# NoInputNoOutput auto-accepts pair requests ("Just Works", no passkey).
+# Safe because the adapter is only pairable while the quickshell bluetooth
+# panel is open (BluetoothPanel.qml); outside that window bluez refuses
+# inbound pair attempts.
+ExecStart=/usr/bin/bt-agent -c NoInputNoOutput
+Restart=on-failure
+RestartSec=2
+
+[Install]
+# default.target, not graphical-session.target like omarchy: Hyprland is
+# started without uwsm here, so graphical-session.target is never reached.
+WantedBy=default.target
