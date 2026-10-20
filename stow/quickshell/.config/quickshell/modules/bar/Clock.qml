@@ -116,6 +116,13 @@ RowLayout {
         anchorItem: announcement
         minWidth: 240
 
+        // Several events: stay open on the rest (the bar moves on to the next)
+        function hide(ev) {
+            CalendarService.dismiss(ev);
+            evs = evs.filter(e => e.id !== ev.id);
+            if (evs.length === 0) visible = false;
+        }
+
         Repeater {
             model: announcementMenu.evs
 
@@ -185,13 +192,7 @@ RowLayout {
                     leftAligned: true
                     icon: Icons.calendar.hide
                     text: "Hide from the bar"
-                    // Several events: stay open on the rest (the bar moves on to the next)
-                    onClicked: {
-                        const ev = section.ev;
-                        CalendarService.dismiss(ev);
-                        announcementMenu.evs = announcementMenu.evs.filter(e => e.id !== ev.id);
-                        if (announcementMenu.evs.length === 0) announcementMenu.visible = false;
-                    }
+                    onClicked: announcementMenu.hide(section.ev)
                 }
             }
         }
