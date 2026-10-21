@@ -20,7 +20,7 @@ set -euo pipefail
 
 DEB="${CITRIX_DEB:-$HOME/Downloads/nsginstaller64.deb}"
 PKGNAME=citrix-secure-access
-PKGREL=2   # bump when the packaging below changes, so installs get redone
+PKGREL=3   # bump when the packaging below changes, so installs get redone
 BUILD_DIR="$HOME/.cache/citrix-secure-access-build"
 DOWNLOAD_URL='https://www.citrix.com/downloads/citrix-secure-access/plug-ins/Citrix-Gateway-VPN-EPA-Clients-Ubuntu.html'
 
@@ -88,7 +88,7 @@ post_install() {
   update-desktop-database -q 2>/dev/null || true
 }
 post_upgrade() { post_install; }
-pre_remove() { pkill -x NSGClient 2>/dev/null || true; }
+pre_remove() { pkill -9 -x NSGClient 2>/dev/null || true; }
 post_remove() {
   systemctl daemon-reload 2>/dev/null || true
   update-desktop-database -q 2>/dev/null || true
@@ -143,7 +143,8 @@ package() {
   chmod -R 755 "$nsg"
   chmod 644 "$nsg"/globalConfiguration.{conf,json} "$nsg/bin/nsgclient.desktop"
   chmod 444 "$nsg"/{citrix_va.conf,rt_csa.conf,pubkey.asc}
-  install -m644 /dev/null "$nsg/.socketpath"
+  # No .socketpath here: nsgverctl creates it as a unix socket at runtime;
+  # a packaged file would replace the live socket on every upgrade.
 
   install -Dm644 "$nsg/citrix_va.conf" etc/NetworkManager/conf.d/citrix_va.conf
   install -Dm644 "$nsg/rt_csa.conf" etc/iproute2/rt_tables.d/rt_csa.conf
@@ -159,9 +160,13 @@ echo "building $PKGNAME $deb_ver"
     || { echo "makepkg failed, log: $BUILD_DIR/makepkg.log" >&2; exit 1; }
 
 # --- install ---------------------------------------------------------------------
-pkill -x NSGClient 2>/dev/null || true
+# NSGClient ignores SIGTERM; a stale client would keep talking to the old socket
+pkill -x NSGClient 2>/dev/null && sleep 2
+pkill -9 -x NSGClient 2>/dev/null || true
 sudo pacman -U --needed --noconfirm "$BUILD_DIR/$PKGNAME"-*.pkg.tar.*
-sudo systemctl enable --now nsgverctl.service
+# restart, not just --now: a running nsgverctl keeps the socket of the old install
+sudo systemctl enable nsgverctl.service
+sudo systemctl restart nsgverctl.service
 
 missing="$(ldd /opt/Citrix/NSGClient/bin/NSGClient /opt/Citrix/NSGClient/service/nsgverctl 2>/dev/null | grep 'not found' || true)"
 [ -z "$missing" ] || { echo "WARNING: missing libraries:"; echo "$missing"; }
