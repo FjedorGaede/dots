@@ -14,8 +14,23 @@
 #
 # Usage after install: log in at the company Citrix URL in the browser, allow
 # the citrixsso:// link. Logs: ~/.citrix/nssslvpn.txt, journalctl -u nsgverctl
+#
+# DNS: the client resolves company names by intercepting DNS queries — IPv4
+# only. Queries to an IPv6 DNS server (e.g. announced by the home router) slip
+# past it and return public IPs, which the company's allowlists then block.
+# So this also installs a NetworkManager dispatcher hook that sets
+# ipv6.ignore-auto-dns=yes on every wifi/ethernet profile when it comes up
+# (existing profiles are switched right here). IPv6 itself keeps working.
+# The client also flushes the systemd-resolved cache on connect (stale "not
+# found" answers from before the tunnel) — as the user, which polkit denies;
+# a polkit rule lets wheel members flush-caches (nothing else).
+#
 # Uninstall: sudo systemctl disable --now nsgverctl
 #            sudo pacman -Rns citrix-secure-access   (also removes gpgme-1)
+#            sudo rm /etc/NetworkManager/dispatcher.d/90-ipv4-dns-only
+#            sudo rm /etc/polkit-1/rules.d/50-resolved-flush-caches.rules
+#            (profiles keep ipv6.ignore-auto-dns=yes — per profile:
+#             nmcli connection modify <name> ipv6.ignore-auto-dns no)
 set -euo pipefail
 
 DEB="${CITRIX_DEB:-$HOME/Downloads/nsginstaller64.deb}"
@@ -29,11 +44,59 @@ declare -A KNOWN_SHA256=(
     [25.8.2]=56d3095495c6847738404a6f076e43484887675be4776ea73aa6ad11472c09b3
 )
 
+DNS_HOOK=/etc/NetworkManager/dispatcher.d/90-ipv4-dns-only
+DNS_HOOK_CONTENT='#!/bin/sh
+# Installed by dots (packages/work/install/citrix-secure-access) — see there.
+# Citrix Secure Access only intercepts DNS over IPv4: ignore IPv6 DNS servers
+# on every wifi/ethernet profile, once, when it first comes up.
+[ "$2" = up ] && [ -n "$CONNECTION_UUID" ] || exit 0
+case "$(nmcli -g connection.type connection show uuid "$CONNECTION_UUID")" in
+    802-11-wireless|802-3-ethernet) ;;
+    *) exit 0 ;;
+esac
+[ "$(nmcli -g ipv6.ignore-auto-dns connection show uuid "$CONNECTION_UUID")" = yes ] && exit 0
+nmcli connection modify uuid "$CONNECTION_UUID" ipv6.ignore-auto-dns yes
+nmcli device reapply "$1"'
+
+FLUSH_RULE=/etc/polkit-1/rules.d/50-resolved-flush-caches.rules
+FLUSH_RULE_CONTENT='// Installed by dots (packages/work/install/citrix-secure-access) — see there.
+// Lets the Citrix client (runs as the user, outside the login session) flush
+// the systemd-resolved cache on connect.
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.resolve1.flush-caches" && subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});'
+
+# Hook for future profiles + switch the existing ones now (active ones reapplied),
+# plus the polkit rule for the client's cache flush
+ensure_ipv4_dns() {
+    # rules.d is root-only readable → compare via sudo, content on stdin
+    if ! printf '%s\n' "$FLUSH_RULE_CONTENT" | sudo cmp -s - "$FLUSH_RULE"; then
+        printf '%s\n' "$FLUSH_RULE_CONTENT" | sudo install -m 644 -o root -g root /dev/stdin "$FLUSH_RULE"
+        echo "installed $FLUSH_RULE"
+    fi
+    if ! printf '%s\n' "$DNS_HOOK_CONTENT" | cmp -s - "$DNS_HOOK"; then
+        printf '%s\n' "$DNS_HOOK_CONTENT" | sudo install -m 755 -o root -g root /dev/stdin "$DNS_HOOK"
+        echo "installed $DNS_HOOK"
+    fi
+    local uuid type dev
+    while IFS=: read -r uuid type; do
+        case "$type" in 802-11-wireless|802-3-ethernet) ;; *) continue ;; esac
+        [ "$(nmcli -g ipv6.ignore-auto-dns connection show uuid "$uuid")" = yes ] && continue
+        sudo nmcli connection modify uuid "$uuid" ipv6.ignore-auto-dns yes
+        echo "ipv4-only DNS: $(nmcli -g connection.id connection show uuid "$uuid")"
+        dev="$(nmcli -g GENERAL.DEVICES connection show uuid "$uuid" 2>/dev/null || true)"
+        [ -z "$dev" ] || sudo nmcli device reapply "$dev"
+    done < <(nmcli -t -f UUID,TYPE connection show)
+}
+
 installed_ver="$(pacman -Q "$PKGNAME" 2>/dev/null | awk '{print $2}' || true)"
 
 if [ ! -f "$DEB" ]; then
     if [ -n "$installed_ver" ]; then
         echo "citrix-secure-access already installed: $installed_ver"
+        ensure_ipv4_dns
     else
         echo "citrix-secure-access: $DEB not found, skipping (nothing installed)."
         echo "  Download 'Citrix Secure Access client for Ubuntu 22/24' (Citrix login required):"
@@ -53,6 +116,7 @@ deb_ver="$(sed -n 's/^Version: *//p' "$WORK/control/control" | sed 's/^[0-9]*://
 if [ "$installed_ver" = "$deb_ver-$PKGREL" ]; then
     echo "citrix-secure-access already installed: $installed_ver"
     systemctl is-enabled -q nsgverctl.service || sudo systemctl enable --now nsgverctl.service
+    ensure_ipv4_dns
     exit 0
 fi
 
@@ -170,5 +234,7 @@ sudo systemctl restart nsgverctl.service
 
 missing="$(ldd /opt/Citrix/NSGClient/bin/NSGClient /opt/Citrix/NSGClient/service/nsgverctl 2>/dev/null | grep 'not found' || true)"
 [ -z "$missing" ] || { echo "WARNING: missing libraries:"; echo "$missing"; }
+
+ensure_ipv4_dns
 
 echo "citrix-secure-access installed: $(pacman -Q "$PKGNAME" | awk '{print $2}')"
