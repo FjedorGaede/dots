@@ -19,3 +19,7 @@ stow/herdr/.config/herdr/.plugins.lock
 stow/herdr/.config/herdr/session.json
 stow/herdr/.config/herdr/session-snapshots/
 stow/herdr/.config/herdr/release-notes.json
+
+# theming adapters link generated wal themes into folded stow dirs
+stow/tools/.config/walker/themes/wal
+stow/yazi/.config/yazi/flavors/wal.yazi
