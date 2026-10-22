@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "1.0.2",
-  "defaultProvider": "openrouter",
-  "defaultModel": "deepseek/deepseek-v4.1-flash",
-  "defaultThinkingLevel": "high",
+  "defaultProvider": "claude-bridge",
+  "defaultModel": "claude-opus-5-5",
+  "defaultThinkingLevel": "medium",
   "modelThinkingLevels": {
     "claude-bridge/claude-opus-5-5": "medium"
   },
