@@ -36,9 +36,6 @@ bindMainShift("K",  hl.dsp.exec_cmd("qs ipc call keyboard toggle"), { locked = t
 -- plain Super+H stays "focus left"
 bindMainShift("H",  hl.dsp.exec_cmd("qs ipc call home toggle"))
 
--- ── LID CLOSE ─────────────────────────────────────────
-hl.bind("switch:Lid Switch", hl.dsp.exec_cmd("systemctl suspend"), { locked = true })
-
 -- ── SCREENSHOTS ───────────────────────────────────────
 bindMain("PRINT",       hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
 hl.bind("PRINT",        hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
