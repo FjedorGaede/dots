@@ -80,13 +80,14 @@ prefs_capture() {
 }
 
 # The repo is public: list every string that could be personal — URLs (minus
-# browser-internal ones), email addresses, home paths — so it gets a look
-# before pushing.
+# browser-internal ones and Vivaldi's public theme gallery), email addresses,
+# home paths — so it gets a look before pushing.
 prefs_privacy_check() {
     local -a hits=()
     mapfile -t hits < <(jq -r '.. | strings
         | select(test("^[a-z][a-z0-9+.-]*://|[^ @]+@[^ @]+\\.[a-z]+|/home/|^~/"; "i"))
-        | select(test("^(chrome|chrome-extension|vivaldi|about|devtools)://") | not)' "$1" | sort -u)
+        | select(test("^(chrome|chrome-extension|vivaldi|about|devtools)://") | not)
+        | select(test("^https://themes\\.vivaldi\\.net/") | not)' "$1" | sort -u)
     [ -n "${hits[*]:-}" ] || return 0
     warn "the repo is public — these end up on GitHub, check them before pushing:"
     printf '    %s\n' "${hits[@]}" >&2

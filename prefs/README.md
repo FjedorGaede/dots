@@ -38,7 +38,7 @@ grouped:
 |---|---|
 | Keyboard | shortcuts + mouse gesture mappings (`vivaldi.actions`), which shortcuts win over websites, ctrl+f toggles the find bar |
 | Theme | custom themes, active theme, private-window theme, theme schedule, accent + highlight color, density, dim unfocused windows, narrow scrollbars |
-| UI layout | saved layouts, all toolbars, panels (list, position, web panels), tab bar + address bar position, status bar, auto-hide, menu, native window decoration |
+| UI layout | saved layouts, all toolbars, panels (list, position — not web panels, their URLs are private), tab bar + address bar position, status bar, auto-hide, menu, native window decoration |
 | Tab behavior | double-click action, stacking mode + editor, drag&drop tiling, pinned-tab rules (the rest of tab behavior is synced by Vivaldi) |
 | Address bar | dropdown contents (bookmarks, calculator, search history, size), search suggestions, search field width |
 | Reader + start page | reader view style/controls, speed dial navigation/columns/size, dashboard on/off + columns |

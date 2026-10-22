@@ -35,7 +35,6 @@ keys=(
     vivaldi.panel_editor
     vivaldi.panels.elements
     vivaldi.panels.position
-    vivaldi.panels.web                    # web panels (and extension panels)
     vivaldi.tabs.bar.position             # tab bar top / left / ...
     vivaldi.address_bar.position
     vivaldi.address_bar.visible
@@ -83,3 +82,4 @@ keys=(
 #   vivaldi.dashboard.widgets       weather widget holds your city
 #   vivaldi.dashboard.sticky_notes  note text
 #   vivaldi.workspaces.*            workspace IDs differ per machine; link rules leak sites
+#   vivaldi.panels.web              web panel URLs (private hosts, e.g. Home Assistant remote URL)
