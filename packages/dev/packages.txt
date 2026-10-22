@@ -2,3 +2,4 @@ lazygit
 bob
 tree-sitter-cli
 nvm
+diff-so-fancy
