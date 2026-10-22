@@ -30,6 +30,7 @@ One repo, one CLI (`dots`), one-command bootstrap on a fresh machine.
 │   └── install/<name>/install.sh   # optional idempotent install scripts
 ├── setup/<name>/setup.sh  # interactive per-machine steps (dots setup)
 ├── stow/<component>/    # one folder per stow package (the actual dotfiles)
+├── prefs/<app>/         # app.sh + prefs.json: settings merged into files apps rewrite themselves (dots prefs)
 ├── dots-cli/            # the CLI tool (see dots-cli/AGENTS.md for internals)
 └── BACKUP_DO_NEVER_DELETE/   # frozen remains of the old chezmoi setup
 ```
@@ -56,7 +57,8 @@ On `$PATH` via shell rc. Flat verbs:
 | `dots stow-add [--all] [--dry-run] <name\|path> [path]` | Import a live config (default `~/.config/<name>`) as a new stow component: pick what to track in an fzf tree picker — whole dirs or single files at any depth (`x`/space toggle, `l` open dir, `h` back; state-ish entries unselected), nested .git vendored, then stow + auto-commit. On an existing component it **extends** it: tracked files are pre-selected (locked), only new picks are added. `--dry-run` (`-n`) only prints what would happen |
 | `dots stow-remove [--yes] <component...>` | Detach: unstow, copy the repo's files back over the live paths, remove from repo + auto-commit. Never touches `~/.dotfiles-backup/` |
 | `dots sync` | Drift check: installed-but-untracked packages (print-only) |
-| `dots update [--dry-run]` | Pull (ff-only, refuses on uncommitted changes), `stow -R` all linked components, report missing packages / unstowed components, reload Hyprland. The only pull path |
+| `dots update [--dry-run]` | Pull (ff-only, refuses on uncommitted changes), `stow -R` all linked components, report missing packages / unstowed components, apply changed `prefs/` (merging uncaptured live changes), reload Hyprland. The only pull path |
+| `dots prefs [diff\|capture\|apply] [app...] [--yes]` | Settings of apps that rewrite their own config (can't be stowed — Vivaldi's `Preferences`): `prefs/<app>/app.sh` names the live file, process and owned JSON keys, `prefs/<app>/prefs.json` their values. `capture` live → repo (commit via `dots git`), `apply` repo → live (shows the diff + asks, closes and reopens a running app, backs up to `~/.dotfiles-backup/`), `diff` (default) compares. Conflicts: per-setting three-way merge. Docs: `prefs/README.md` |
 | `dots theme` | Apply theming scheme (default: dracula; `WAL_BIN=echo` for dry-run) |
 | `dots calendar [client\|login\|logout\|list]` | Log Google accounts into the quickshell calendar (OAuth; client + tokens stay in `~/.local/share/quickshell/`, never in the repo). Thin wrapper around `stow/quickshell/.config/quickshell/scripts/gcal-sync.py` |
 | `dots edit` | Open repo files in editor |

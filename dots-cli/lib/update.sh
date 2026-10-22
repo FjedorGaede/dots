@@ -7,6 +7,11 @@
 #   4. report what needs sudo or a decision: unstowed components that changed,
 #      changed categories with missing packages / changed install scripts
 #   5. reload Hyprland if it runs and its config changed, print configerrors
+#   6. prefs/<app> changed upstream: apply it (running app: ask, close,
+#      apply, reopen). Live has uncaptured changes → three-way merge per
+#      setting (base = pre-pull prefs.json): merged result goes to live AND
+#      prefs.json (commit it via dots git); same setting changed on both
+#      sides → report, nothing written
 # --dry-run: fetch + show incoming commits + preview the restow; mutates nothing.
 # The only pull path in the CLI — pushing stays with lazygit (dots git).
 
@@ -64,7 +69,58 @@ cmd_update() {
 
     report_unstowed
     report_packages
+    update_prefs
     $dry_run || ! $hypr_touched || reload_hyprland
+}
+
+# prefs/<app> changed in the pull: bring live in line, with the app closed
+# (asks to close + reopen it when it runs) — closing first matters, the app
+# saves its settings on quit. Unchanged prefs that drifted are only reported.
+update_prefs() {
+    command -v jq >/dev/null 2>&1 || { [ -z "$(prefs_apps)" ] || warn "jq missing — prefs skipped"; return 0; }
+    $dry_run || prefs_merge_driver_register
+    local app
+    for app in $(prefs_apps); do
+        prefs_load "$app"
+        if ! path_changed "prefs/$app/"; then
+            prefs_in_sync "$app" || info "$app: live settings differ from the repo — 'dots prefs diff $app'"
+            continue
+        fi
+        prefs_in_sync "$app" && continue
+        if $dry_run; then
+            info "$app: prefs changed — a real update would apply them"
+            continue
+        fi
+        prefs_closed "$app" true update_live_prefs "$app" || true
+    done
+    return 0
+}
+
+# update_live_prefs <app> (app closed): live still equal to the pre-pull repo
+# (or the app is new in the repo) → apply. Otherwise live has uncaptured
+# changes → three-way merge per setting (base = pre-pull prefs.json, ours =
+# live, theirs = pulled prefs.json); clean → write to repo + live, conflict →
+# report, nothing written.
+update_live_prefs() {
+    local app="$1" repo_file base live merged rc=0
+    repo_file="$(prefs_file "$app")"
+    base="$(mktemp)" live="$(mktemp)" merged="$(mktemp)"
+    git -C "$DOTFILES_DIR" show "$old_head:prefs/$app/prefs.json" > "$base" 2>/dev/null || : > "$base"
+    prefs_extract "$target" > "$live"
+    if [ ! -s "$base" ] || [ "$(jq -S . "$base")" = "$(cat "$live")" ]; then
+        prefs_apply_live "$app"
+    elif prefs_merge3 "$base" "$live" "$repo_file" > "$merged" 2>"$base.err"; then
+        cp "$merged" "$repo_file"
+        prefs_apply_live "$app"
+        warn "$app: your uncaptured live changes were merged into prefs/$app/prefs.json — commit it via dots git"
+    else
+        rc=1
+        warn "$app: same setting(s) changed upstream AND live — nothing written:"
+        cat "$base.err" >&2
+        echo "    'dots prefs diff $app', then capture (keep live) or apply (take repo)" >&2
+    fi
+    rm -f "$base" "$base.err" "$live" "$merged"
+    return "$rc"
 }
 
 # path_changed <prefix>: true if a file under <prefix> changed in the pull.

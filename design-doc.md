@@ -44,6 +44,8 @@ dots/
 │   │   └── packages.txt
 │   └── gaming/
 │       └── packages.txt        # add a category by adding a dir — nothing else to register
+├── prefs/<app>/                # app.sh (live file, process, owned JSON keys) +
+│                               #   prefs.json — for configs the app rewrites itself
 ├── setup/                      # interactive per-machine steps (dots setup)
 │   ├── git/setup.sh            # global user.name/user.email
 │   ├── ssh/setup.sh            # ~/.ssh/id_ed25519 (no passphrase)
@@ -62,7 +64,7 @@ dots/
     └── lib/
         ├── common.sh             # shared helpers (category discovery, gum wrappers)
         └── <cmd>.sh              # one file per command (install, setup, add, remove,
-                                  #   list, stow, stow-add, stow-remove, sync, theme,
+                                  #   list, stow, stow-add, stow-remove, sync, prefs, theme,
                                   #   calendar, edit, git) — see dots-cli/AGENTS.md
 ```
 
@@ -131,6 +133,7 @@ tool, not a dotfile.
 | `dots stow-remove [--yes] <component...>` | Detach: unstow, copy every tracked file back to its live path (replacing the symlinks — machine content == repo content, no backup involved), `rm -rf stow/<comp>`, auto-commit |
 | `dots sync` | Drift check — installed-but-untracked packages, printed only, never auto-modified |
 | `dots update [--dry-run]` | Apply the remote repo to this machine: refuse on uncommitted changes, `git pull --ff-only` (diverged → resolve in `dots git`), `stow -R` every linked component (links new files, prunes deleted ones — also repairs drift without new commits), report unstowed changed components and missing packages of changed categories (never runs sudo), reload Hyprland + print `configerrors` when its config changed. The only pull path; pushing stays in lazygit |
+| `dots prefs [diff\|capture\|apply] [app...] [--yes]` | Settings that can't be stowed because the app rewrites the file on exit (Vivaldi: shortcuts, theme, UI layout and the other settings its own sync skips — list in `prefs/README.md`). The repo owns only the JSON keys listed in `prefs/<app>/app.sh`; `capture` copies them live → `prefs.json` (committed via `dots git`), `apply` merges them repo → live (backup first; shows the diff and asks; a running app is closed and reopened), `diff` compares. `dots update` applies changed prefs and three-way-merges uncaptured live changes per setting (base = pre-pull `prefs.json`); the same merge is a git merge driver for diverged commits. Only the same setting changed on both sides is a real conflict — reported (update) or left as markers (git). User docs: `prefs/README.md`, internals: `dots-cli/AGENTS.md` |
 | `dots calendar [client\|login\|logout\|list]` | Connects Google Calendar to the quickshell calendar (no command = gum menu). Thin surface like `dots theme`: logic lives in the quickshell component's `scripts/gcal-sync.py`. The OAuth client JSON and tokens are secrets → `~/.local/share/quickshell/`, never in the repo; a new machine re-runs `client` + `login` (`dots setup calendar` does both) |
 
 ### `dots add` — the day-to-day habit

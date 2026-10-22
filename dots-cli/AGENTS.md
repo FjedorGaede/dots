@@ -24,7 +24,9 @@ dots-cli/
 │   ├── stow-remove.sh  # cmd_stow_remove (detach: unstow + restore + remove)
 │   ├── sync.sh       # cmd_sync
 │   ├── update.sh     # cmd_update (pull --ff-only + restow linked components
-│   │                 #   + report packages + reload Hyprland)
+│   │                 #   + report packages + apply/merge prefs + reload Hyprland)
+│   ├── prefs.sh      # cmd_prefs (diff/capture/apply + git merge-driver;
+│   │                 #   helpers in common.sh, update.sh uses them too)
 │   ├── theme.sh      # cmd_theme (thin CLI surface — logic lives in theming/)
 │   ├── calendar.sh   # cmd_calendar (thin surface over quickshell's gcal-sync.py)
 │   ├── edit.sh       # cmd_edit
@@ -56,7 +58,9 @@ Unknown commands print usage and exit 1. There is no argument parsing in
   functions (`die`, `info`, `warn`, `require_gum`, `gum_*`, `categories`,
   `category_dir`, `category_file`, `packages_in_category`, `install_scripts`,
   `is_aur`, `pkg_name`, `stow_components`, `is_linked`, `backup_conflicts`)
-  come from `common.sh`.
+  come from `common.sh`. Same for the prefs helpers (`PREFS_DIR`,
+  `prefs_apps`, `prefs_load`, `prefs_extract`, `prefs_in_sync`,
+  `prefs_merge3`, `prefs_apply_live`, `prefs_merge_driver_register`).
 - Errors: `die "message"` (prints to stderr, exit 1). Progress: `info`.
   Non-fatal failures: `warn` — never silently ignore a failure.
 - Interactive bits must go through the `gum_*` wrappers, and must call
@@ -128,6 +132,45 @@ Flow of `apply-theme.sh`:
    (the `WAL_BIN` override stubs out wal itself), or invoke
    `dots-cli/theming/apply-theme.sh` directly.
 
+## Prefs: `dots prefs` and conflict handling
+
+User-facing docs: `prefs/README.md`. For apps that rewrite their own JSON
+config on exit (Vivaldi's `Default/Preferences`), so a stow symlink would be
+replaced. The repo owns only the keys listed in `prefs/<app>/app.sh`
+(`target`, `process`, optional `launch=(...)`, `keys=(...)` as dotted JSON
+paths); `prefs/<app>/prefs.json` holds their values (`jq -S`, pretty). Applying replaces each listed key's whole subtree; everything else
+in the live file is untouched. Never list keys the app syncs itself (Vivaldi:
+anything under `account_values`) — both would fight over them.
+
+Conflicts are resolved per **leaf** (a scalar or an array of scalars — e.g.
+one command's shortcut list) by `prefs_merge3 base ours theirs`: a leaf
+changed on one side takes that side; changed on both sides differently = real
+conflict. It's used in two places:
+
+- **`dots update`**, when `prefs/<app>/` changed in the pull and live
+  differs from the pre-pull `prefs.json` (= uncaptured changes): base =
+  pre-pull `prefs.json` (`git show $old_head:...`), ours = live, theirs =
+  pulled `prefs.json`. Clean → written to `prefs.json` (commit via
+  `dots git`) and live. Real conflict → report, nothing written; the user
+  picks with `dots prefs diff/capture/apply`. Live equal to the base (or app
+  new in the repo) → plain apply.
+- **git merges** of diverged commits: `.gitattributes` routes
+  `prefs/*/prefs.json` to the `dots-prefs` merge driver
+  (`dots prefs merge-driver %O %A %B`, registered in `.git/config` by every
+  `dots prefs` / `dots update` run). Real conflict → falls back to
+  `git merge-file` markers, resolved in lazygit.
+
+**Running app:** every write goes through `prefs_closed <app> <ask> <cmd>`:
+if the app runs it asks (update: gum confirm, needs a terminal — otherwise
+just a hint; `prefs apply` asks together with the diff, `--yes` skips),
+quits it (`prefs_stop`: SIGTERM to the oldest `pgrep -x $process`, waits
+≤15s, dies without writing if it won't quit), runs the command **in a
+subshell** (a `die` inside still reaches the reopen), reopens it
+(`prefs_start`: `setsid -f "${launch[@]}"`). Live is read only after the
+quit — the app saves pending settings on quit, so the merge sees them.
+
+Adding an app: `prefs/<app>/app.sh`, then `dots prefs capture <app>`.
+
 ## Invariants (do not break)
 
 - **Repo wins on conflict.** `stow --adopt` is banned; conflicts are backed up
@@ -147,4 +190,7 @@ Flow of `apply-theme.sh`:
   refuses on uncommitted changes or divergence (those go to lazygit).
 - **Filesystem is the source of truth** — categories are discovered by scanning
   `packages/*/` (dir + `packages.txt`), components by scanning `stow/*`, theme
-  adapters by scanning `dots-cli/theming/adapters/*`; no registries.
+  adapters by scanning `dots-cli/theming/adapters/*`, prefs apps by scanning
+  `prefs/*/app.sh`; no registries.
+- **Prefs never silently drop live changes** — `apply` asks (or needs
+  `--yes`) when live differs, `update` merges instead of overwriting.

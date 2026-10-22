@@ -32,6 +32,7 @@ dots add <pkg> [--aur]             install + track a package (auto-commit)
 dots remove                        untrack a package
 dots stow [component]              link configs into $HOME
 dots update [--dry-run]            pull + restow + report what to install
+dots prefs [diff|capture|apply]    app settings that can't be stowed (Vivaldi shortcuts)
 dots setup [name]                  per-machine steps (git, ssh, github, ...)
 dots theme [name]                  apply a colorscheme
 dots edit                          edit the configs
@@ -46,5 +47,6 @@ dots git                           lazygit in the repo
 packages/<category>/   packages.txt + optional install/<name>/install.sh
 setup/<name>/          per-machine steps for `dots setup`
 stow/<component>/      the configs
+prefs/<app>/           settings merged into files apps rewrite themselves
 dots-cli/              the CLI (internals: dots-cli/AGENTS.md)
 ```

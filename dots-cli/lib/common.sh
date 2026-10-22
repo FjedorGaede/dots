@@ -6,6 +6,7 @@ set -euo pipefail
 
 PACKAGES_DIR="$DOTFILES_DIR/packages"
 STOW_DIR="$DOTFILES_DIR/stow"
+PREFS_DIR="$DOTFILES_DIR/prefs"
 BACKUP_DIR="$HOME/.dotfiles-backup"
 
 usage() {
@@ -57,6 +58,12 @@ Daily:
   dots update [--dry-run]     Pull the repo (fast-forward only), restow every
                               linked component, report packages to install,
                               reload Hyprland; --dry-run = preview only
+  dots prefs [diff|capture|apply] [app...] [--yes]
+                              App settings that can't be stowed (Vivaldi
+                              shortcuts, ...): capture = machine → repo,
+                              apply = repo → machine (closes + reopens a
+                              running app), diff = compare; no app = all in
+                              prefs/ (see prefs/README.md)
   dots edit [component]       Open $EDITOR in the stow tree (whole tree or one
                               component); edits land in the repo — commit them
   dots theme [-l] [name]      Apply a pywal16 colorscheme (+ per-app adapters in
@@ -214,6 +221,163 @@ backup_conflicts() {
     done
 }
 
+# --- prefs ------------------------------------------------------------------
+# Settings of apps that rewrite their own JSON config (can't be stowed): the
+# repo keeps only the chosen keys in prefs/<app>/prefs.json and merges them
+# into the live file. prefs/<app>/app.sh sets target, process, launch, keys.
+
+prefs_apps() { # app names under prefs/ (dirs with an app.sh)
+    [ -d "$PREFS_DIR" ] || return 0
+    find "$PREFS_DIR" -mindepth 2 -maxdepth 2 -name app.sh -type f -printf '%h\n' \
+        | sed "s|^$PREFS_DIR/||" | sort
+}
+
+require_prefs_app() {
+    [ -f "$PREFS_DIR/$1/app.sh" ] || die "no such prefs app: '$1' (existing: $(prefs_apps | tr '\n' ' '))"
+}
+
+# prefs_load <app>: sets target, process, launch + keys (arrays) from
+# prefs/<app>/app.sh. launch is optional (no launch = no reopen after apply).
+prefs_load() {
+    target="" process="" launch=() keys=()
+    # shellcheck source=/dev/null
+    source "$PREFS_DIR/$1/app.sh"
+    [ -n "$target" ] && [ -n "$process" ] && [ ${#keys[@]} -gt 0 ] \
+        || die "prefs/$1/app.sh must set target, process and keys"
+}
+
+prefs_file() { echo "$PREFS_DIR/$1/prefs.json"; }
+
+prefs_running() { pgrep -x "$process" >/dev/null 2>&1; }
+
+# prefs_stop: graceful quit — SIGTERM to the main process (the oldest; its
+# helper processes exit with it). Chromium handles it like a normal quit:
+# session and Preferences are saved, nothing counts as a crash.
+prefs_stop() {
+    local pid i
+    pid="$(pgrep -o -x "$process")" || return 0
+    kill -TERM "$pid"
+    for i in $(seq 30); do
+        prefs_running || return 0
+        sleep 0.5
+    done
+    die "$process still running 15s after asking it to quit — nothing changed"
+}
+
+prefs_start() {
+    if [ ${#launch[@]} -eq 0 ]; then
+        warn "no launch command in app.sh — start it yourself"
+        return 0
+    fi
+    setsid -f "${launch[@]}" >/dev/null 2>&1 </dev/null
+    success "reopened ${launch[0]}"
+}
+
+# prefs_closed <app> <ask> <command...>: run command while the app is closed.
+# If it runs: ask first (ask=true; no terminal or gum → report, return 1),
+# quit it, run the command in a subshell (so a die still reaches the reopen),
+# reopen it. Returns the command's status.
+prefs_closed() {
+    local app="$1" ask="$2" rc=0
+    shift 2
+    if ! prefs_running; then
+        "$@"
+        return
+    fi
+    if $ask; then
+        if ! [ -t 0 ] || ! command -v gum >/dev/null 2>&1; then
+            warn "$app is running — close it, then 'dots prefs apply $app'"
+            return 1
+        fi
+        gum_confirm "$app is running — close it, apply, and reopen it?" \
+            || { warn "$app: skipped — later: close it, then 'dots prefs apply $app'"; return 1; }
+    fi
+    prefs_stop
+    ( "$@" ) || rc=$?
+    prefs_start
+    return "$rc"
+}
+
+# prefs_extract <json file>: the listed keys only (dotted paths), sorted,
+# pretty-printed — the format prefs.json is stored in. Missing keys are left out.
+prefs_extract() {
+    jq -S --args '. as $src | reduce ($ARGS.positional[] | split(".")) as $p ({};
+        ($src | getpath($p)) as $v | if $v == null then . else setpath($p; $v) end)' \
+        "${keys[@]}" < "$1"
+}
+
+# prefs_in_sync <app>: true if the live values equal the repo's (needs prefs_load).
+# A missing prefs.json or live file counts as in sync — nothing to compare.
+prefs_in_sync() {
+    local repo_file
+    repo_file="$(prefs_file "$1")"
+    [ -f "$repo_file" ] && [ -f "$target" ] || return 0
+    [ "$(prefs_extract "$target")" = "$(jq -S . "$repo_file")" ]
+}
+
+# prefs_merge3 <base> <ours> <theirs>: three-way merge of prefs fragments, per
+# leaf (scalars and arrays of scalars, e.g. one command's shortcut list): a
+# leaf changed on one side takes that side. Prints the merged JSON; leaves
+# both sides changed differently are listed on stderr → exit 1. A missing
+# base file counts as {}.
+prefs_merge3() {
+    local base="$1" result
+    [ -s "$base" ] || base=<(echo '{}')
+    result="$(jq -n --slurpfile b "$base" --slurpfile o "$2" --slurpfile t "$3" '
+        def leaves: def r(p):
+            if type == "object" and length > 0 then to_entries[] as $e | ($e.value | r(p + [$e.key]))
+            elif type == "array" and any(.[]; type == "object" or type == "array")
+                then to_entries[] as $e | ($e.value | r(p + [$e.key]))
+            else p end; r([]);
+        $b[0] as $b | $o[0] as $o | $t[0] as $t
+        | [$b, $o, $t] | map([leaves]) | add | unique
+        | reduce .[] as $p ({merged: {}, conflicts: []};
+            ($b | getpath($p)) as $bv | ($o | getpath($p)) as $ov | ($t | getpath($p)) as $tv
+            | if $ov == $tv or $tv == $bv then {v: $ov}
+              elif $ov == $bv then {v: $tv}
+              else {c: true} end as $r
+            | if $r.c then .conflicts += [$p | map(tostring) | join(".")]
+              elif $r.v == null then .
+              else .merged |= setpath($p; $r.v) end)
+    ')" || return 2
+    jq -S .merged <<<"$result"
+    jq -e '.conflicts == []' <<<"$result" >/dev/null && return 0
+    jq -r '.conflicts[] | "  conflict: \(.)"' <<<"$result" >&2
+    return 1
+}
+
+# prefs_merge_driver_register: git merge driver for prefs/*/prefs.json (the
+# .gitattributes line is in the repo, the driver lives in .git/config).
+# Idempotent; called by dots prefs and dots update.
+prefs_merge_driver_register() {
+    git -C "$DOTFILES_DIR" config merge.dots-prefs.name "dots prefs three-way JSON merge"
+    git -C "$DOTFILES_DIR" config merge.dots-prefs.driver \
+        "\"$DOTFILES_DIR/dots-cli/bin/dots\" prefs merge-driver %O %A %B"
+}
+
+# prefs_apply_live <app>: back up the live file, then replace each listed key with
+# the repo's value (whole subtree — the repo owns that key). Keys missing from
+# prefs.json stay untouched. Caller checks that the app isn't running.
+prefs_apply_live() {
+    local app="$1" repo_file dir tmp
+    repo_file="$(prefs_file "$app")"
+    [ -f "$repo_file" ] || die "prefs/$app/prefs.json missing — run 'dots prefs capture $app' on a configured machine"
+    [ -f "$target" ] || die "$target missing — start $app once so it creates it"
+    dir="$BACKUP_DIR/prefs-$app.$(date +%Y%m%d-%H%M%S)"
+    mkdir -p "$dir"
+    cp -p "$target" "$dir/"
+    tmp="$(mktemp "$target.dots.XXXXXX")"
+    if ! jq -c --slurpfile repo "$repo_file" --args '. as $t
+            | reduce ($ARGS.positional[] | split(".")) as $p ($t;
+                ($repo[0] | getpath($p)) as $v | if $v == null then . else setpath($p; $v) end)' \
+            "${keys[@]}" < "$target" > "$tmp"; then
+        rm -f "$tmp"
+        die "merging prefs/$app/prefs.json into $target failed — file untouched"
+    fi
+    mv "$tmp" "$target"
+    success "applied prefs/$app → $target (backup: $dir)"
+}
+
 # --- git integration ---------------------------------------------------------
 # Auto-commit for tracking changes (add/remove) + manual `dots commit` for
 # configs. Commits from add/remove stage ONLY the touched category files, so
@@ -245,7 +409,7 @@ main() {
     [ $# -gt 0 ] && shift
 
     case "$cmd" in
-        install|setup|add|remove|list|stow|sync|update|theme|calendar|edit|git)
+        install|setup|add|remove|list|stow|sync|update|prefs|theme|calendar|edit|git)
             # shellcheck source=/dev/null
             source "$LIB_DIR/$cmd.sh"
             "cmd_$cmd" "$@"
@@ -265,7 +429,7 @@ main() {
             ;;
         --subcommands)
             # for shell completion (e.g. zsh compdef) — one subcommand per line
-            printf '%s\n' install setup add remove list stow stow-add stow-remove sync update theme calendar edit git
+            printf '%s\n' install setup add remove list stow stow-add stow-remove sync update prefs theme calendar edit git
             ;;
         *)
             usage >&2
