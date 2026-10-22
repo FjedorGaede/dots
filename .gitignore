@@ -18,3 +18,4 @@ stow/herdr/.config/herdr/*.sock
 stow/herdr/.config/herdr/.plugins.lock
 stow/herdr/.config/herdr/session.json
 stow/herdr/.config/herdr/session-snapshots/
+stow/herdr/.config/herdr/release-notes.json
