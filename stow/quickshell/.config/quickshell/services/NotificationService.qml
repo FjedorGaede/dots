@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Services.Notifications
 
@@ -99,6 +100,24 @@ Singleton {
     function dismissToast(notification) {
         if (!root._removeToast(notification) || !root._alive(notification)) return;
         notification.dismiss();
+    }
+
+    // Toast tapped: run the app's "default" action, then focus its window.
+    // On Wayland the app can't raise itself (Teams' "View" only shows its
+    // window on the teams workspace) → focus the window whose class equals
+    // the desktop-entry hint; Hyprland switches workspace. No match → no-op.
+    function activate(notification) {
+        if (!root._alive(notification)) return;
+        const defaultAction = (notification.actions ?? []).find(a => a.identifier === "default");
+        if (defaultAction) defaultAction.invoke();
+
+        const entry = notification.desktopEntry.replace(/"/g, "");
+        if (entry !== "") {
+            // Escaped for the regex, doubled for the Lua string literal
+            const cls = entry.replace(/[.*+?^${}()|[\]\\]/g, "\\\\$&");
+            Hyprland.dispatch('hl.dsp.focus({window="class:^' + cls + '$"})');
+        }
+        root.dismissToast(notification);
     }
 
     function clearAll() {

@@ -76,11 +76,6 @@ PanelWindow {
 
             readonly property int expireAfter: isCritical ? 0
                 : (modelData.expireTimeout > 0 ? modelData.expireTimeout : NotificationService.defaultExpire)
-            // Many apps send an unnamed "default" action ("open this"); the
-            // toast body tap should trigger it instead of just dismissing.
-            readonly property var defaultAction:
-                (modelData.actions ?? []).find(a => a.identifier === "default") ?? null
-
             width: ListView.view.width
 
             onActionInvoked: NotificationService.dismissToast(toast.modelData)
@@ -92,11 +87,9 @@ PanelWindow {
                 onTriggered: NotificationService.hideToast(toast.modelData)
             }
 
+            // Body tap opens the app (default action + focus its window)
             TapHandler {
-                onTapped: {
-                    if (toast.defaultAction) toast.defaultAction.invoke();
-                    NotificationService.dismissToast(toast.modelData)
-                }
+                onTapped: NotificationService.activate(toast.modelData)
             }
         }
     }
