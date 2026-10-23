@@ -17,7 +17,8 @@
   "packages": [
     "git:github.com/badlogic/pi-skills",
     "npm:pi-mcp-adapter",
-    "npm:pi-claude-agent-sdk"
+    "npm:pi-claude-agent-sdk",
+    "npm:pi-web-access"
   ],
   "hideThinkingBlock": false,
   "extensions": [
