@@ -124,12 +124,15 @@ hl.window_rule({
 -- ── TELEGRAM (Special workspace) ──────────────────────
 -- Don't let new messages steal focus (still marked urgent)
 hl.window_rule({
-    match          = { class = "org.telegram.desktop" },
-    float          = true,
-    center         = true,
-    size           = { "monitor_w * 0.9", "monitor_h * 0.9" },
-    workspace      = "special:telegram",
-    suppress_event = "activatefocus",
+    match             = { class = "org.telegram.desktop" },
+    float             = true,
+    center            = true,
+    size              = { "monitor_w * 0.9", "monitor_h * 0.9" },
+    workspace         = "special:telegram",
+    suppress_event    = "activatefocus",
+    -- suppress_event alone didn't stop it (Telegram still got focused on new
+    -- messages); this dynamic rule does
+    focus_on_activate = false,
 })
 
 -- ── SLACK (desktop app) + HUDDLES ────────────────────
