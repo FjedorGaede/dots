@@ -28,11 +28,13 @@ PopupPanel {
         NetworkService.setWifiEnabled(false)
     }
 
-    // True while wifi is starting up (no networks listed yet — undefined or
-    // empty), or while any network is activating
-    readonly property bool isConnecting: isLoadingWifi && (allNetworks?.length ?? 0) === 0
-                                         || (allNetworks ?? []).some(n => n?.stateChanging ?? false)
-    readonly property bool hideNetworksLayout: isConnecting || !NetworkService.wifiEnabled
+    // Wifi starting up: no networks listed yet (undefined or empty)
+    readonly property bool isStarting: isLoadingWifi && (allNetworks?.length ?? 0) === 0
+    // Any network (de)activating — header text only. The list stays: its row
+    // shows a spinner, and hiding it flashed the whole list on every state
+    // step of a switch (old disconnects, new connects)
+    readonly property bool isConnecting: (allNetworks ?? []).some(n => n?.stateChanging ?? false)
+    readonly property bool hideNetworksLayout: isStarting || !NetworkService.wifiEnabled
     readonly property bool showPasswordView: passwordView.network != null
     readonly property bool showVpnImport: vpnImport.active
     // Password prompt or VPN import replaces the lists
@@ -58,6 +60,8 @@ PopupPanel {
         if (!requested) return
         if (wifiDevice && NetworkService.wifiEnabled) {
             wifiDevice.scannerEnabled = true
+            // Before mapping: the OTHERS "scanning" row is in the first frame
+            NetworkService.scan()
             settleTimer.restart()
             settleCap.restart()
         } else {
@@ -109,7 +113,8 @@ PopupPanel {
 
         Text {
             font.family: Theme.fontFamily
-            visible: wifiManager.isConnecting && NetworkService.wifiEnabled && !wifiManager.showSubView
+            visible: (wifiManager.isStarting || wifiManager.isConnecting)
+                     && NetworkService.wifiEnabled && !wifiManager.showSubView
             text: "Connecting..."
             color: wifiManager.textColor
         }
@@ -151,11 +156,24 @@ PopupPanel {
         }
 
         ColumnLayout {
-            visible: NetworkService.unknownNetworks.length > 0
+            visible: NetworkService.unknownNetworks.length > 0 || NetworkService.scanning
 
             Divider {}
 
-            SectionHeader { text: "OTHERS" }
+            RowLayout {
+                SectionHeader { text: "OTHERS" }
+                Item { Layout.fillWidth: true }
+                StyledText {
+                    visible: NetworkService.scanning
+                    text: "Scanning"
+                    color: Theme.dimForeground
+                    font.pixelSize: Theme.fontSize.md
+                }
+                DotsSpinner {
+                    visible: NetworkService.scanning
+                    font.pixelSize: Theme.fontSize.md
+                }
+            }
 
             Repeater {
                 model: NetworkService.unknownNetworks

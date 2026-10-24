@@ -1,6 +1,7 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Networking
 
 import '../lib/network.js' as NetUtils
@@ -34,4 +35,20 @@ Singleton {
                                        || Networking.connectivity == NetworkConnectivity.Limited
 
     function setWifiEnabled(on) { Networking.wifiEnabled = on }
+
+    // True while a wifi scan is in progress (wifi panel "scanning" indicator).
+    // Quickshell doesn't expose NM's LastScan → `nmcli … --rescan auto` blocks
+    // until a fresh scan finished (seconds), returns at once (~30 ms) when the
+    // last scan is recent. Runs next to the panel's scannerEnabled, which
+    // only re-shows cached networks and requests scans without telling us.
+    readonly property bool scanning: scanProc.running
+
+    function scan() {
+        if (wifiEnabled) scanProc.running = true
+    }
+
+    Process {
+        id: scanProc
+        command: ["nmcli", "-t", "-f", "SSID", "device", "wifi", "list", "--rescan", "auto"]
+    }
 }
