@@ -86,41 +86,41 @@ PopupPanel {
         visible: BluetoothService.adapter?.enabled ?? false
         spacing: 5
 
-        Divider {}
-
-        SectionHeader {
-            text: "CONNECTED"
+        // Each section brings its own divider and is hidden while empty →
+        // no stacked dividers when nothing was ever paired
+        ColumnLayout {
             visible: BluetoothService.connectedDevices.length > 0
-        }
+            Layout.fillWidth: true
+            spacing: 5
 
-        Repeater {
-            model: BluetoothService.connectedDevices
-            BluetoothDeviceItem {
-                required property var modelData
-                device: modelData
+            Divider {}
+
+            SectionHeader { text: "CONNECTED" }
+
+            Repeater {
+                model: BluetoothService.connectedDevices
+                BluetoothDeviceItem {
+                    required property var modelData
+                    device: modelData
+                }
             }
         }
 
-        Divider {
-            visible: BluetoothService.connectedDevices.length > 0 && BluetoothService.pairedDevices.length > 0
-        }
+        ColumnLayout {
+            visible: BluetoothService.pairedDevices.length > 0
+            Layout.fillWidth: true
+            spacing: 5
 
-        RowLayout {
-            SectionHeader {
-                text: "PAIRED DEVICES"
-                visible: BluetoothService.pairedDevices.length > 0
-            }
+            Divider {}
 
-            Item {
-                Layout.fillWidth: true
-            }
-        }
+            SectionHeader { text: "PAIRED DEVICES" }
 
-        Repeater {
-            model: BluetoothService.pairedDevices
-            BluetoothDeviceItem {
-                required property var modelData
-                device: modelData
+            Repeater {
+                model: BluetoothService.pairedDevices
+                BluetoothDeviceItem {
+                    required property var modelData
+                    device: modelData
+                }
             }
         }
 
@@ -155,16 +155,21 @@ PopupPanel {
             }
         }
 
+        // One status line for both states: discovery switches on as the panel
+        // opens, so swapping text instead of showing/hiding keeps the size
+        // stable while it maps (docs/GOTCHAS.md, popup resize flash)
         Text {
+            readonly property bool discovering: BluetoothService.adapter?.discovering ?? false
             font.family: Theme.fontFamily
-            text: "Discovering disabled.."
+            text: discovering ? "Searching for devices…" : "Discovery is off"
             font.italic: true
             font.pixelSize: Theme.fontSize.md
             color: Theme.fadedForeground
-            visible: !(BluetoothService.adapter?.discovering ?? false)
+            visible: !discovering || BluetoothService.discoveredDevices.length === 0
         }
 
         ColumnLayout {
+            Layout.fillWidth: true
             visible: BluetoothService.adapter?.discovering ?? false
             Repeater {
                 model: BluetoothService.discoveredDevices
