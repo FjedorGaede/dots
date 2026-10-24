@@ -152,6 +152,15 @@ original comments stay next to the code they explain.
   switch behaviour on that hang silently: `slurp` waits to read predefined
   boxes from stdin and never shows its overlay. Redirect `</dev/null`
   (`scripts/screenrec-select.sh`).*
+- **A popup resized within a few ms of mapping can flash.** → *Its first
+  frame is then shown at the wrong scale (content ~1.5× = monitor scale,
+  cropped) for one frame. Reproduced with AudioPanel growing 1 ms after
+  open (1 of 3); resizes ≥ 8 ms after mapping were always clean. Below our
+  config (Quickshell / Qt Wayland / Hyprland fractional scale). Panels whose
+  content changes on open must settle before mapping: the wifi panel enables
+  the scanner on request and maps once the network list is quiet — without
+  the scanner Quickshell hides unknown networks (`nm/wireless.cpp`
+  `registerNetwork`), they return one by one ~2 ms apart.*
 - **`IpcHandler` targets are per instance** → `qs ipc -p <path> call …`
   addresses a specific instance.
 

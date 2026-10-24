@@ -34,6 +34,9 @@ PopupPanel {
                                          || (allNetworks ?? []).some(n => n?.stateChanging ?? false)
     readonly property bool hideNetworksLayout: isConnecting || !NetworkService.wifiEnabled
     readonly property bool showPasswordView: passwordView.network != null
+    readonly property bool showVpnImport: vpnImport.active
+    // Password prompt or VPN import replaces the lists
+    readonly property bool showSubView: showPasswordView || showVpnImport
 
     onAllNetworksChanged: {
         if (allNetworks?.length > 0)
@@ -41,32 +44,72 @@ PopupPanel {
     }
 
     // Open state (+ `qs ipc call wifi …`) lives in PanelService
-    open: PanelService.isOpenOn("wifi", screenName)
+    readonly property bool requested: PanelService.isOpenOn("wifi", screenName)
+    // A popup resized within a few ms of mapping can show its first frame at
+    // the wrong scale (docs/GOTCHAS.md). Without the scanner Quickshell lists
+    // only known/active networks; enabling it adds the others one by one
+    // (~2 ms apart, done after ~6 ms), with no "done" signal → scanner on
+    // when requested, map once the list is quiet for 20 ms (at most 100 ms).
+    property bool listSettled: false
+    open: requested && listSettled
+
+    onRequestedChanged: {
+        listSettled = false
+        if (!requested) return
+        if (wifiDevice && NetworkService.wifiEnabled) {
+            wifiDevice.scannerEnabled = true
+            settleTimer.restart()
+            settleCap.restart()
+        } else {
+            listSettled = true
+        }
+    }
+
+    Timer {
+        id: settleTimer
+        interval: 20
+        onTriggered: { settleCap.stop(); wifiManager.listSettled = true }
+    }
+    Timer {
+        id: settleCap
+        interval: 100
+        onTriggered: { settleTimer.stop(); wifiManager.listSettled = true }
+    }
+    Connections {
+        target: NetworkService
+        function onNetworksChanged() {
+            if (settleTimer.running) settleTimer.restart()
+        }
+    }
 
     onVisibleChanged: {
         PanelService.setOpen("wifi", visible, screenName)
         if (wifiDevice)
-            wifiDevice.scannerEnabled = visible
-        if (!visible)
+            wifiDevice.scannerEnabled = visible || requested
+        if (!visible) {
             passwordView.cancel()
+            vpnImport.cancel()
+        }
     }
 
     function requestPassword(net) { passwordView.open(net) }
 
     // --- Header with WIFI toggle ---
     PanelHeader {
-        title: wifiManager.showPasswordView ? "CONNECT" : "WIFI"
+        title: wifiManager.showPasswordView ? "CONNECT"
+             : wifiManager.showVpnImport ? "ADD VPN"
+             : "WIFI"
 
         Text {
             font.family: Theme.fontFamily
-            visible: !NetworkService.wifiEnabled && !wifiManager.showPasswordView
+            visible: !NetworkService.wifiEnabled && !wifiManager.showSubView
             text: "Disabled"
             color: wifiManager.textColor
         }
 
         Text {
             font.family: Theme.fontFamily
-            visible: wifiManager.isConnecting && NetworkService.wifiEnabled && !wifiManager.showPasswordView
+            visible: wifiManager.isConnecting && NetworkService.wifiEnabled && !wifiManager.showSubView
             text: "Connecting..."
             color: wifiManager.textColor
         }
@@ -75,7 +118,7 @@ PopupPanel {
 
         Toggle {
             id: wifiToggle
-            visible: !wifiManager.showPasswordView
+            visible: !wifiManager.showSubView
             checked: NetworkService.wifiEnabled
 
             onUserToggled: (value) => {
@@ -90,7 +133,7 @@ PopupPanel {
 
     // --- Network list (hidden when showing password view) ---
     ScrollColumn {
-        visible: !wifiManager.hideNetworksLayout && !wifiManager.showPasswordView
+        visible: !wifiManager.hideNetworksLayout && !wifiManager.showSubView
         maxHeight: wifiManager.maxNetworkHeight
         spacing: 5
 
@@ -130,9 +173,14 @@ PopupPanel {
         id: passwordView
     }
 
+    // --- VPN import view ("+ Add VPN") ---
+    VpnImportView {
+        id: vpnImport
+    }
+
     // --- VPN section ---
     ColumnLayout {
-        visible: VpnService.connections.length > 0 && !wifiManager.showPasswordView
+        visible: !wifiManager.showSubView
         spacing: 5
 
         Divider {}
@@ -144,5 +192,13 @@ PopupPanel {
         }
 
         VpnList {}     // popup stays open after a tap
+
+        GhostButton {
+            Layout.fillWidth: true
+            leftAligned: true
+            text: "+ Add VPN"
+            textSize: Theme.fontSize.md
+            onClicked: vpnImport.open()
+        }
     }
 }
