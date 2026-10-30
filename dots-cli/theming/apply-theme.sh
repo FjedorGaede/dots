@@ -102,9 +102,9 @@ main() {
     echo "$accent" > "$WAL_CACHE/accent"
     success "accent: $accent"
 
+    # keep the log on failure — the warnings above point to it
     if ! run_adapters "$name"; then
-        rm -f "$THEME_LOG"
-        die "one or more theme adapters failed"
+        die "one or more theme adapters failed (log: $THEME_LOG)"
     fi
     rm -f "$THEME_LOG"
 
