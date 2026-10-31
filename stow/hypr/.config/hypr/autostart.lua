@@ -3,6 +3,8 @@
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("hyprpaper")
+    -- night light schedule: hyprsunset.conf, toggle in the quickshell home menu
+    hl.exec_cmd("hyprsunset")
     -- idle (dim/lock/screen-off/suspend) is handled by quickshell: services/IdleService.qml
     -- only on machines with the tuxedo-extras category installed
     hl.exec_cmd("command -v tuxedo-control-center >/dev/null && tuxedo-control-center")

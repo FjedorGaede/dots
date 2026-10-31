@@ -49,6 +49,11 @@ ModalOverlay {
         PanelService.close("home"); // keyboard icon in the bar is the feedback
     }
 
+    // Menu stays open: the switch + the screen color are the feedback
+    function toggleNightLight() {
+        NightLightService.toggle();
+    }
+
     function openNetwork() {
         PanelService.toggle("network");
         PanelService.close("home");
@@ -110,12 +115,16 @@ ModalOverlay {
         { key: "record",  label: "Screen recording", short: "Recording", icon: "\uF03D", toggle: false,
           on: RecorderService.active, status: RecorderService.active ? "Stop" : "Start",
           color: Theme.red },
+        { key: "night",   label: "Night light", short: "Night light", icon: "\uF186", toggle: true,
+          on: NightLightService.on, status: NightLightService.on ? "On" : "Off",
+          color: Theme.yellow },
     ]
 
     function activate(key) {
         switch (key) {
         case "stay":     toggleStayAwake(); break
         case "kb":       toggleKeyboard(); break
+        case "night":    toggleNightLight(); break
         case "network":  openNetwork(); break
         case "displays": openDisplays(); break
         case "record":   recordAction(); break
@@ -210,6 +219,7 @@ ModalOverlay {
     Group {
         Row { f: homeMenu.features[0] }
         Row { f: homeMenu.features[1] }
+        Row { f: homeMenu.features[5] }
     }
 
     Group {
