@@ -131,7 +131,9 @@ whispy-daemon setup systemd  # seeds config.toml (never overwrites), enables whi
 if [ "$uinput_ok" = 1 ]; then
     config_set injection mode '"paste"'
     config_set injection paste_keys "\"$PASTE_KEYS\""
-    echo "injection: paste (one block, Ctrl+Shift+V)"
+    # whispy drops a clip at 60 s with an error (the pill shows an X) — raise it
+    config_set audio max_clip_secs "300.0"
+    echo "injection: paste (one block, Ctrl+Shift+V), clip limit 5 min"
 else
     config_set injection mode '"type"'
     echo "injection: type (character by character) — see the note at the end"
