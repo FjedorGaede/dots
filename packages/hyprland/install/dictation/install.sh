@@ -28,6 +28,10 @@
 #
 # Not used: 'whispy-daemon setup' in full copies whispy's own pill module into
 # ~/.config/quickshell/Whispy (= into the stow repo); we have our own pill.
+#
+# Depends on the stow component `wireplumber`: it keeps ALSA inputs from being
+# suspended, otherwise the microphone is still asleep when the key is pressed and
+# the first words of a sentence come back ~17 dB too quiet.
 set -euo pipefail
 
 PACKAGES=(whispy wtype ydotool)
@@ -122,53 +126,12 @@ EOF
     systemctl --user enable --now ydotoold.service
 fi
 
-# ── 4. keep the microphone awake (user config, no sudo) ─────────────────────
-# WirePlumber suspends an idle input device after 5 s (measured: the node goes to
-# `suspended`). Dictation opens the stream on the key press and the mic then
-# needs ~1 s to wake up: the first words come back ~17 dB too quiet (-41 instead
-# of -24 dB), so the level display showed nothing at the start of a sentence.
-# The setting is per node and cannot be generic — it names the microphone present
-# now, and is rewritten if the default source changes.
-MIC_NODE="$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ 2>/dev/null | sed -n 's/.*node.name = "\(.*\)"/\1/p' | head -1)"
-WP_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/wireplumber/wireplumber.conf.d/51-mic-no-suspend.conf"
-if [ -n "$MIC_NODE" ]; then
-    wanted="$(cat <<EOF
-# Keep the microphone from being suspended when idle (see dots: dictation).
-# It takes about a second to wake up, and dictation starts capturing on the key
-# press — that first second would come back far too quiet, so the level display
-# missed the first words. Matched by node name only: other devices still suspend.
-monitor.alsa.rules = [
-  {
-    matches = [
-      { node.name = "$MIC_NODE" }
-    ]
-    actions = {
-      update-props = {
-        session.suspend-timeout-seconds = 0
-      }
-    }
-  }
-]
-EOF
-)"
-    if [ ! -e "$WP_CONF" ] || ! cmp -s <(printf '%s\n' "$wanted") "$WP_CONF"; then
-        info "keeping the microphone awake: $MIC_NODE"
-        mkdir -p "$(dirname "$WP_CONF")"
-        printf '%s\n' "$wanted" > "$WP_CONF"
-        systemctl --user restart wireplumber   # brief audio interruption
-    else
-        echo "microphone stays awake already ($MIC_NODE)"
-    fi
-else
-    echo "note: no default microphone found — skipping the suspend fix"
-fi
-
-# ── 5. speech engine, model, config, whispy-daemon (each step idempotent) ─────
+# ── 4. speech engine, model, config, whispy-daemon (each step idempotent) ─────
 whispy-daemon setup stt      # Parakeet engine (the AUR package ships it → no-op)
 whispy-daemon setup model    # checksum-verified download, skipped when present
 whispy-daemon setup systemd  # seeds config.toml (never overwrites), enables whispy-daemon
 
-# ── 6. injection mode: paste in one block, or type until uinput is there ─────
+# ── 5. injection mode: paste in one block, or type until uinput is there ─────
 if [ "$uinput_ok" = 1 ]; then
     config_set injection mode '"paste"'
     config_set injection paste_keys "\"$PASTE_KEYS\""
@@ -180,7 +143,7 @@ else
     echo "injection: type (character by character) — see the note at the end"
 fi
 
-# ── 7. (re)start and check ───────────────────────────────────────────────────
+# ── 6. (re)start and check ───────────────────────────────────────────────────
 systemctl --user restart whispy-daemon
 whispy-daemon setup verify
 

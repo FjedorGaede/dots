@@ -36,7 +36,7 @@ One repo, one CLI (`dots`), one-command bootstrap on a fresh machine.
 ```
 
 Stow components: **hypr, quickshell, ghostty, tmux, tools, wal, shell,
-scripts, pi, nvim, herdr**. New components are created with `dots stow-add` — never
+scripts, pi, nvim, herdr, wireplumber**. New components are created with `dots stow-add` — never
 direct `stow --adopt`. Deliberately dropped (do not reintroduce): waybar, astal,
 swayosd, wlogout, mako, rofi, nm-connection-editor, vim — the custom
 quickshell shell replaces several of them.
