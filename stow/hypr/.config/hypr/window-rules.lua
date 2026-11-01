@@ -51,8 +51,7 @@ hl.window_rule({
 })
 
 -- ── VIVALDI BITWARDEN POPUP ───────────────────────────
--- Same late-title problem as the Google login below: the extension popup
--- maps as "Vivaldi - Vivaldi" and only then becomes "Bitwarden - Vivaldi".
+-- The extension popup maps as "Vivaldi - Vivaldi" and only then becomes "Bitwarden - Vivaldi".
 -- Float it as a tall, narrow window (once per window).
 local bitwarden_done = {}
 local function float_bitwarden(w)
@@ -66,23 +65,6 @@ end
 hl.on("window.open", float_bitwarden)
 hl.on("window.title", float_bitwarden)
 hl.on("window.close", function(w) if w then bitwarden_done[w.address] = nil end end)
-
--- ── VIVALDI GOOGLE LOGIN ──────────────────────────────
--- The popup maps as "Vivaldi - Vivaldi" and only later gets its
--- "Anmelden – Google Konten" title, so a static rule never matches.
--- Float/size/center it on title change instead (once per window).
-local google_login_done = {}
-local function float_google_login(w)
-    if not w or w.class ~= "vivaldi-stable" or not w.title:match("^Anmelden") then return end
-    if google_login_done[w.address] then return end
-    google_login_done[w.address] = true
-    hl.dispatch(hl.dsp.window.float({ action = "enable", window = w }))
-    hl.dispatch(hl.dsp.window.resize({ x = 600, y = 760, window = w }))
-    hl.dispatch(hl.dsp.window.center({ window = w }))
-end
-hl.on("window.open", float_google_login)
-hl.on("window.title", float_google_login)
-hl.on("window.close", function(w) if w then google_login_done[w.address] = nil end end)
 
 -- ── VIVALDI SCREEN-SHARE BAR ("Freigabe beenden") ─────
 -- Chromium's sharing indicator has no class; title e.g.
