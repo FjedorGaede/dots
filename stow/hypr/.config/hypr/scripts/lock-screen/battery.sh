@@ -1,10 +1,15 @@
 #!/bin/bash
 
+# First battery, whatever its number (BAT0 on some laptops, BAT1 on others);
+# no battery (desktop) → print nothing
+battery=$(ls -d /sys/class/power_supply/BAT* 2>/dev/null | head -n1)
+[ -n "$battery" ] || exit 0
+
 # Get the current battery percentage
-battery_percentage=$(cat /sys/class/power_supply/BAT0/capacity)
+battery_percentage=$(cat "$battery/capacity")
 
 # Get the battery status (Charging or Discharging)
-battery_status=$(cat /sys/class/power_supply/BAT0/status)
+battery_status=$(cat "$battery/status")
 
 # Define the battery icons for each 10% segment
 battery_icons=("󰂃" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰁹")
