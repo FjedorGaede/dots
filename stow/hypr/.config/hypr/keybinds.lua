@@ -49,6 +49,15 @@ bindMain("R",  hl.dsp.exec_cmd("qs ipc call recording toggle"))
 -- straight to the region drag, no menu (audio as last set in the menu)
 bindMainShift("R",  hl.dsp.exec_cmd("qs ipc call recording start region"))
 
+-- ── DICTATION ─────────────────────────────────────────
+-- whispy (dots: packages/hyprland/install/dictation): hold F9 = push-to-talk,
+-- Super+Ctrl+X = start/stop, +Shift = discard. The text is typed into the
+-- focused window; quickshell's DictationPill shows the state.
+hl.bind("F9",                       hl.dsp.exec_cmd("whispy-client start"))
+hl.bind("F9",                       hl.dsp.exec_cmd("whispy-client stop"), { release = true })
+hl.bind("SUPER + CTRL + X",         hl.dsp.exec_cmd("whispy-client toggle"))
+hl.bind("SUPER + CTRL + SHIFT + X", hl.dsp.exec_cmd("whispy-client cancel"))
+
 -- ── FOCUS (vim-style) ─────────────────────────────────
 bindMain("H", hl.dsp.focus({ direction = "left" }))
 bindMain("L", hl.dsp.focus({ direction = "right" }))

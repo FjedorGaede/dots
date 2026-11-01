@@ -51,6 +51,8 @@ Scope {
 
             Osd { screen: main.modelData }
 
+            DictationPill { screen: main.modelData }
+
             Toasts { screen: main.modelData }
 
             LanDevices { screen: main.modelData }
