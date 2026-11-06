@@ -75,9 +75,9 @@ local function apply()
     -- ...existing workspaces are moved to where they belong
     for _, ws in ipairs(hl.get_workspaces()) do
         if not ws.special and ws.monitor then
-            local target = own[ws.id] or main
+            local target = (ws.id and own[ws.id]) or main
             if ws.monitor.name ~= target.name then
-                local selector = ws.id > 0 and tostring(ws.id) or "name:" .. ws.name
+                local selector = ws.id and ws.id > 0 and tostring(ws.id) or "name:" .. ws.name
                 hl.dispatch(hl.dsp.workspace.move({ workspace = selector, monitor = target.name }))
             end
         end
@@ -87,10 +87,10 @@ local function apply()
     -- (10 after unplugging) or one Hyprland made up for it (11, 12, ...):
     -- show the lowest of 1-9 instead
     local shown = main.active_workspace
-    if not shown or shown.id > 9 then
+    if not shown or (shown.id and shown.id > 9) then
         local lowest
         for _, ws in ipairs(hl.get_workspaces()) do
-            if ws.id >= 1 and ws.id <= 9 and (not lowest or ws.id < lowest) then lowest = ws.id end
+            if ws.id and ws.id >= 1 and ws.id <= 9 and (not lowest or ws.id < lowest) then lowest = ws.id end
         end
         if lowest then main:set_workspace({ workspace = lowest }) end
     end
@@ -112,7 +112,7 @@ local function bounce_others()
     local main = main_monitor(monitors)
     for _, m in ipairs(monitors) do
         local ws = m.active_workspace
-        if m.name ~= main.name and ws and ws.id > 9 then
+        if m.name ~= main.name and ws and ws.id and ws.id > 9 then
             m:set_workspace({ workspace = BOUNCE_WS })
             m:set_workspace({ workspace = ws.id })
         end
@@ -121,11 +121,63 @@ end
 
 -- Hotplug: give the new monitor a moment to get its first workspace, then let
 -- the workspace moves settle before bouncing
+local hotplugging = false  -- fix_new_workspaces() stays out of the way meanwhile
+
 local function apply_soon()
+    hotplugging = true
     hl.timer(function()
         apply()
+        hotplugging = false
         hl.timer(bounce_others, { timeout = 200, type = "oneshot" })
     end, { timeout = 500, type = "oneshot" })
 end
 hl.on("monitor.added", apply_soon)
 hl.on("monitor.removed", apply_soon)
+
+-- Workspace rules are ignored when a workspace is created by moving a window
+-- into it (Super+Shift+N) or by a window rule (obsidian, slack, ...): it then
+-- appears on whatever monitor had focus. Move such workspaces to the main
+-- monitor right after they appear. Only 1-9 and the named ones are touched —
+-- the other screens' own workspaces (10, 11, ...) are left to apply().
+local MAIN_NAMES = { slack = true, huddle = true, teams = true, obsidian = true }
+
+local function belongs_on_main(ws)
+    if ws.special then return false end
+    if ws.id and ws.id >= 1 and ws.id <= 9 then return true end
+    return MAIN_NAMES[ws.name] == true
+end
+
+local function fix_new_workspaces()
+    if hotplugging then return end
+    local monitors = hl.get_monitors()
+    if #monitors < 2 then return end
+    local main = main_monitor(monitors)
+
+    local others = {}
+    for _, m in ipairs(monitors) do
+        if m.name ~= main.name then table.insert(others, m) end
+    end
+    table.sort(others, function(a, b) return a.position.x < b.position.x end)
+    local own = {}  -- monitor name → its own workspace id
+    for i, m in ipairs(others) do own[m.name] = 9 + i end
+
+    for _, ws in ipairs(hl.get_workspaces()) do
+        local from = ws.monitor
+        if from and from.name ~= main.name and belongs_on_main(ws) then
+            -- If it's shown there, show that screen's own workspace first, so
+            -- Hyprland doesn't make up a new one (which could be 1-9 again)
+            local shown = from.active_workspace
+            if shown and shown.name == ws.name and own[from.name] then
+                from:set_workspace({ workspace = own[from.name] })
+            end
+            local selector = ws.id and ws.id > 0 and tostring(ws.id) or "name:" .. ws.name
+            hl.dispatch(hl.dsp.workspace.move({ workspace = selector, monitor = main.name }))
+            main:set_workspace({ workspace = selector })
+        end
+    end
+end
+
+-- Deferred: don't move a workspace while Hyprland is still creating it
+hl.on("workspace.created", function()
+    hl.timer(fix_new_workspaces, { timeout = 50, type = "oneshot" })
+end)
