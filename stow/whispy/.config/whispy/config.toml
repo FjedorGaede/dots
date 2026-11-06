@@ -1,0 +1,113 @@
+# whispy daemon configuration.
+# Copy to $XDG_CONFIG_HOME/whispy/config.toml to override; otherwise these
+# defaults are baked into the daemon binary.
+
+[stt]
+# Speech-to-text engine. The daemon runs its server as a supervised child process.
+#   "parakeet" = NVIDIA Parakeet (parakeet-ultra) via whispy-stt on transcribe.cpp:
+#                ~6x faster than whisper, punctuates well, and returns nothing on
+#                silence instead of a hallucinated "Thank you." (25 European languages)
+#   "whisper"  = whisper.cpp's whisper-server: ~100 languages, takes the vocabulary
+#                as a decoding prompt
+# `whispy-daemon setup` installs whichever is chosen (and its model).
+engine = "parakeet"
+host = "127.0.0.1"
+port = 8181
+# --- parakeet engine ---
+# GGUF model (`setup model` downloads parakeet-ultra Q8_0, ~740 MB, checksum-verified).
+parakeet_model_path = "~/.local/share/whispy/models/parakeet-ultra-Q8_0.gguf"
+# whispy-stt binary; empty = installed next to whispy-daemon, else on PATH.
+parakeet_bin = ""
+# --- whisper engine ---
+# Model name (informational) + path to the ggml weights. Set after the Step 1 benchmark.
+model = "large-v3-turbo-q5_0"
+model_path = "~/.local/share/whisper.cpp/models/ggml-large-v3-turbo-q5_0.bin"
+server_bin = "~/.local/share/whisper.cpp/build/bin/whisper-server"
+# --- both engines ---
+# "auto" detects the language of each clip (switch IT/EN freely), or an ISO code.
+language = "auto"
+# Compute backend. whisper-server is built with it (`setup whisper`) and keeps
+# that build; whispy-stt is built with it (`setup stt`) and re-reads it at start.
+#   "auto"   = Vulkan if the loader is present, else CPU (default)
+#   "vulkan" = force the Vulkan GPU backend (needs libvulkan + a GPU ICD)
+#   "cpu"    = CPU only (whisper: auto-enables OpenBLAS when `libopenblas` is installed)
+backend = "auto"
+timeout_secs = 120       # hard cap on one /inference request (guards against a hung GPU)
+
+[audio]
+# PipeWire source (node name, see `pactl list sources short`) to record from.
+# Empty = the system default source.
+source = ""
+# whisper's input format; validated at startup, don't change.
+rate = 16000
+channels = 1
+max_clip_secs = 600.0     # auto-stop with error: too_long beyond this
+min_clip_ms = 400         # shorter clips are dropped silently
+rms_interval_ms = 80      # RMS publish cadence while recording
+gain = 1.0                # linear gain on captured samples (mic is quiet; raise for meter)
+silence_timeout_ms = 0         # after speech, auto-stop & transcribe after this much silence (0 = off)
+silence_rms_threshold = 0.0015 # RMS (0..1) at/below this counts as silence (mic is quiet: speech median ~0.0024, silence ~0)
+
+[filter]
+no_speech_prob_max = 0.6  # drop as low_confidence above this
+avg_logprob_min = -1.0    # drop as low_confidence below this
+fuzzy_ratio = 0.85        # hallucination blacklist fuzzy-match threshold
+# `whispy-daemon setup` seeds this; if missing, the built-in list is used.
+hallucinations_path = "~/.config/whispy/hallucinations.toml"
+
+[injection]
+mode = "type"            # "paste" (clipboard+Ctrl+V, GUI apps, keeps accents) | "type" (wtype/xdotool, works in terminals too)
+# Display server / injection backend:
+#   "auto"    = detect from WAYLAND_DISPLAY/DISPLAY (default)
+#   "wayland" = wl-copy/wl-paste clipboard, wtype typing
+#   "x11"     = xclip/xsel clipboard, xdotool typing
+# ydotool delivers the paste keystroke on both.
+backend = "auto"
+restore_clipboard_delay_ms = 300
+# ydotool keycodes: Ctrl down, V down, V up, Ctrl up.
+paste_keys = "29:1 47:1 47:0 29:0"
+key_delay_ms = 25         # spacing between ydotool key events (so the held Ctrl registers)
+
+[ipc]
+# Empty = use XDG defaults ($XDG_RUNTIME_DIR/whispy/whispy.sock,
+# $XDG_RUNTIME_DIR/whispy/state.json).
+socket_path = ""
+state_path = ""
+state_max_hz = 20         # cap state.json writes while recording
+
+[dictionary]
+# Bias whisper toward custom words/names (joined into the STT prompt).
+vocabulary = []
+# Auto-fix recurring mistakes (case-insensitive, whole-word), e.g.:
+# corrections = { "wisper" = "whisper", "hyperland" = "Hyprland" }
+corrections = {}
+
+[snippets]
+# Text-expansion shortcuts. Placeholders: {{DATE}}, {{TIME}}, {{CLIPBOARD}}.
+# entries = { "my email" = "me@example.com", "stamp" = "{{DATE}} {{TIME}}" }
+entries = {}
+
+[ui]
+# Desktop notifications on success/error, for sessions without the Quickshell pill:
+#   "auto" = notify only on X11 (the layer-shell pill can't run there) (default)
+#   "on"   = always notify   "off" = never
+notify = "auto"
+
+[llm]
+# OpenAI-compatible chat endpoint. Default = local ollama. Set api_key for cloud.
+base_url = "http://127.0.0.1:11434/v1"
+model = ""                # empty disables LLM workflows
+api_key = ""
+timeout_secs = 20
+
+# Optional AI workflows. Each rewrites the transcript before injection.
+# Selected by `whispy-client toggle --workflow NAME`, else by matching the
+# focused window class against `apps`.
+# [[workflow]]
+# name = "clean"
+# prompt = "Clean up this dictation: fix punctuation and remove filler words. Output only the cleaned text."
+# apps = []
+# [[workflow]]
+# name = "email"
+# prompt = "Rewrite this dictation as a polite email body. Output only the text."
+# apps = ["thunderbird"]
