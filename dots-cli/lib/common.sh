@@ -13,15 +13,20 @@ usage() {
     cat <<'EOF'
 dots — dotfiles CLI
 
-Machine setup (rare — new machine / migration):
-  dots install [category...] [--packages-only] [--pick]
-                              Install packages from categories (menu if none
-                              given) + run their install/ scripts (skipped
-                              with --packages-only); --pick = choose packages
-                              + install scripts from a menu
+Install (choose what you want):
+  dots install                Menu: pick categories, then "everything" or
+                              "pick items" (packages + install scripts)
+  dots install <category> --pick
+                              Menu of one category's packages + install
+                              scripts — x to select, enter to install
   dots install <category> --only <item,...>
-                              Install only the named items of one category
-                              (names from 'dots list <category> --items')
+                              Same without the menu (names from
+                              'dots list <category> --items')
+  dots install [category...] [--packages-only]
+                              Install whole categories; --packages-only
+                              skips the install/ scripts
+
+Machine setup (rare — new machine / migration):
   dots setup [name...]        Interactive per-machine setup steps (git, ssh,
                               github, dots-remote, calendar) from setup/;
                               no name = menu with done/open status

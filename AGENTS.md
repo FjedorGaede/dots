@@ -47,7 +47,7 @@ On `$PATH` via shell rc. Flat verbs:
 
 | Command | Purpose |
 |---|---|
-| `dots install [category...] [--packages-only] [--pick]` | Install categories (menu if none given) + run install scripts (`--pick`: choose packages + install scripts from one menu) |
+| `dots install [category...] [--packages-only] [--pick]` | Install categories (none given: category menu, then "everything" or "pick items") + run install scripts (`--pick`: choose packages + install scripts from one menu) |
 | `dots install <category> --only <item,...>` | Non-interactive `--pick`: install only the named items (packages and/or install scripts) |
 | `dots setup [name...]` | Interactive per-machine steps from `setup/` (git, ssh, github, dots-remote, calendar); no name = menu with ✔/✘/– status. `--status`: tab-separated for quickshell; `--ignore`/`--unignore <name>`: hide a step from the bar's setup indicator (wrench, shown while a step is open; click = popup, row = run in terminal) |
 | `dots add <pkg...> [--aur] [--category <c>]` | Install + track (the day-to-day habit; replaces raw `pacman -S`) |

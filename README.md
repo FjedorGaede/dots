@@ -39,6 +39,14 @@ dots edit                          edit the configs
 dots git                           lazygit in the repo
 ```
 
+Install only some things: `dots install` asks for categories, then
+"everything" or "pick items". Shortcuts:
+
+```
+dots install dev --pick              menu of dev's packages + install scripts
+dots install dev --only neovim,lazygit same, no menu (names: dots list dev --items)
+```
+
 `dots help` shows everything.
 
 ## Layout

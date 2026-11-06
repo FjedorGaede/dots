@@ -121,7 +121,7 @@ tool, not a dotfile.
 
 | Command | Behavior |
 |---|---|
-| `dots install [category...] [--packages-only] [--pick]` | Installs packages from given categories (all, via a menu, if none given), then runs the categories' install scripts |
+| `dots install [category...] [--packages-only] [--pick]` | Installs packages from given categories (none given: a category menu, then "everything" or "pick items"), then runs the categories' install scripts |
 | `dots install <category> --only <item,...>` | Non-interactive twin of `--pick`: installs only the named packages/install scripts of one category; unknown names abort |
 | `dots setup [name...]` | Runs interactive per-machine steps from `setup/` (no name = menu with ✔/✘ status) |
 | `dots add <pkg...> [--aur] [--category <name>]` | Installs the package(s) in one call, then tracks them. No `--category` → prompts via `gum choose` (existing categories + "+ new category") |

@@ -5,7 +5,8 @@
 # category with its packages and install scripts to choose from. --only is
 # the non-interactive twin of --pick: installs just the named items (names as
 # printed by 'dots list <cat> --items'). With no category arguments,
-# shows a multi-select menu of all categories.
+# shows a multi-select menu of all categories, then asks whether to install
+# everything in them or pick items (unless --pick/--only already decided).
 
 cmd_install() {
     local packages_only=false pick=false only=""
@@ -40,6 +41,11 @@ cmd_install() {
         # gum choose exits 0 with no selection when cancelled; treat empty as all
         if [ ${#chosen[@]} -eq 0 ] || [ -z "${chosen[*]}" ]; then
             chosen=("${wanted[@]}")
+        fi
+        if ! $pick && [ -z "$only" ]; then
+            local mode
+            mode="$(gum_choose_one "Install everything in them, or pick items?" "everything" "pick items")" || die "cancelled"
+            [ "$mode" != "pick items" ] || pick=true
         fi
     else
         chosen=("${wanted[@]}")
