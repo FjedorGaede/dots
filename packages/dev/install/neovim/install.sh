@@ -36,6 +36,37 @@ if [ ! -e "$HOME/.local/bin/nvim" ] && [ -x "$BOB_BIN/nvim" ]; then
     echo "linked $HOME/.local/bin/nvim -> $BOB_BIN/nvim"
 fi
 
+# Default app for text files (instead of micro). Like yazi's entry: our own
+# .desktop that opens nvim inside ghostty — Terminal=true entries most
+# launchers can't resolve to ghostty.
+APPS_DIR="$HOME/.local/share/applications"
+DESKTOP_FILE="$APPS_DIR/nvim-ghostty.desktop"
+MIME_TYPES=(
+    text/plain text/markdown text/x-shellscript text/x-python text/x-csrc
+    text/x-c++src text/x-lua text/x-toml application/json application/x-yaml
+    application/toml application/x-shellscript
+)
+
+mkdir -p "$APPS_DIR"
+
+cat > "$DESKTOP_FILE" <<EOF
+[Desktop Entry]
+Name=Neovim
+Comment=Text editor (in Ghostty)
+Icon=nvim
+Type=Application
+Exec=ghostty --confirm-close-surface=false -e nvim %F
+Terminal=false
+MimeType=$(printf '%s;' "${MIME_TYPES[@]}")
+Categories=Utility;TextEditor;
+NoDisplay=true
+EOF
+
+xdg-mime default nvim-ghostty.desktop "${MIME_TYPES[@]}"
+update-desktop-database "$APPS_DIR" 2>/dev/null || true
+
+echo "nvim set as default text editor: $DESKTOP_FILE"
+
 # print version by explicit path — a fresh-install session may not have
 # ~/.local/bin on PATH yet
 "$BOB_BIN/nvim" --version | head -n 1
