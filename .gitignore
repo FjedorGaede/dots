@@ -8,6 +8,8 @@ stow/pi/.config/pi/agent/models-store.json
 stow/pi/.config/pi/agent/sessions/
 stow/pi/.config/pi/agent/claude-bridge.json
 stow/pi/.config/pi/agent/mcp-onboarding.json
+stow/pi/.config/pi/agent/pi-web-access/last-seen-version.json
+stow/pi/.config/pi/agent/web-search-cache/
 # packages installed by pi (reinstallable)
 stow/pi/.config/pi/agent/git/
 stow/pi/.config/pi/agent/npm/
@@ -23,3 +25,4 @@ stow/herdr/.config/herdr/release-notes.json
 # theming adapters link generated wal themes into folded stow dirs
 stow/tools/.config/walker/themes/wal
 stow/yazi/.config/yazi/flavors/wal.yazi
+stow/pi/.config/pi/agent/themes/wal.json
