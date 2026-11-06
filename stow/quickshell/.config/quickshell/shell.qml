@@ -5,6 +5,7 @@ import QtQuick
 import qs.modules.bar
 import qs.modules.osd
 import qs.modules.overlays
+import qs.modules.recorder
 import qs.modules.notifications
 import qs.services
 
@@ -62,6 +63,17 @@ Scope {
             DisplaysMenu { screen: main.modelData }
 
             SharePicker { screen: main.modelData }
+        }
+    }
+
+    // Webcam bubble while recording: on the screen of the recorded target
+    // (picked per recording → new window each time, see above)
+    Variants {
+        model: RecorderService.bubbleShown ? [RecorderService.targetScreen] : []
+
+        delegate: WebcamBubble {
+            required property var modelData
+            screen: modelData
         }
     }
 }

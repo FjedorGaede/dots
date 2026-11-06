@@ -151,7 +151,7 @@ original comments stay next to the code they explain.
 - **A `Process` child's stdin is an open pipe, not a tty.** → *Tools that
   switch behaviour on that hang silently: `slurp` waits to read predefined
   boxes from stdin and never shows its overlay. Redirect `</dev/null`
-  (`scripts/screenrec-select.sh`).*
+  (`modules/recorder/select-target.sh`).*
 - **A popup resized within a few ms of mapping can flash.** → *Its first
   frame is then shown at the wrong scale (content ~1.5× = monitor scale,
   cropped) for one frame. Reproduced with AudioPanel growing 1 ms after
@@ -207,11 +207,13 @@ original comments stay next to the code they explain.
   composited output — every layer is in it. Hyprland's `no_screen_share`
   layer rule only affects screencopy/portal clients and paints the layer
   **black**, it doesn't remove it (tested with grim). So there is no
-  floating recording control; the bar indicator is the only one (the bar is
-  in full-screen recordings anyway).*
+  standalone floating recording control; the bar indicator has them (the bar
+  is in full-screen recordings anyway). The webcam bubble uses this on
+  purpose: it is meant to be in the video, its controls under it fade out
+  unless hovered.*
 - **gsr `-region WxH+X+Y` takes global logical coordinates** (scales them
   itself: 600x300 at scale 1.33 → 800x400 video) — slurp's output is passed
-  through unchanged (`scripts/screenrec-select.sh`).
+  through unchanged (`modules/recorder/select-target.sh`).
 
 ## Services / system
 

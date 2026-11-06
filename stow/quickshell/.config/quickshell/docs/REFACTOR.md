@@ -98,6 +98,8 @@ quickshell/
 │   │               BluetoothPanel BluetoothDeviceItem · NotificationCenter ·
 │   │               CalendarPopup · VpnPopup VpnList · SunshinePopup
 │   ├── overlays/   HomeMenu LanDevices
+│   ├── recorder/   RecorderMenu WebcamBubble WebcamFeed RecordingIndicator select-target.sh
+│   │               (feature folder — README.md; its service stays in services/)
 │   ├── osd/        Osd
 │   └── notifications/  Toasts NotificationCard NotificationActions
 ├── lib/            icons.js  fuzzy.js  dates.js  notif.js      (.pragma library, relative imports)

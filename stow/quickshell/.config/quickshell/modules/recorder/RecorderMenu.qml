@@ -5,17 +5,17 @@ import qs.components
 import qs.config
 import qs.services
 
-// Screen recorder start menu: capture mode + audio sources → Record.
+// Screen recorder start menu: capture mode + audio sources + camera → Record.
 // Open state lives in PanelService ("recorder"); Super+R goes through
 // `qs ipc call recording toggle` (menu when idle, stop while recording).
 ModalOverlay {
     id: menu
     visible: PanelService.isOpen("recorder")
 
-    // Audio defaults to off on every open (the mode is remembered)
+    // Everything is remembered (last recording's setup = default)
     onVisibleChanged: if (visible) {
-        RecorderService.mic = false;
-        RecorderService.desktopAudio = false;
+        RecorderService.refreshCameras();   // plugged in since last time?
+        RecorderService.checkInstalled();   // removed since last time?
     }
 
     onCloseRequested: PanelService.close("recorder")
@@ -30,8 +30,47 @@ ModalOverlay {
 
     Divider {}
 
+    // ── Not installed: one-click install (RecorderService.install) ──
+    ColumnLayout {
+        visible: !RecorderService.installed
+        Layout.preferredWidth: 308
+        spacing: 12
+
+        StyledText {
+            Layout.fillWidth: true
+            text: "The screen recorder isn't installed yet."
+            font.pixelSize: Theme.fontSize.lg
+            wrapMode: Text.WordWrap
+        }
+
+        StyledText {
+            Layout.fillWidth: true
+            text: "gpu-screen-recorder + camera support (qt6-multimedia). "
+                + "Installs in a terminal — sudo asks for your password."
+            color: Theme.dimForeground
+            font.pixelSize: Theme.fontSize.md
+            wrapMode: Text.WordWrap
+        }
+
+        GhostButton {
+            Layout.fillWidth: true
+            implicitHeight: 36
+            exclusiveGrab: true
+            icon: RecorderService.installing ? "" : "\uF019"
+            text: RecorderService.installing ? "Installing… (see terminal)" : "Install"
+            iconSize: Theme.fontSize.sm
+            textSize: Theme.fontSize.lg
+            bold: true
+            idleColor: Theme.mainAccentSubtle
+            hoverColor: Theme.alpha(Theme.mainAccent, 0.3)
+            contentColor: Theme.mainAccent
+            onClicked: RecorderService.install()
+        }
+    }
+
     // ── Mode ──
     RowLayout {
+        visible: RecorderService.installed
         spacing: 10
 
         Repeater {
@@ -87,16 +126,20 @@ ModalOverlay {
         }
     }
 
-    // ── Audio ──
+    // ── Audio + camera ──
     // Own column: the overlay's 14px spacing is too loose between the two rows
     ColumnLayout {
+        visible: RecorderService.installed
         Layout.fillWidth: true
         spacing: 2
 
         Repeater {
             model: [
                 { key: "desktopAudio", icon: "", label: "Desktop audio" },
-                { key: "mic",          icon: "", label: "Microphone" }
+                { key: "mic",          icon: "", label: "Microphone" },
+                // Webcam bubble (WebcamBubble) — remembered, not reset on open.
+                // Click cycles off → each camera → off
+                { key: "webcam",       icon: "\uF03D", label: "Camera" }
             ]
 
             delegate: Rectangle {
@@ -132,7 +175,10 @@ ModalOverlay {
                     }
 
                     StyledText {
-                        text: row.checked ? "on" : "off"
+                        text: !row.checked ? "off"
+                            : row.modelData.key === "webcam"
+                                ? (RecorderService.cameraLabel(RecorderService.activeCamera) || "on")
+                                : "on"
                         color: row.checked ? Theme.mainAccent : Theme.dimForeground
                         font.pixelSize: Theme.fontSize.md
                     }
@@ -143,13 +189,17 @@ ModalOverlay {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: RecorderService[row.modelData.key] = !row.checked
+                    onClicked: {
+                        if (row.modelData.key === "webcam") RecorderService.cycleCamera();
+                        else RecorderService[row.modelData.key] = !row.checked;
+                    }
                 }
             }
         }
     }
 
     RowLayout {
+        visible: RecorderService.installed
         spacing: 8
 
         GhostButton {

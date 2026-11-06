@@ -71,7 +71,8 @@ category file). Never hand-edit `packages/*/packages.txt` to bypass the CLI.
 
 1. **Install scripts must be idempotent** — they re-run on every `dots install`.
 2. **Packages only via `dots add`** — direct pacman/yay installs cause drift
-   that only `dots sync` would catch.
+   that only `dots sync` would catch. Exception: an app's own packages live in
+   its install script (see "Apps" below).
 3. **nvim is stowed like everything else** (`stow/nvim`). The old
    `neovim-config` repo is archived on GitHub (history only).
 4. **Big changes** (new tools, new subcommands, structural changes beyond
@@ -81,6 +82,46 @@ category file). Never hand-edit `packages/*/packages.txt` to bypass the CLI.
    run by the user interactively.
 7. gum 2.0 quirks: `choose` uses `--header` (not `--prompt`); `x` toggles in
    multi-select (space does not); `--selected` takes a comma-separated value.
+
+## Apps (self-contained shell features)
+
+User-facing features of the quickshell shell are built as **apps**: one
+feature = one unit that can be found, installed and (later) moved as a whole.
+Not separate programs — they run inside the shell. Reference implementation:
+the **screen recorder** (`modules/recorder/README.md`).
+
+An app has:
+
+1. **A feature folder** `stow/quickshell/.config/quickshell/modules/<app>/`
+   with all its UI (menus, overlays, its bar indicator), its scripts and a
+   `README.md` (parts, flow, IPC, state file, install, wiring outside the
+   folder). Its singleton stays in `services/<App>Service.qml` — the shell's
+   layering (`docs/REFACTOR.md`: services → config only) would break if a
+   service had to import a module.
+2. **An install script** `packages/<category>/install/<app>/install.sh`
+   (category: where the shell lives, i.e. `hyprland`) that installs exactly the
+   app's own packages, idempotent like every install script. Tools other
+   parts also use stay in `packages.txt`. The script answers
+   **`install.sh --check`** (exit 0 = everything installed, no output) — the
+   one package list, nothing duplicated in QML.
+3. **One-click install in the UI.** The service keeps `installed`
+   (optimistic `true`, set from `--check` at startup and whenever the app's
+   entry point opens). Not installed → the entry point (menu) shows an
+   Install button instead of the controls; it runs
+   `dots install <category> --only <app>` via `Apps.floatingTerminalCommand`
+   (sudo prompts in the terminal). When the terminal closes: `--check` again;
+   on success `Quickshell.reload()` (new QML modules are only found by a fresh
+   engine) and reopen the entry point. Keybinds that skip the menu open it
+   instead while not installed.
+4. **Optional QML modules loaded by URL** (`Loader { source: "Foo.qml" }`),
+   never imported statically by files the shell always loads — a missing
+   module then only empties that part instead of breaking the whole shell.
+
+If an app ever needs crash isolation or should be shared on its own, the
+feature folder + service become a separate quickshell config (`qs -c <app>`);
+the bar then reads its state over IPC. Older features that predate this
+pattern (dictation, the bluez-tools hint) only partly follow it — migrate
+them when touched.
 
 ## Bootstrap
 

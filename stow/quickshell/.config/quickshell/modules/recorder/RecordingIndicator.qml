@@ -6,8 +6,8 @@ import qs.config
 import qs.services
 
 // Screen recording in progress: red dot (pause glyph while paused) + elapsed
-// time │ pause/resume + stop buttons. The only recording control — a
-// floating one would end up in the video (docs/GOTCHAS.md).
+// time │ pause/resume + stop buttons. With the camera on, the webcam bubble
+// (WebcamBubble) has the same controls — in the video, like the bubble.
 RowLayout {
     id: root
 

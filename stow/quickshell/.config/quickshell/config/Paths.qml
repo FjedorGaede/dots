@@ -28,11 +28,14 @@ Singleton {
     // Calendar settings: which calendars are shown ({ "<google id>": bool })
     readonly property string calendarVisibility: root.home + "/.local/share/quickshell/calendar-visibility.json"
 
-    // dots CLI — not on quickshell's PATH (only the shell rc adds it)
-    readonly property string dotsCli: root.home + "/dots/dots-cli/bin/dots"
+    // dots repo + CLI — not on quickshell's PATH (only the shell rc adds it)
+    readonly property string dotsDir: root.home + "/dots"
+    readonly property string dotsCli: root.dotsDir + "/dots-cli/bin/dots"
 
     // Screen recordings (RecorderService; created on first recording)
     readonly property string recordings: root.home + "/Videos/Recordings"
+    // Recorder setup (mode, audio, camera) + webcam bubble size/position (RecorderService)
+    readonly property string recorderState: root.cache + "/quickshell/recorder.json"
 
     // Machine-local monitor rules saved by DisplaysMenu (not in git;
     // hypr/monitors.lua loads it — keep the path in sync there)

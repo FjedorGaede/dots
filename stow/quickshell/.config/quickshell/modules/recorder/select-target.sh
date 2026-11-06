@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Picks the capture target for the screen recorder (services/RecorderService.qml).
+# Picks the capture target for the screen recorder (services/RecorderService.qml,
+# modules/recorder/README.md).
 #
-#   screenrec-select.sh screen   → "screen <monitor> <x> <y> <w> <h>"  (focused monitor)
-#   screenrec-select.sh region   → "region <x> <y> <w> <h>"            (slurp drag)
-#   screenrec-select.sh window   → "region <x> <y> <w> <h>"            (slurp, click a window)
+#   select-target.sh screen   → "screen <monitor> <x> <y> <w> <h>"  (focused monitor)
+#   select-target.sh region   → "region <x> <y> <w> <h>"            (slurp drag)
+#   select-target.sh window   → "region <x> <y> <w> <h>"            (slurp, click a window)
 #
 # All coordinates are global *logical* pixels — what gpu-screen-recorder's
 # `-region WxH+X+Y` expects (it scales them itself; verified at scale 1.33).

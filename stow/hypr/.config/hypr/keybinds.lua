@@ -45,10 +45,10 @@ bindMainShift("A",  hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
 bindMainShift("F",  hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
 
 -- ── SCREEN RECORDING ──────────────────────────────────
--- quickshell recorder (services/RecorderService.qml, IPC target "recording"):
+-- quickshell recorder (modules/recorder/README.md, IPC target "recording"):
 -- menu when idle, stop while recording (pause/resume: buttons in the bar)
 bindMain("R",  hl.dsp.exec_cmd("qs ipc call recording toggle"))
--- straight to the region drag, no menu (audio as last set in the menu)
+-- straight to the region drag, no menu (then the setup card, last setup preselected)
 bindMainShift("R",  hl.dsp.exec_cmd("qs ipc call recording start region"))
 
 -- ── DICTATION ─────────────────────────────────────────
