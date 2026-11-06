@@ -41,6 +41,8 @@ bindMain("PRINT",       hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
 hl.bind("PRINT",        hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
 hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/screenshot-region.sh"))
 bindMainShift("S",  hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/screenshot-region.sh"))
+bindMainShift("A",  hl.dsp.exec_cmd("hyprshot -m window --clipboard-only"))
+bindMainShift("F",  hl.dsp.exec_cmd("hyprshot -m output --clipboard-only"))
 
 -- ── SCREEN RECORDING ──────────────────────────────────
 -- quickshell recorder (services/RecorderService.qml, IPC target "recording"):
