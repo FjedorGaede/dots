@@ -55,6 +55,11 @@ hl.config({
         focus_on_activate       = true,
     },
 
+    -- Render: no auto HDR/wide-gamut switch on fullscreen (BenQ DP-2 is 8-bit → warning)
+    render = {
+        cm_auto_hdr = 0,
+    },
+
     -- XWayland
     xwayland = {
         force_zero_scaling = true,
