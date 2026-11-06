@@ -17,9 +17,10 @@ setopt CORRECT
 
 # History settings
 HISTFILE=~/.zsh_history   # persist history to file
+HISTSIZE=10000            # number of entries kept in memory
 SAVEHIST=10000            # number of entries to save
 setopt HIST_IGNORE_DUPS   # ignore duplicate commands
-setopt HIST_IGNORE_SPACE  # ignore commands starting with a space
+# setopt HIST_IGNORE_SPACE  # ignore commands starting with a space (disabled: pasted commands often start with a space)
 setopt SHARE_HISTORY      # share history across all open terminals
 
 # Autosuggestions
