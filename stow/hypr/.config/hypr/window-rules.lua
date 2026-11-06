@@ -5,6 +5,19 @@
 local home = os.getenv("HOME")
 local scripts = home .. "/.config/hypr/scripts/special-workspaces/"
 
+-- Floating windows sized as a fraction of their monitor. A size rule is only
+-- evaluated when the window opens, so after a hotplug a window opened on the
+-- 4K BenQ kept its size on the laptop screen (hanging off every edge).
+-- relative_size() registers the window here and returns the rule's size; the
+-- hook at the end re-applies it whenever the monitors change.
+local refit = {}
+
+-- class: exact class; title: optional Lua pattern
+local function relative_size(fraction, class, title)
+    table.insert(refit, { fraction = fraction, class = class, title = title })
+    return { "monitor_w * " .. fraction, "monitor_h * " .. fraction }
+end
+
 -- ── GLOBAL ────────────────────────────────────────────
 -- Suppress maximize events from all apps
 hl.window_rule({
@@ -19,7 +32,7 @@ hl.window_rule({
 hl.window_rule({
     match  = { class = "dots.floating" },
     float  = true,
-    size   = { "monitor_w * 0.5", "monitor_h * 0.5" },
+    size   = relative_size(0.5, "dots.floating"),
     center = true,
 })
 
@@ -27,14 +40,14 @@ hl.window_rule({
 hl.window_rule({
     match = { class = "blueman-manager" },
     float = true,
-    size  = { "monitor_w * 0.8", "monitor_h * 0.8" },
+    size  = relative_size(0.8, "blueman-manager"),
 })
 
 -- ── PAVUCONTROL ───────────────────────────────────────
 hl.window_rule({
     match = { class = "org.pulseaudio.pavucontrol" },
     float = true,
-    size  = { "monitor_w * 0.6", "monitor_h * 0.6" },
+    size  = relative_size(0.6, "org.pulseaudio.pavucontrol"),
 })
 
 -- ── NM-CONNECTION-EDITOR ──────────────────────────────
@@ -47,7 +60,7 @@ hl.window_rule({
 hl.window_rule({
     match = { class = "vivaldi-stable", title = "(.*)Settings(.*)" },
     float = true,
-    size  = { "monitor_w * 0.8", "monitor_h * 0.8" },
+    size  = relative_size(0.8, "vivaldi-stable", "Settings"),
 })
 
 -- ── VIVALDI BITWARDEN POPUP ───────────────────────────
@@ -99,19 +112,21 @@ hl.window_rule({
     match     = { initial_class = "Spotify" },
     float     = true,
     center    = true,
-    size      = { "monitor_w * 0.9", "monitor_h * 0.9" },
+    size      = relative_size(0.8, "Spotify"),
     workspace = "special:spotify",
 })
 
 -- ── TELEGRAM (Special workspace) ──────────────────────
--- Don't let new messages steal focus (still marked urgent)
+-- Don't let new messages steal focus (still marked urgent).
+-- suppress_event replaces the global "maximize" one instead of adding to it,
+-- so it is repeated here — Telegram restores its saved maximized state.
 hl.window_rule({
     match             = { class = "org.telegram.desktop" },
     float             = true,
     center            = true,
-    size              = { "monitor_w * 0.9", "monitor_h * 0.9" },
+    size              = relative_size(0.8, "org.telegram.desktop"),
     workspace         = "special:telegram",
-    suppress_event    = "activatefocus",
+    suppress_event    = "activatefocus maximize",
     -- suppress_event alone didn't stop it (Telegram still got focused on new
     -- messages); this dynamic rule does
     focus_on_activate = false,
@@ -160,3 +175,33 @@ hl.window_rule({
     match        = { class = "steam[._]app[._].*" },
     idle_inhibit = "fullscreen",
 })
+
+-- ── REFIT AFTER MONITOR CHANGES ───────────────────────
+-- Re-apply relative_size() to the registered floating windows on the monitor
+-- each one is on now. Monitor width/height are physical pixels, the rules'
+-- monitor_w/h are logical → divide by scale. Runs after workspaces.lua has
+-- moved the workspaces around (500 + 200 ms). Fullscreen/maximized windows are
+-- left alone; a manual resize is lost on the next monitor change.
+local function refit_windows()
+    for _, w in ipairs(hl.get_windows({ floating = true })) do
+        local m = w.monitor
+        if m and w.fullscreen == 0 then
+            for _, r in ipairs(refit) do
+                if w.class == r.class and (not r.title or w.title:find(r.title)) then
+                    local width  = math.floor(m.width  / m.scale * r.fraction + 0.5)
+                    local height = math.floor(m.height / m.scale * r.fraction + 0.5)
+                    hl.dispatch(hl.dsp.window.resize({ x = width, y = height, window = w }))
+                    hl.dispatch(hl.dsp.window.center({ window = w }))
+                    break
+                end
+            end
+        end
+    end
+end
+
+local function refit_soon()
+    hl.timer(refit_windows, { timeout = 1000, type = "oneshot" })
+end
+hl.on("monitor.added", refit_soon)
+hl.on("monitor.removed", refit_soon)
+hl.on("monitor.layout_changed", refit_soon)
