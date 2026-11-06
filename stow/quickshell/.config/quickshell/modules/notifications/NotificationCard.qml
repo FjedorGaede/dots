@@ -23,6 +23,10 @@ Rectangle {
 
     readonly property bool isCritical: notification.urgency === NotificationUrgency.Critical
     readonly property string iconSource: Notif.iconSource(notification)
+    // Reaction (Teams): name as summary, "reacted" line, body as a quote of
+    // the user's own message
+    readonly property string reactor: Notif.reactor(notification)
+    readonly property bool isReaction: reactor !== ""
 
     readonly property var m: compact
         ? ({ // history entry: flat row with a subtle border, hover highlight
@@ -76,7 +80,7 @@ Rectangle {
             spacing: root.m.textSpacing
 
             StyledText {
-                text: root.notification.summary
+                text: root.isReaction ? root.reactor : root.notification.summary
                 color: root.isCritical ? Theme.color1 : Theme.foreground
                 font { pixelSize: root.m.summary; bold: true }
                 elide: Text.ElideRight
@@ -84,7 +88,16 @@ Rectangle {
             }
 
             StyledText {
-                visible: root.notification.body !== ""
+                visible: root.isReaction
+                text: Icons.reaction + "  reacted to your message"
+                color: Theme.mainAccent
+                font.pixelSize: root.m.body
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+            }
+
+            StyledText {
+                visible: root.notification.body !== "" && !root.isReaction
                 text: root.notification.body
                 color: Theme.fadedForeground
                 font.pixelSize: root.m.body
@@ -92,6 +105,30 @@ Rectangle {
                 maximumLineCount: root.m.bodyLines
                 elide: Text.ElideRight
                 Layout.fillWidth: true
+            }
+
+            // Reaction: the user's own message, quoted (accent bar + italic)
+            RowLayout {
+                visible: root.isReaction && root.notification.body !== ""
+                spacing: 8
+                Layout.fillWidth: true
+
+                Rectangle {
+                    implicitWidth: 2
+                    radius: 1
+                    color: Theme.mainAccent
+                    Layout.fillHeight: true
+                }
+
+                StyledText {
+                    text: root.notification.body
+                    color: Theme.dimForeground
+                    font { pixelSize: root.m.body; italic: true }
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: root.m.bodyLines
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
             }
 
             StyledText {

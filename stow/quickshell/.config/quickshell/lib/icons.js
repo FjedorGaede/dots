@@ -58,6 +58,7 @@ var bluetooth = { off: "󰂲", on: "󰂯", connected: "󰂱", battery: "󰂄", w
 
 // ── Notifications ──
 var bell = { empty: "󰂚", unread: "󱅫" };
+var reaction = "󰇵";
 var trash = "󰆴";
 
 // ── VPN / misc ──
