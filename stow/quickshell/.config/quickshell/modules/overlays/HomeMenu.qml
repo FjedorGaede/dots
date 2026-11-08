@@ -73,6 +73,11 @@ ModalOverlay {
             PanelService.open("recorder");
     }
 
+    function openFlasher() {
+        PanelService.close("home");
+        PanelService.open("flasher");
+    }
+
     function power(key) {
         switch (key) {
         case "lock":     Apps.lock(); break
@@ -118,6 +123,10 @@ ModalOverlay {
         { key: "night",   label: "Night light", short: "Night light", icon: "\uF186", toggle: true,
           on: NightLightService.on, status: NightLightService.on ? "On" : "Off",
           color: Theme.yellow },
+        { key: "flash",   label: "Flash USB stick", short: "Flash USB", icon: "\uF287", toggle: false,
+          on: FlasherService.busy,
+          status: FlasherService.busy ? Math.round(FlasherService.progress * 100) + " %" : "Open",
+          color: Theme.green },
     ]
 
     function activate(key) {
@@ -128,6 +137,7 @@ ModalOverlay {
         case "network":  openNetwork(); break
         case "displays": openDisplays(); break
         case "record":   recordAction(); break
+        case "flash":    openFlasher(); break
         }
     }
 
@@ -226,6 +236,7 @@ ModalOverlay {
         Row { f: homeMenu.features[2] }
         Row { f: homeMenu.features[3] }
         Row { f: homeMenu.features[4] }
+        Row { f: homeMenu.features[6] }
     }
 
     RowLayout {

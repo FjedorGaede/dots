@@ -6,6 +6,7 @@ import qs.modules.bar
 import qs.modules.osd
 import qs.modules.overlays
 import qs.modules.recorder
+import qs.modules.flasher
 import qs.modules.notifications
 import qs.services
 
@@ -61,6 +62,8 @@ Scope {
             RecorderMenu { screen: main.modelData }
 
             DisplaysMenu { screen: main.modelData }
+
+            FlasherMenu { screen: main.modelData }
 
             SharePicker { screen: main.modelData }
         }

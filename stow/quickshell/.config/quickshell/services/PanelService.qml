@@ -6,7 +6,7 @@ import Quickshell.Io
 // Open/close state for every panel + their IPC targets (replaces ShellState
 // and the six copy-pasted IpcHandler blocks).
 //
-//   qs ipc call <audio|wifi|bluetooth|notifications|home|network|calendar|recorder|displays> <toggle|open|close>
+//   qs ipc call <audio|wifi|bluetooth|notifications|home|network|calendar|recorder|displays|flasher> <toggle|open|close>
 //
 // Every screen has a bar, so a panel is open ON a screen: the bar button
 // passes its screen name, IPC/keyboard (no screen) means the main monitor.
@@ -21,7 +21,7 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    readonly property var panels: ["audio", "wifi", "bluetooth", "notifications", "home", "network", "calendar", "recorder", "displays"]
+    readonly property var panels: ["audio", "wifi", "bluetooth", "notifications", "home", "network", "calendar", "recorder", "displays", "flasher"]
 
     // name → screen name it's open on (missing = closed). Replaced (never
     // mutated) so bindings on isOpen()/isOpenOn() update.
