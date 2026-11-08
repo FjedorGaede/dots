@@ -16,7 +16,10 @@ ModalOverlay {
     // Two-click confirmation for the destructive actions: first click arms
     // the button (check mark, red), second click executes, 3s later it disarms.
     property string confirming: ""
-    onVisibleChanged: if (!visible) confirming = ""
+    onVisibleChanged: {
+        if (!visible) confirming = ""
+        else AiUsageService.refresh(false)
+    }
 
     Timer {
         id: confirmReset
@@ -225,6 +228,8 @@ ModalOverlay {
             spacing: 0
         }
     }
+
+    HomeUsage {}
 
     Group {
         Row { f: homeMenu.features[0] }
