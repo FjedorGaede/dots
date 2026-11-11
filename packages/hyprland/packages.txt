@@ -26,3 +26,4 @@ xdg-desktop-portal-hyprland
 wl-clipboard
 spotify-player
 hyprsunset
+aur:elephant-menus
