@@ -35,3 +35,4 @@ ffmpegthumbnailer
 poppler
 imagemagick
 bluez-tools
+pacman-contrib
