@@ -23,6 +23,7 @@ export LC_ALL=en_US.UTF-8
 # Remap ls and cd to command line tools
 alias ls='lsd'
 alias l='ls -l'
+alias pi='pi-sandbox'   # bwrap sandbox; `command pi` = unsandboxed
 alias la='ls -a'
 alias ll='ls -la'
 alias lt='ls --tree'

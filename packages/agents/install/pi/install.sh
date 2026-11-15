@@ -14,6 +14,14 @@
 # ~/.config/pi.
 set -euo pipefail
 
+# pi always runs sandboxed: the stowed pi-sandbox wrapper (alias pi) needs
+# bubblewrap. Before the "already installed" exit, so existing pi installs
+# pick it up on the next 'dots install agents'.
+if ! pacman -Q bubblewrap >/dev/null 2>&1; then
+    echo "installing bubblewrap (pi sandbox)..."
+    sudo pacman -S --needed --noconfirm bubblewrap
+fi
+
 for p in "$(command -v pi || true)" "$HOME/.local/bin/pi" "$HOME/.pi/agent/bin/pi"; do
     if [ -n "$p" ] && [ -x "$p" ]; then
         echo "pi already installed: $p"

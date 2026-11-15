@@ -1,0 +1,33 @@
+#!/bin/bash
+# Run pi inside bubblewrap: hides SSH keys, agents and escape sockets.
+set -euo pipefail
+
+if ! command -v bwrap >/dev/null 2>&1; then
+  echo "pi-sandbox: bwrap missing — run 'dots install agents --only pi'. Unsandboxed: 'command pi'." >&2
+  exit 1
+fi
+
+PI_BIN="$HOME/.pi/agent/bin/pi"
+SELF="$(readlink -f "$0")"
+RUN="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+args=(
+  --dev-bind / /
+  --tmpfs "$HOME/.ssh"          # keys + config invisible
+  --tmpfs /tmp                  # private /tmp, hides tmux sockets
+  --tmpfs "$RUN"                # hides dbus, systemd, gnupg, hyprland sockets
+  --ro-bind "$SELF" "$SELF"     # wrapper itself read-only
+  --unsetenv SSH_AUTH_SOCK
+  --unsetenv DBUS_SESSION_BUS_ADDRESS
+  --unsetenv TMUX
+  --unsetenv HYPRLAND_INSTANCE_SIGNATURE
+  --setenv PI_SANDBOX 1
+  --die-with-parent
+)
+
+# Keep Wayland socket (clipboard)
+if [[ -n "${WAYLAND_DISPLAY:-}" && -S "$RUN/$WAYLAND_DISPLAY" ]]; then
+  args+=(--ro-bind "$RUN/$WAYLAND_DISPLAY" "$RUN/$WAYLAND_DISPLAY")
+fi
+
+exec bwrap "${args[@]}" -- "$PI_BIN" "$@"
