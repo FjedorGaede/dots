@@ -46,7 +46,7 @@ On `$PATH` via shell rc. Flat verbs:
 |---|---|
 | `dots install [category...] [--packages-only] [--pick]` | Install categories (none given: category menu, then "everything" or "pick items") + run install scripts (`--pick`: choose packages + install scripts from one menu) |
 | `dots install <category> --only <item,...>` | Non-interactive `--pick`: install only the named items (packages and/or install scripts) |
-| `dots setup [name...]` | Interactive per-machine steps from `setup/` (git, ssh, github, dots-remote, calendar); no name = menu with ✔/✘/– status. `--status`: tab-separated for quickshell; `--ignore`/`--unignore <name>`: hide a step from the bar's setup indicator (wrench, shown while a step is open; click = popup, row = run in terminal) |
+| `dots setup [name...]` | Interactive per-machine steps from `setup/` (git, ssh, github, dots-remote, calendar); no name = menu with ✔/✘/– status. `--status`: tab-separated for quickshell; `--ignore`/`--unignore <name>`: hide a step from the bar's setup indicator (wrench, shown while a step is open; click = popup, row = run in terminal). Opt-in steps (`# dots-setup: optional` in setup.sh — waydroid, online-coach) report `optional` instead of `open`: listed under OPTIONAL, never counted by the indicator. The popup also opens from the home menu (Setup tile, panel `setup`) |
 | `dots add <pkg...> [--aur] [--category <c>]` | Install + track (the day-to-day habit; replaces raw `pacman -S`) |
 | `dots remove [<cat> <pkg>] [--uninstall]` | Untrack (and optionally uninstall) |
 | `dots list [category]` | Print tracked packages (`--categories`: only category names; `<category> --items`: packages + install scripts, the names `--only` takes) |

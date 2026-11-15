@@ -5,7 +5,7 @@ import '../../lib/icons.js' as Icons
 import qs.components
 import qs.config
 
-// One dots setup step in the SetupPopup: state glyph, name over status text,
+// One dots setup step in the SetupMenu: state glyph, name over status text,
 // and explicit buttons (Run / Ignore / Unignore) instead of a hover-only
 // action — the whole row also runs the step. Done rows are informative only.
 Rectangle {
@@ -15,6 +15,8 @@ Rectangle {
 
     readonly property bool done: step.state === "done"
     readonly property bool ignored: step.state === "ignored"
+    // opt-in step: nothing to ignore, it never nags
+    readonly property bool optional: step.state === "optional"
 
     signal run()
     signal toggleIgnore()
@@ -45,8 +47,9 @@ Rectangle {
         spacing: 12
 
         StyledText {
-            text: root.done ? Icons.setup.done : root.ignored ? Icons.setup.ignored : Icons.setup.open
-            color: root.done ? Theme.success : root.ignored ? Theme.dimForeground : Theme.warning
+            text: root.done ? Icons.setup.done : root.ignored ? Icons.setup.ignored
+                : root.optional ? Icons.setup.optional : Icons.setup.open
+            color: root.done ? Theme.success : root.ignored || root.optional ? Theme.dimForeground : Theme.warning
             font.pixelSize: Theme.fontSize.xl
             Layout.preferredWidth: 18
             horizontalAlignment: Text.AlignHCenter
@@ -60,7 +63,7 @@ Rectangle {
                 text: root.step.name
                 color: root.done || root.ignored ? Theme.fadedForeground : Theme.foreground
                 font.pixelSize: Theme.fontSize.base
-                font.bold: !root.done && !root.ignored
+                font.bold: !root.done && !root.ignored && !root.optional
                 Layout.fillWidth: true
                 elide: Text.ElideRight
             }
@@ -77,7 +80,7 @@ Rectangle {
         // exclusiveGrab: else the click also reaches the row's TapHandler and
         // runs the step a second time (docs/GOTCHAS.md "MouseArea vs TapHandler")
         GhostButton {
-            visible: !root.done
+            visible: !root.done && !root.optional
             exclusiveGrab: true
             icon: root.ignored ? Icons.setup.unignore : Icons.setup.ignore
             text: root.ignored ? "Unignore" : "Ignore"
@@ -87,10 +90,10 @@ Rectangle {
         GhostButton {
             visible: !root.done
             exclusiveGrab: true
-            text: "Run"
+            text: root.optional ? "Install" : "Run"
             bold: true
-            idleColor: Theme.alpha(Theme.warning, 0.15)
-            contentColor: Theme.warning
+            idleColor: Theme.alpha(root.optional ? Theme.mainAccent : Theme.warning, 0.15)
+            contentColor: root.optional ? Theme.mainAccent : Theme.warning
             onClicked: root.run()
         }
     }

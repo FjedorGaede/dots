@@ -65,6 +65,8 @@ Scope {
 
             FlasherMenu { screen: main.modelData }
 
+            SetupMenu { screen: main.modelData }
+
             SharePicker { screen: main.modelData }
         }
     }

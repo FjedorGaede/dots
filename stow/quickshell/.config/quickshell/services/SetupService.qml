@@ -14,7 +14,8 @@ import qs.config
 Singleton {
     id: root
 
-    // [{ name, state: "open" | "ignored" | "done", text }] — open first
+    // [{ name, state: "open" | "optional" | "ignored" | "done", text }] — open
+    // first. "optional" (opt-in apps, `# dots-setup: optional`) never counts as open.
     property var steps: []
     readonly property var openSteps: root.steps.filter(s => s.state === "open")
     property bool loading: false
@@ -50,7 +51,7 @@ Singleton {
     }
 
     function sorted(list) {
-        const rank = { open: 0, ignored: 1, done: 2 };
+        const rank = { open: 0, optional: 1, ignored: 2, done: 3 };
         return list.slice().sort((a, b) => rank[a.state] - rank[b.state] || a.name.localeCompare(b.name));
     }
 
@@ -58,7 +59,7 @@ Singleton {
         const out = [];
         for (const line of text.split("\n")) {
             if (!line.trim()) continue;
-            // tab-separated: name \t done|open|ignored \t status text
+            // tab-separated: name \t done|open|optional|ignored \t status text
             const f = line.split("\t");
             out.push({ name: f[0], state: f[1] ?? "open", text: f[2] ?? "" });
         }

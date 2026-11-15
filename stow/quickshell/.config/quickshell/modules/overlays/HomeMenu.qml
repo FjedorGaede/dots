@@ -81,6 +81,11 @@ ModalOverlay {
         PanelService.open("flasher");
     }
 
+    function openSetup() {
+        PanelService.close("home");
+        PanelService.open("setup");
+    }
+
     function power(key) {
         switch (key) {
         case "lock":     Apps.lock(); break
@@ -130,6 +135,10 @@ ModalOverlay {
           on: FlasherService.busy,
           status: FlasherService.busy ? Math.round(FlasherService.progress * 100) + " %" : "Open",
           color: Theme.green },
+        { key: "setup",   label: "Setup & optional apps", short: "Setup", icon: "\uF0AD", toggle: false,
+          on: false,
+          status: SetupService.openSteps.length > 0 ? SetupService.openSteps.length + " open" : "Open",
+          color: Theme.cyan },
     ]
 
     function activate(key) {
@@ -141,6 +150,7 @@ ModalOverlay {
         case "displays": openDisplays(); break
         case "record":   recordAction(); break
         case "flash":    openFlasher(); break
+        case "setup":    openSetup(); break
         }
     }
 
@@ -242,6 +252,7 @@ ModalOverlay {
         Row { f: homeMenu.features[3] }
         Row { f: homeMenu.features[4] }
         Row { f: homeMenu.features[6] }
+        Row { f: homeMenu.features[7] }
     }
 
     RowLayout {

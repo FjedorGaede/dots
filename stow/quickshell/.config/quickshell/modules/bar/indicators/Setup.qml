@@ -4,10 +4,9 @@ import '../../../lib/icons.js' as Icons
 import qs.components
 import qs.config
 import qs.services
-import qs.modules.panels
 
 // Open dots setup steps (github, calendar, ...) — hidden when every step is
-// done or ignored (SetupService)
+// done, ignored or optional (SetupService). Click opens the centered SetupMenu.
 BarButton {
     id: setup
 
@@ -18,13 +17,5 @@ BarButton {
     icon: Icons.setup.indicator
     iconColor: Theme.warning
     tooltipText: setup.open === 1 ? "1 setup step open" : setup.open + " setup steps open"
-    onClicked: {
-        setupPopup.visible = !setupPopup.visible;
-        if (setupPopup.visible) SetupService.refresh();
-    }
-
-    SetupPopup {
-        id: setupPopup
-        anchorItem: setup
-    }
+    onClicked: PanelService.open("setup")
 }

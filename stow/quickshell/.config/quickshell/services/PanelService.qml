@@ -21,7 +21,7 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    readonly property var panels: ["audio", "wifi", "bluetooth", "notifications", "home", "network", "calendar", "recorder", "displays", "flasher"]
+    readonly property var panels: ["audio", "wifi", "bluetooth", "notifications", "home", "network", "calendar", "recorder", "displays", "flasher", "setup"]
 
     // name → screen name it's open on (missing = closed). Replaced (never
     // mutated) so bindings on isOpen()/isOpenOn() update.

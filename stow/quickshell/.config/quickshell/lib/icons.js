@@ -69,7 +69,7 @@ var forget = "󰌸";
 var calendar = { refresh: "󰑐", external: "󰏌", video: "󰕧", warning: "󰀦", settings: "󰒓", today: "󰃶", back: "󰁍", check: "󰄬", hide: "󰂛" };
 
 // ── Setup (dots setup steps) ──
-var setup = { indicator: "󰖷", open: "󰗖", done: "󰄬", ignored: "󰈉", ignore: "󰈉", unignore: "󰈈" };
+var setup = { indicator: "󰖷", open: "󰗖", done: "󰄬", ignored: "󰈉", ignore: "󰈉", unignore: "󰈈", optional: "󰐕" };
 
 // ── System updates (pacman) ──
 var updates = { pending: "󰚰", mirror: "󰀦", reboot: "󰜉" };

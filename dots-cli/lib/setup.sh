@@ -2,14 +2,18 @@
 # Interactive per-machine setup steps (accounts, logins, ...) from
 # setup/<name>/setup.sh. Not part of 'dots install': these need a human.
 # No names: menu over all steps, each labelled with its status (✔ done / ✘ open
-# / – ignored).
-# --status: one line per step, tab-separated: <name> <done|open|ignored> <text>
+# / ○ optional / – ignored).
+# --status: one line per step, tab-separated:
+#   <name> <done|open|optional|ignored> <text>
 # (machine-readable — quickshell's SetupService reads it).
 # --ignore/--unignore: hide a step from the bar indicator. The only state file
 # of the CLI (dots-cli/AGENTS.md): "ignored" is a decision, nothing to query.
 #
 # Script contract: `setup.sh status` prints a one-line status and exits 0 when
 # the step is done, non-zero when open; `setup.sh` (no argument) runs the step.
+# A line `# dots-setup: optional` in setup.sh marks an opt-in step (an app not
+# every machine wants): when not done it is "optional", never "open" — listed,
+# but the bar's setup indicator doesn't count it.
 # Scripts get $DOTFILES_DIR and $DOTS (path to this CLI) in the environment.
 
 SETUP_DIR="$DOTFILES_DIR/setup"
@@ -21,12 +25,15 @@ setup_names() { # setup step names, one per line (sorted)
 }
 
 is_ignored() { grep -qxF -- "$1" "$SETUP_IGNORED" 2>/dev/null; }
+is_optional() { grep -qx '# dots-setup: optional' "$SETUP_DIR/$1/setup.sh"; }
 
-# setup_state <name> — prints "<done|open|ignored>\t<status text>"
+# setup_state <name> — prints "<done|open|optional|ignored>\t<status text>"
 setup_state() {
     local text state=open
     if text="$(bash "$SETUP_DIR/$1/setup.sh" status 2>&1 | head -n1; exit "${PIPESTATUS[0]}")"; then
         state=done
+    elif is_optional "$1"; then
+        state=optional
     elif is_ignored "$1"; then
         state=ignored
     fi
@@ -88,13 +95,14 @@ cmd_setup() {
             case "$state" in
                 done) mark="✔" ;;
                 ignored) mark="–"; text="$text (ignored)" ;;
+                optional) mark="○"; text="$text (optional)" ;;
                 *) mark="✘" ;;
             esac
             labels+=("$(printf '%s %-12s %s' "$mark" "$name" "$text")")
         done
         mapfile -t chosen < <(gum_choose_many "Run which setup steps? (x to select, enter to confirm)" "${labels[@]}" || true)
         [ -n "${chosen[*]}" ] || { info "nothing selected"; return 0; }
-        chosen=("${chosen[@]#* }")    # drop the ✔/✘/– mark
+        chosen=("${chosen[@]#* }")    # drop the ✔/✘/○/– mark
         chosen=("${chosen[@]%% *}")   # label → name
     fi
 
