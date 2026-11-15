@@ -1,8 +1,7 @@
 # AGENTS.md — Dotfiles
 
 > **Permanent.** This repo replaced the old chezmoi/Ansible setup in September
-> 2026. The old system is preserved read-only in `BACKUP_DO_NEVER_DELETE/`
-> (reference only — never modify or delete anything in it). The full design
+> 2026. The full design
 > rationale lives in `design-doc.md`; CLI internals in `dots-cli/AGENTS.md`.
 
 ## What this repository is
@@ -31,12 +30,10 @@ One repo, one CLI (`dots`), one-command bootstrap on a fresh machine.
 ├── setup/<name>/setup.sh  # interactive per-machine steps (dots setup)
 ├── stow/<component>/    # one folder per stow package (the actual dotfiles)
 ├── prefs/<app>/         # app.sh + prefs.json: settings merged into files apps rewrite themselves (dots prefs)
-├── dots-cli/            # the CLI tool (see dots-cli/AGENTS.md for internals)
-└── BACKUP_DO_NEVER_DELETE/   # frozen remains of the old chezmoi setup
+└── dots-cli/            # the CLI tool (see dots-cli/AGENTS.md for internals)
 ```
 
-Stow components: **hypr, quickshell, ghostty, tmux, tools, wal, shell,
-scripts, pi, nvim, herdr, wireplumber**. New components are created with `dots stow-add` — never
+Stow components: whatever `ls stow/` lists (no hard-coded list). New components are created with `dots stow-add` — never
 direct `stow --adopt`. Deliberately dropped (do not reintroduce): waybar, astal,
 swayosd, wlogout, mako, rofi, nm-connection-editor, vim — the custom
 quickshell shell replaces several of them.
