@@ -17,6 +17,7 @@ RowLayout {
     ScreenShare {}
     Sunshine {}
     Setup {}
+    Updates {}
     BenqRange {}
     // Add more status indicators here as needed
 }

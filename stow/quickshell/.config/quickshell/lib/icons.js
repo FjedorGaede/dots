@@ -70,3 +70,6 @@ var calendar = { refresh: "󰑐", external: "󰏌", video: "󰕧", warning: "�
 
 // ── Setup (dots setup steps) ──
 var setup = { indicator: "󰖷", open: "󰗖", done: "󰄬", ignored: "󰈉", ignore: "󰈉", unignore: "󰈈" };
+
+// ── System updates (pacman) ──
+var updates = { pending: "󰚰", mirror: "󰀦", reboot: "󰜉" };
