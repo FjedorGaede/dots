@@ -10,6 +10,8 @@ stow/pi/.config/pi/agent/claude-bridge.json
 stow/pi/.config/pi/agent/mcp-onboarding.json
 stow/pi/.config/pi/agent/pi-web-access/last-seen-version.json
 stow/pi/.config/pi/agent/web-search-cache/
+stow/pi/.config/pi/agent/mcp-last-seen-version.json
+stow/pi/.config/pi/agent/trust.json
 # packages installed by pi (reinstallable)
 stow/pi/.config/pi/agent/git/
 stow/pi/.config/pi/agent/npm/

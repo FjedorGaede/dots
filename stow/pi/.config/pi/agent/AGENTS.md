@@ -33,3 +33,10 @@ flowchart LR
   P[Problem] --> A[Option A: fast, hacky]
   P --> B["Option B ★: clean"] --> D[done]
 ```
+
+## Version Control (GitButler)
+- Use `but` for all git writes (see `but` skill). Never `git add/commit/push/checkout/rebase/stash`.
+- Default: parallel branches. Each agent/session commits only its own changes to its own branch (`but commit -b <branch> ...`).
+- Stack (`--above`) only when work depends on another branch.
+- Worktrees only for real isolation (competing attempts, separate runtime).
+- If another agent touches the same files, say so before committing.
