@@ -3,3 +3,6 @@ bob
 tree-sitter-cli
 nvm
 diff-so-fancy
+docker
+docker-compose
+docker-buildx
