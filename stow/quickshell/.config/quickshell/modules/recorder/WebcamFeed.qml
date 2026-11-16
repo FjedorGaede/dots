@@ -3,8 +3,8 @@ import QtMultimedia
 
 import qs.services
 
-// Live webcam picture for WebcamBubble, mirrored like a selfie view (the
-// recording shows exactly this). Its own file, loaded by URL: QtMultimedia
+// Live webcam picture for WebcamBubble, mirrored like a selfie view unless
+// switched off in the setup card (the recording shows exactly this). Its own file, loaded by URL: QtMultimedia
 // is an optional package (qt6-multimedia + qt6-multimedia-ffmpeg) — a static
 // import would break the whole shell without it, this way only the bubble
 // stays empty.
@@ -65,6 +65,6 @@ Item {
         id: output
         anchors.fill: parent
         fillMode: VideoOutput.PreserveAspectCrop
-        transform: Scale { origin.x: output.width / 2; xScale: -1 }
+        transform: Scale { origin.x: output.width / 2; xScale: RecorderService.mirror ? -1 : 1 }
     }
 }

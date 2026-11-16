@@ -13,7 +13,7 @@ while gpu-screen-recorder captures it (KMS capture, docs/GOTCHAS.md).
 | `services/RecorderService.qml` | State machine + gsr process + IPC `recording`. Stays in `services/` (layering: `NotificationService` reads `RecorderService.active` to hold back toasts) |
 | `RecorderMenu.qml` | Start menu: mode, desktop audio, mic, camera (click cycles off → each camera → off) |
 | `select-target.sh` | Target picker (slurp / focused monitor) → global logical rect |
-| `WebcamBubble.qml` | Round webcam bubble; "ready": setup card (camera, mic, desktop audio, Start recording), recording: pill (time, pause, stop) — below the bubble, above when there is no room; drag = move, scroll = resize |
+| `WebcamBubble.qml` | Round webcam bubble; "ready": setup card (camera, mirror, mic + which mic, desktop audio, Start recording), recording: pill (time, pause, stop) — below the bubble, above when there is no room; drag = move, scroll = resize (140–800 px) |
 | `SetupOption.qml` | One selectable row of the setup card |
 | `WebcamFeed.qml` | The camera picture (QtMultimedia). Loaded by URL → without qt6-multimedia only the bubble stays empty |
 | `RecordingIndicator.qml` | Bar pill while recording (dot, timer, pause/resume, stop) — in `AppStatusArea` |
@@ -37,8 +37,9 @@ qs ipc call recording stop | pause              # stop also cancels ready
 
 ## State
 
-`~/.cache/quickshell/recorder.json`: the last setup — mode, mic, desktop
-audio, camera on/off, camera (V4L2 card name; pinned when a recording
+`~/.cache/quickshell/recorder.json`: the last setup — mode, mic, picked mic
+(`micName`, PipeWire node name; "" or unplugged = system default), desktop
+audio, mirror, camera on/off, camera (V4L2 card name; pinned when a recording
 starts), bubble size and position (fraction of the free space in the target →
 same corner in every new region).
 

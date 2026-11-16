@@ -35,6 +35,11 @@ Singleton {
     property alias mode: state.mode   // "region" | "window" | "screen"
     property alias mic: state.mic
     property alias desktopAudio: state.desktopAudio
+    // Picked microphone (PipeWire node name, "" = system default). A picked
+    // mic that's unplugged falls back to the default
+    property alias micName: state.micName
+    readonly property string activeMic:
+        AudioService.sources.some(n => n.name === root.micName) ? root.micName : ""
     property alias webcam: state.webcam
     // Chosen camera (V4L2 card name, see `cameras`); "" or unplugged → the
     // first one available
@@ -50,6 +55,9 @@ Singleton {
     property alias bubbleSize: state.bubbleSize
     property alias bubbleFx: state.bubbleFx
     property alias bubbleFy: state.bubbleFy
+    // Bubble picture mirrored (selfie view) — also in the video, since the
+    // bubble is what gets recorded. Off = how others see you on a call
+    property alias mirror: state.mirror
 
     // Picked target ({ monitor, x, y, w, h }, global logical) and the screen
     // it is on — the bubble window opens there
@@ -249,7 +257,7 @@ Singleton {
         // Both sources → one merged track
         const audio = [];
         if (root.desktopAudio) audio.push("default_output");
-        if (root.mic) audio.push("default_input");
+        if (root.mic) audio.push(root.activeMic !== "" ? root.activeMic : "default_input");
         if (audio.length > 0) args.push("-a", audio.join("|"));
         args.push("-o", root.outputPath);
 
@@ -310,9 +318,11 @@ Singleton {
             property string mode: "region"
             property bool mic: false
             property bool desktopAudio: false
+            property string micName: ""
             property bool webcam: true
             property string camera: ""
             property int bubbleSize: 220
+            property bool mirror: true
             property real bubbleFx: 0
             property real bubbleFy: 1
         }

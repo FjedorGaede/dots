@@ -56,7 +56,7 @@ recording starts (it may have been a fallback).
 | Webcam picture via QtMultimedia in its own file, loaded by `Loader.source` | Optional package: a static import would break the whole shell without it |
 | Cameras from `/sys/class/video4linux`: `index == 0` nodes, `IR Camera` filtered | Metadata nodes + Windows-Hello IR sensors are not webcams |
 | Camera format: smallest ≥ 720p at ≥ 30 fps | The Insta360 defaults to 4K MJPEG → decode load for a ≤ 480 px bubble |
-| Picture mirrored (selfie view) — also in the video | What you see is what's recorded |
+| Picture mirrored (selfie view) by default — also in the video; "Mirror picture" in the setup card turns it off | What you see is what's recorded; unmirrored = how others see you on a call |
 | `RecorderService` stays in `services/` | Layering: `NotificationService` reads `active` (holds back toasts); services must not import modules |
 | Own install script with `--check` + Install button in the menu, then `Quickshell.reload()` | "Apps" pattern; QtMultimedia is only found by a fresh QML engine |
 | One process with the shell (not `qs -c recorder`) | Stage 1 of 2 — split only if the camera ever crashes the shell |

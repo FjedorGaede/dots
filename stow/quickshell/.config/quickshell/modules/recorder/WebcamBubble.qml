@@ -195,7 +195,7 @@ PanelWindow {
                 }
                 onWheel: wheel => {
                     const step = wheel.angleDelta.y > 0 ? 20 : -20;
-                    RecorderService.bubbleSize = Math.max(140, Math.min(480, root.size + step));
+                    RecorderService.bubbleSize = Math.max(140, Math.min(800, root.size + step));
                 }
             }
         }
@@ -263,6 +263,15 @@ PanelWindow {
                     onClicked: RecorderService.webcam = false
                 }
 
+                SetupOption {
+                    Layout.fillWidth: true
+                    visible: RecorderService.webcam
+                    glyph: "\uF0EC"
+                    label: "Mirror picture"
+                    checked: RecorderService.mirror
+                    onClicked: RecorderService.mirror = !RecorderService.mirror
+                }
+
                 StyledText {
                     Layout.leftMargin: 8
                     Layout.topMargin: 8
@@ -277,6 +286,22 @@ PanelWindow {
                     label: "Microphone"
                     checked: RecorderService.mic
                     onClicked: RecorderService.mic = !RecorderService.mic
+                }
+
+                // Which mic (only with the mic on): system default first
+                Repeater {
+                    model: RecorderService.mic
+                        ? [{ name: "", label: "Default (" + (AudioService.source?.description ?? "–") + ")" }]
+                          .concat(AudioService.sources.map(n => ({ name: n.name, label: n.description || n.name })))
+                        : []
+                    delegate: SetupOption {
+                        required property var modelData
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 18
+                        label: modelData.label
+                        checked: RecorderService.activeMic === modelData.name
+                        onClicked: RecorderService.micName = modelData.name
+                    }
                 }
 
                 SetupOption {
