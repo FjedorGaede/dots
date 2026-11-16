@@ -134,15 +134,18 @@ hl.window_rule({
 
 -- ── SLACK (desktop app) + HUDDLES ────────────────────
 -- Every Slack window has class "slack"; a huddle window opens titled
--- "Slack - Huddle Preview" (rules match the title at open) and starts fullscreen
+-- "Slack - Huddle Preview" (rules match the title at open) and starts maximized
+-- (like Super+F). Slack's own fullscreen/maximize requests are ignored so it
+-- can't undo that; also replaces the global "maximize" suppression.
 hl.window_rule({
     match     = { class = "slack", title = "negative:.*[Hh]uddle.*" },
     workspace = "name:slack",
 })
 hl.window_rule({
     match      = { class = "slack", title = ".*[Hh]uddle.*" },
-    workspace  = "name:huddle",
-    fullscreen = true,
+    workspace      = "name:huddle",
+    maximize       = true,
+    suppress_event = "fullscreen maximize",
 })
 
 -- ── TEAMS (teams-for-linux) ───────────────────────────
