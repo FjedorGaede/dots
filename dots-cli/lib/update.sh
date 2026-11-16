@@ -210,10 +210,34 @@ report_packages() {
         if [ -n "${missing[*]:-}" ]; then
             warn "$cat: ${#missing[@]} tracked package(s) not installed: ${missing[*]} — run 'dots install $cat'"
         elif path_changed "packages/$cat/install/"; then
-            warn "$cat: install scripts changed — run 'dots install $cat' to apply them"
+            # only scripts already set up here (--check passes / no --check):
+            # a changed script of an app this machine never installed is no news
+            local -a redo=()
+            local name
+            for name in $(changed_install_scripts "$cat"); do
+                redo+=("$name")
+            done
+            [ ${#redo[@]} -eq 0 ] || warn "$cat: install scripts changed — run 'dots install $cat --only $(IFS=,; echo "${redo[*]}")' to apply them"
         fi
     done
     return 0
+}
+
+# changed_install_scripts <cat>: names of install scripts changed in the pull
+# that still exist. Scripts with --check (apps) only count when --check passes,
+# i.e. the app is installed on this machine — optional apps stay quiet.
+changed_install_scripts() {
+    local cat="$1" f name script
+    for f in "${changed[@]:-}"; do
+        case "$f" in packages/"$cat"/install/*/*) ;; *) continue ;; esac
+        name="${f#packages/"$cat"/install/}"; name="${name%%/*}"
+        script="$DOTFILES_DIR/packages/$cat/install/$name/install.sh"
+        [ -x "$script" ] || continue
+        if grep -q -- '--check' "$script"; then
+            "$script" --check >/dev/null 2>&1 || continue
+        fi
+        echo "$name"
+    done | sort -u
 }
 
 reload_hyprland() {

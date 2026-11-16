@@ -113,7 +113,7 @@ Singleton {
 
     // ── One-click install ──
     // The recorder is a dots app: its packages come from
-    // packages/hyprland/install/screen-recorder/install.sh, which also answers
+    // packages/apps/install/screen-recorder/install.sh, which also answers
     // "installed?" (--check) — one package list. Missing → the menu shows an
     // Install button instead of the controls; it runs `dots install` in a
     // floating terminal (as BluetoothService does for bluez-tools). Afterwards
@@ -121,7 +121,7 @@ Singleton {
     property bool installed: true   // optimistic: no install flash at startup
     readonly property bool installing: installProc.running
     readonly property var installCheckCommand:
-        [Paths.dotsDir + "/packages/hyprland/install/screen-recorder/install.sh", "--check"]
+        [Paths.dotsDir + "/packages/apps/install/screen-recorder/install.sh", "--check"]
 
     function checkInstalled() {
         if (!installCheck.running) installCheck.running = true;
@@ -130,7 +130,7 @@ Singleton {
     function install() {
         if (installProc.running) return;
         installProc.command = Apps.floatingTerminalCommand(
-            Paths.dotsCli + " install hyprland --only screen-recorder");
+            Paths.dotsCli + " install apps --only screen-recorder");
         installProc.running = true;
     }
 

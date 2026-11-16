@@ -84,7 +84,8 @@ category file). Never hand-edit `packages/*/packages.txt` to bypass the CLI.
 
 User-facing shell features are built as **apps**: feature folder
 `modules/<app>/` + `services/<App>Service.qml` + install script
-`packages/<category>/install/<app>/install.sh` (`--check`) + one-click
+`packages/apps/install/<app>/install.sh` (`--check`; optional `apps`
+category — bootstrap always adds screen-recorder + dictation) + one-click
 install in the UI + optional QML loaded by URL.
 How we think about apps, the setup flow and a checklist:
 **`stow/quickshell/.config/quickshell/docs/APPS.md`**. References: screen
@@ -97,7 +98,8 @@ recorder (`modules/recorder/`), USB flasher (`modules/flasher/`).
 pacman base tools (git/gum/stow) → clone → **all questions up front** (git
 name/email, which optional categories, which items of each — core + hyprland
 are always installed) → `dots setup git` + `dots setup ssh` → unattended:
-`dots install core hyprland`, `dots install <cat> --only <items>` per pick →
+`dots install core hyprland`, `dots install apps --only screen-recorder,dictation`,
+`dots install <cat> --only <items>` per pick →
 stow all → dracula theme → `sudo chsh` to zsh. Bootstrap only *uses* the CLI
 (`list --categories`, `list --items`, `install --only`) — no CLI behavior
 exists just for it. github, dots-remote and calendar stay for later

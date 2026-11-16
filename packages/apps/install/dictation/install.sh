@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# install: dictation (category: hyprland)
-# Runs on 'dots install hyprland' after the category's packages are installed.
+# install: dictation (category: apps)
+# Runs on 'dots install apps' (or --only <name>) after the category's packages.
 # MUST be idempotent — safe to run again on every install.
 #
 # Local push-to-talk dictation: whispy as the engine (Parakeet speech model,
@@ -10,7 +10,7 @@
 # user service. Keybinds live in hypr/keybinds.lua, the pill in quickshell's
 # modules/osd/DictationPill.qml.
 #
-# Re-run any time with:  dots install hyprland --only dictation
+# Re-run any time with:  dots install apps --only dictation
 # Every step is idempotent, so re-running re-applies the config and restarts the
 # daemon — that is the way to fix a broken setup.
 #
@@ -39,6 +39,14 @@ CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/whispy/config.toml"
 UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 # ydotool tokens: Ctrl down, Shift down, V down, V up, Shift up, Ctrl up
 PASTE_KEYS='29:1 42:1 47:1 47:0 42:0 29:0'
+
+#   install.sh --check   exit 0 if packages are installed and whispy-daemon is
+#                        enabled, 1 if not (no output) — dots update asks this
+if [ "${1:-}" = --check ]; then
+    pacman -Q "${PACKAGES[@]}" >/dev/null 2>&1 \
+        && systemctl --user is-enabled --quiet whispy-daemon 2>/dev/null
+    exit
+fi
 
 die() { echo "dictation: $*" >&2; exit 1; }
 info() { echo "==> $*"; }
@@ -163,7 +171,7 @@ dictation: block paste is not active yet.
   group is not active in this session yet.
   Reboot, then run this again — it will switch to paste automatically:
 
-      dots install hyprland --only dictation
+      dots install apps --only dictation
 EOF
     exit 1
 fi

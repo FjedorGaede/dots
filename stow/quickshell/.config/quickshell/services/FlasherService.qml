@@ -194,7 +194,7 @@ Singleton {
     property bool installed: true   // optimistic: no install flash at startup
     readonly property bool installing: installProc.running
     readonly property var installCheckCommand:
-        [Paths.dotsDir + "/packages/hyprland/install/usb-flasher/install.sh", "--check"]
+        [Paths.dotsDir + "/packages/apps/install/usb-flasher/install.sh", "--check"]
 
     function checkInstalled() {
         if (!installCheck.running) installCheck.running = true;
@@ -203,7 +203,7 @@ Singleton {
     function install() {
         if (installProc.running) return;
         installProc.command = Apps.floatingTerminalCommand(
-            Paths.dotsCli + " install hyprland --only usb-flasher");
+            Paths.dotsCli + " install apps --only usb-flasher");
         installProc.running = true;
     }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# install: screen-recorder (category: hyprland)
-# Runs on 'dots install hyprland' after the category's packages are installed.
+# install: screen-recorder (category: apps)
+# Runs on 'dots install apps' (or --only <name>) after the category's packages.
 # MUST be idempotent — safe to run again on every install.
 #
 # Loom-style screen recorder in quickshell (Super+R): gpu-screen-recorder for
@@ -12,7 +12,7 @@
 # Shared tools it also uses come from packages.txt (slurp, wl-clipboard,
 # libnotify; jq from core) — they are not the recorder's alone.
 #
-# Re-run any time with:  dots install hyprland --only screen-recorder
+# Re-run any time with:  dots install apps --only screen-recorder
 #
 #   install.sh --check   exit 0 if everything is installed, 1 if not (no
 #                        output) — the recorder menu asks this before it offers

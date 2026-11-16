@@ -89,7 +89,7 @@ qs log | grep -iv dbus         # QML errors (a broken file → "Type X unavailab
   `shell.qml`, `config/Paths.qml`, `modules/bar/AppStatusArea.qml`,
   `docs/GOTCHAS.md`, `docs/REFACTOR.md`, deleted `modules/overlays/RecorderMenu.qml`,
   `modules/bar/indicators/Recording.qml`, `scripts/screenrec-select.sh`,
-  `~/dots/packages/hyprland/install/screen-recorder/`, `~/dots/AGENTS.md`
+  `~/dots/packages/apps/install/screen-recorder/`, `~/dots/AGENTS.md`
   ("Apps" section), comment in `stow/hypr/.config/hypr/keybinds.lua`.
   Already committed + pushed: `gpu-screen-recorder` removed from
   `packages/hyprland/packages.txt`.

@@ -242,7 +242,7 @@ Singleton {
     property bool installed: true   // optimistic: no install flash at startup
     readonly property bool installing: installProc.running
     readonly property var installCheckCommand:
-        [Paths.dotsDir + "/packages/hyprland/install/insta360/install.sh", "--check"]
+        [Paths.dotsDir + "/packages/apps/install/insta360/install.sh", "--check"]
 
     function checkInstalled() {
         if (!installCheck.running) installCheck.running = true;
@@ -251,7 +251,7 @@ Singleton {
     function install() {
         if (installProc.running) return;
         installProc.command = Apps.floatingTerminalCommand(
-            Paths.dotsCli + " install hyprland --only insta360");
+            Paths.dotsCli + " install apps --only insta360");
         installProc.running = true;
     }
 

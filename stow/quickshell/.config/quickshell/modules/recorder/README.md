@@ -49,10 +49,10 @@ filtered out), re-read whenever the menu opens.
 ## Install
 
 An app in the dots sense (`~/dots/AGENTS.md` "Apps"):
-`packages/hyprland/install/screen-recorder/install.sh` installs
+`packages/apps/install/screen-recorder/install.sh` installs
 gpu-screen-recorder, qt6-multimedia, qt6-multimedia-ffmpeg; `--check` tells
 whether they are there. Not installed → the menu shows an Install button
-(floating terminal, `dots install hyprland --only screen-recorder`), then the
+(floating terminal, `dots install apps --only screen-recorder`), then the
 shell reloads and reopens the menu.
 
 ## Later: own process

@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Dictation state from whispy-daemon (dots: packages/hyprland/install/dictation).
+// Dictation state from whispy-daemon (dots: packages/apps/install/dictation).
 // The daemon writes $XDG_RUNTIME_DIR/whispy/state.json:
 //   { state: idle|recording|transcribing|success|error, rms, error_message, timestamp }
 // The keybinds drive whispy-client directly (hypr/keybinds.lua); this service

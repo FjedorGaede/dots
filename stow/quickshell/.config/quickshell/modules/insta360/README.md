@@ -70,5 +70,5 @@ python3 -I link.py status          # from this folder
 
 ## Install
 
-`packages/hyprland/install/insta360/install.sh` (v4l-utils, python, qt6-multimedia, qt6-multimedia-ffmpeg;
+`packages/apps/install/insta360/install.sh` (v4l-utils, python, qt6-multimedia, qt6-multimedia-ffmpeg;
 `--check`).

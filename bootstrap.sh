@@ -38,6 +38,9 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dots}"
 DEFAULT_THEME="dracula"
 # always installed, no question — core provisions yay, so it goes first
 MANDATORY=(core hyprland)
+# apps (install scripts in packages/apps/install/) installed on every machine
+# — the rest of the apps category stays optional
+ALWAYS_APPS=(screen-recorder dictation)
 
 log() { if command -v gum >/dev/null 2>&1; then gum log --level info "$*"; else echo "==> $*"; fi; }
 die() { if command -v gum >/dev/null 2>&1; then gum log --level error "$*" >&2; else echo "bootstrap: $*" >&2; fi; exit 1; }
@@ -96,7 +99,7 @@ mapfile -t optional < <("$DOTS" list --categories | grep -vxF -f <(printf '%s\n'
 chosen=()
 if [ ${#optional[@]} -gt 0 ]; then
     mapfile -t chosen < <(gum choose --no-limit \
-        --header "Choose from which categories? (${MANDATORY[*]} are always installed; x toggles)" \
+        --header "Choose from which categories? (${MANDATORY[*]} + apps ${ALWAYS_APPS[*]} are always installed; x toggles)" \
         "${optional[@]}" || true)
 fi
 
@@ -105,6 +108,8 @@ declare -A picks=()
 for cat in "${chosen[@]}"; do
     [ -n "$cat" ] || continue
     mapfile -t items < <("$DOTS" list "$cat" --items)
+    # always-installed apps are not offered (they come anyway)
+    [ "$cat" != apps ] || mapfile -t items < <(printf '%s\n' "${items[@]}" | grep -vxF -f <(printf '%s\n' "${ALWAYS_APPS[@]}"))
     [ ${#items[@]} -gt 0 ] || continue
     mapfile -t picked < <(gum choose --no-limit \
         --header "Install what from '$cat'? (x toggles, ctrl+a all)" \
@@ -124,6 +129,8 @@ log "that's all the input — the rest runs unattended"
 
 log "installing: ${MANDATORY[*]}"
 "$DOTS" install "${MANDATORY[@]}"
+log "installing apps: ${ALWAYS_APPS[*]}"
+"$DOTS" install apps --only "$(IFS=,; echo "${ALWAYS_APPS[*]}")"
 
 for cat in "${chosen[@]}"; do
     [ -n "${picks[$cat]:-}" ] || continue

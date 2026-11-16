@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# install: usb-flasher (category: hyprland)
-# Runs on 'dots install hyprland' after the category's packages are installed.
+# install: usb-flasher (category: apps)
+# Runs on 'dots install apps' (or --only <name>) after the category's packages.
 # MUST be idempotent — safe to run again on every install.
 #
 # Write an ISO / image to a USB stick from the home menu. The code is stowed
@@ -10,7 +10,7 @@
 # flasher's own packages. A polkit agent (hyprpolkitagent) comes with the
 # hyprland category.
 #
-# Re-run any time with:  dots install hyprland --only usb-flasher
+# Re-run any time with:  dots install apps --only usb-flasher
 #
 #   install.sh --check   exit 0 if everything is installed, 1 if not (no
 #                        output) — FlasherService.checkInstalled

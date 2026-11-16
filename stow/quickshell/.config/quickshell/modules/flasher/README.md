@@ -49,6 +49,6 @@ qs ipc call flash status
 
 ## Install
 
-`packages/hyprland/install/usb-flasher/install.sh` (util-linux, coreutils,
+`packages/apps/install/usb-flasher/install.sh` (util-linux, coreutils,
 polkit; `--check`). Polkit agent: hyprpolkitagent from the hyprland
 category.

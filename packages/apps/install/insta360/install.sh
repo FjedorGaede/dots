@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# install: insta360 (category: hyprland)
-# Runs on 'dots install hyprland' after the category's packages are installed.
+# install: insta360 (category: apps)
+# Runs on 'dots install apps' (or --only <name>) after the category's packages.
 # MUST be idempotent — safe to run again on every install.
 #
 # Control an Insta360 Link / Link 2 webcam from the home menu (gimbal, AI
@@ -9,7 +9,7 @@
 # A dots app (docs/APPS.md in the quickshell config): installs exactly the
 # webcam controls' own packages.
 #
-# Re-run any time with:  dots install hyprland --only insta360
+# Re-run any time with:  dots install apps --only insta360
 #
 #   install.sh --check   exit 0 if everything is installed, 1 if not (no
 #                        output) — Insta360Service.checkInstalled

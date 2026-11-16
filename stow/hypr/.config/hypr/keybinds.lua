@@ -52,7 +52,7 @@ bindMain("R",  hl.dsp.exec_cmd("qs ipc call recording toggle"))
 bindMainShift("R",  hl.dsp.exec_cmd("qs ipc call recording start region"))
 
 -- ── DICTATION ─────────────────────────────────────────
--- whispy (dots: packages/hyprland/install/dictation): hold F9 = push-to-talk,
+-- whispy (dots: packages/apps/install/dictation): hold F9 = push-to-talk,
 -- Super+Ctrl+X = start/stop, +Shift = discard. The text is typed into the
 -- focused window; quickshell's DictationPill shows the state.
 hl.bind("F9",                       hl.dsp.exec_cmd("whispy-client start"))
