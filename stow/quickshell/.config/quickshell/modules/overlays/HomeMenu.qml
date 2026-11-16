@@ -18,7 +18,10 @@ ModalOverlay {
     property string confirming: ""
     onVisibleChanged: {
         if (!visible) confirming = ""
-        else AiUsageService.refresh(false)
+        else {
+            AiUsageService.refresh(false)
+            Insta360Service.refresh()   // tile only while the camera is plugged in
+        }
     }
 
     Timer {
@@ -81,6 +84,11 @@ ModalOverlay {
         PanelService.open("flasher");
     }
 
+    function openWebcam() {
+        PanelService.close("home");
+        PanelService.open("insta360");
+    }
+
     function openSetup() {
         PanelService.close("home");
         PanelService.open("setup");
@@ -139,6 +147,11 @@ ModalOverlay {
           on: false,
           status: SetupService.openSteps.length > 0 ? SetupService.openSteps.length + " open" : "Open",
           color: Theme.cyan },
+        { key: "webcam",  label: "Webcam", short: "Webcam", icon: "\uF030", toggle: false,
+          on: Insta360Service.mode !== "normal",
+          status: Insta360Service.mode !== "normal"
+              ? Insta360Service.modes.find(m => m.key === Insta360Service.mode)?.label ?? "Open" : "Open",
+          color: Theme.mainAccent },
     ]
 
     function activate(key) {
@@ -151,6 +164,7 @@ ModalOverlay {
         case "record":   recordAction(); break
         case "flash":    openFlasher(); break
         case "setup":    openSetup(); break
+        case "webcam":   openWebcam(); break
         }
     }
 
@@ -252,6 +266,7 @@ ModalOverlay {
         Row { f: homeMenu.features[3] }
         Row { f: homeMenu.features[4] }
         Row { f: homeMenu.features[6] }
+        Row { f: homeMenu.features[8]; visible: Insta360Service.present }
         Row { f: homeMenu.features[7] }
     }
 

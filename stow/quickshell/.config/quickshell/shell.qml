@@ -7,6 +7,7 @@ import qs.modules.osd
 import qs.modules.overlays
 import qs.modules.recorder
 import qs.modules.flasher
+import qs.modules.insta360
 import qs.modules.notifications
 import qs.services
 
@@ -64,6 +65,8 @@ Scope {
             DisplaysMenu { screen: main.modelData }
 
             FlasherMenu { screen: main.modelData }
+
+            Insta360Menu { screen: main.modelData }
 
             SetupMenu { screen: main.modelData }
 

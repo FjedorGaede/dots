@@ -36,6 +36,8 @@ Singleton {
     readonly property string recordings: root.home + "/Videos/Recordings"
     // Recorder setup (mode, audio, camera) + webcam bubble size/position (RecorderService)
     readonly property string recorderState: root.cache + "/quickshell/recorder.json"
+    // Insta360 webcam: last AI mode + gimbal presets (Insta360Service)
+    readonly property string insta360State: root.cache + "/quickshell/insta360.json"
 
     // Machine-local monitor rules saved by DisplaysMenu (not in git;
     // hypr/monitors.lua loads it — keep the path in sync there)
