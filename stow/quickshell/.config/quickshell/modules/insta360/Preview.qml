@@ -2,8 +2,8 @@ import QtQuick
 import QtMultimedia
 
 // Live picture of the Insta360 for Insta360Menu. Streaming is also what wakes
-// the gimbal (parked otherwise). Not mirrored: the pad arrows move the picture
-// the way they point. Its own file, loaded by URL like recorder/WebcamFeed.qml
+// the gimbal (parked otherwise). `mirrored` flips only this picture (selfie
+// view), never the camera's output. Its own file, loaded by URL like recorder/WebcamFeed.qml
 // — without qt6-multimedia only the preview stays empty.
 Item {
     id: root
@@ -12,6 +12,7 @@ Item {
     readonly property bool ok: camera.cameraDevice.id.length > 0 && !root.failed && camera.active
     property bool failed: false
     property string errorText: ""
+    property bool mirrored: false
 
     MediaDevices { id: devices }
 
@@ -58,5 +59,6 @@ Item {
         id: output
         anchors.fill: parent
         fillMode: VideoOutput.PreserveAspectFit
+        transform: Scale { origin.x: output.width / 2; xScale: root.mirrored ? -1 : 1 }
     }
 }

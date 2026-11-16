@@ -40,6 +40,9 @@ Singleton {
     // one set is kept
     readonly property string mode: state.mode
     readonly property var presets: state.presets
+    // Menu preview mirrored (selfie view) — the preview only, not the camera
+    readonly property bool mirrorPreview: state.mirrorPreview
+    function toggleMirrorPreview() { state.mirrorPreview = !state.mirrorPreview; }
 
     readonly property var modes: [
         { key: "normal",     label: "Normal" },
@@ -231,6 +234,7 @@ Singleton {
             property string mode: "normal"
             property var presets: []
             property bool gesturesOff: false
+            property bool mirrorPreview: false
         }
     }
 

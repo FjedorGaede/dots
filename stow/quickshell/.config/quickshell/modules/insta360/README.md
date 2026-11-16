@@ -10,7 +10,7 @@ macOS "Insta360 Link Controller".
 |---|---|
 | `services/Insta360Service.qml` | Camera state (polled), write queue (slider drags coalesce), mode + presets, install state, IPC `status` |
 | `Insta360Menu.qml` | Menu: live preview, mode, gimbal pad, zoom, 3 presets, image sliders + switches |
-| `Preview.qml` | Live picture (QtMultimedia, loaded by URL → without qt6-multimedia only the preview stays empty). Runs only while the menu is open |
+| `Preview.qml` | Live picture; "Mirror" button flips the preview only (remembered, `mirrorPreview`), never the camera output. (QtMultimedia, loaded by URL → without qt6-multimedia only the preview stays empty). Runs only while the menu is open |
 | `link.py` | The only camera access. `status` (JSON), `set NAME=VALUE`, `mode`, `frame`, `gestures`, `noise` |
 
 Wiring outside this folder: `shell.qml` (menu), `services/PanelService.qml`

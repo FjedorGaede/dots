@@ -91,6 +91,25 @@ ModalOverlay {
             anchors.fill: parent
             active: menu.visible && menu.ready
             source: "Preview.qml"
+            onLoaded: item.mirrored = Qt.binding(() => Insta360Service.mirrorPreview)
+        }
+
+        // Mirror the preview only (the camera's output stays as it is)
+        GhostButton {
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: 8
+            visible: preview.status === Loader.Ready && !(preview.item?.failed ?? false)
+            implicitHeight: 26
+            exclusiveGrab: true
+            icon: "\uF0EC"
+            text: Insta360Service.mirrorPreview ? "Mirrored" : "Mirror"
+            iconSize: Theme.fontSize.sm
+            textSize: Theme.fontSize.sm
+            idleColor: Theme.alpha(Theme.black, 0.55)
+            hoverColor: Theme.alpha(Theme.black, 0.75)
+            contentColor: Insta360Service.mirrorPreview ? Theme.mainAccent : Theme.white
+            onClicked: Insta360Service.toggleMirrorPreview()
         }
 
         // No picture: package missing, or another app holds the camera
