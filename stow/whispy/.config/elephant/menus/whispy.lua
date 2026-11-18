@@ -39,10 +39,7 @@ function GetEntries()
     return entries
 end
 
+-- Not io.popen: gopher-lua's close() never closes stdin, so wl-copy hangs.
 function Copy(value)
-    local p = io.popen("wl-copy", "w")
-    if p then
-        p:write(value)
-        p:close()
-    end
+    os.execute("wl-copy -- '" .. value:gsub("'", "'\\''") .. "'")
 end
