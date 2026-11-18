@@ -25,10 +25,16 @@
 # found" answers from before the tunnel) — as the user, which polkit denies;
 # a polkit rule lets wheel members flush-caches (nothing else).
 #
+# Dead tunnel: NSGClient's sockets to the gateway have no TCP keepalive. When
+# the path drops, it only notices once the kernel gives up retransmitting
+# (net.ipv4.tcp_retries2=15, ~15 min) and only then reconnects on its own.
+# A sysctl drop-in lowers that to 8 (~100 s) for all TCP connections.
+#
 # Uninstall: sudo systemctl disable --now nsgverctl
 #            sudo pacman -Rns citrix-secure-access   (also removes gpgme-1)
 #            sudo rm /etc/NetworkManager/dispatcher.d/90-ipv4-dns-only
 #            sudo rm /etc/polkit-1/rules.d/50-resolved-flush-caches.rules
+#            sudo rm /etc/sysctl.d/90-tcp-retries.conf && sudo sysctl -w net.ipv4.tcp_retries2=15
 #            (profiles keep ipv6.ignore-auto-dns=yes — per profile:
 #             nmcli connection modify <name> ipv6.ignore-auto-dns no)
 set -euo pipefail
@@ -68,6 +74,21 @@ polkit.addRule(function(action, subject) {
     }
 });'
 
+TCP_SYSCTL=/etc/sysctl.d/90-tcp-retries.conf
+TCP_SYSCTL_CONTENT='# Installed by dots (packages/work/install/citrix-secure-access) — see there.
+# Citrix Secure Access notices a dead gateway connection only when TCP gives
+# up retransmitting: ~100 s instead of the default ~15 min (15).
+net.ipv4.tcp_retries2 = 8'
+
+# Detect a dead gateway connection after ~100 s instead of ~15 min
+ensure_tcp_retries() {
+    if ! printf '%s\n' "$TCP_SYSCTL_CONTENT" | cmp -s - "$TCP_SYSCTL"; then
+        printf '%s\n' "$TCP_SYSCTL_CONTENT" | sudo install -m 644 -o root -g root /dev/stdin "$TCP_SYSCTL"
+        sudo sysctl -q -p "$TCP_SYSCTL"
+        echo "installed $TCP_SYSCTL"
+    fi
+}
+
 # Hook for future profiles + switch the existing ones now (active ones reapplied),
 # plus the polkit rule for the client's cache flush
 ensure_ipv4_dns() {
@@ -97,6 +118,7 @@ if [ ! -f "$DEB" ]; then
     if [ -n "$installed_ver" ]; then
         echo "citrix-secure-access already installed: $installed_ver"
         ensure_ipv4_dns
+        ensure_tcp_retries
     else
         echo "citrix-secure-access: $DEB not found, skipping (nothing installed)."
         echo "  Download 'Citrix Secure Access client for Ubuntu 22/24' (Citrix login required):"
@@ -117,6 +139,7 @@ if [ "$installed_ver" = "$deb_ver-$PKGREL" ]; then
     echo "citrix-secure-access already installed: $installed_ver"
     systemctl is-enabled -q nsgverctl.service || sudo systemctl enable --now nsgverctl.service
     ensure_ipv4_dns
+    ensure_tcp_retries
     exit 0
 fi
 
@@ -236,5 +259,6 @@ missing="$(ldd /opt/Citrix/NSGClient/bin/NSGClient /opt/Citrix/NSGClient/service
 [ -z "$missing" ] || { echo "WARNING: missing libraries:"; echo "$missing"; }
 
 ensure_ipv4_dns
+ensure_tcp_retries
 
 echo "citrix-secure-access installed: $(pacman -Q "$PKGNAME" | awk '{print $2}')"
